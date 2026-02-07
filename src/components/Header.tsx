@@ -1,8 +1,16 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Scale, Menu, X } from "lucide-react";
+import { Scale, Menu, X, Settings, Info, History, Share2, MoreHorizontal } from "lucide-react";
 import { useState } from "react";
 import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { toast } from "sonner";
 
 const navLinks = [
   { href: "/", label: "Início" },
@@ -10,7 +18,12 @@ const navLinks = [
   { href: "/checar-imagem", label: "Checar" },
   { href: "/checar-audio", label: "Áudio" },
   { href: "/biblioteca", label: "Leis" },
-  { href: "/historico", label: "Histórico" },
+];
+
+const moreLinks = [
+  { href: "/historico", label: "Histórico", icon: History },
+  { href: "/configuracoes", label: "Configurações", icon: Settings },
+  { href: "/sobre", label: "Sobre o app", icon: Info },
 ];
 
 export function Header() {
@@ -52,6 +65,53 @@ export function Header() {
                 {link.label}
               </Link>
             ))}
+            
+            {/* More Menu */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 gap-1",
+                    moreLinks.some(l => location.pathname === l.href)
+                      ? "bg-verde text-primary-foreground shadow-md"
+                      : "text-foreground/80 hover:text-foreground hover:bg-white/10"
+                  )}
+                >
+                  Mais
+                  <MoreHorizontal className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {moreLinks.map((link) => (
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link to={link.href} className="flex items-center gap-2 cursor-pointer">
+                      <link.icon className="w-4 h-4" />
+                      {link.label}
+                    </Link>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: "Verdade na Lei Brasil",
+                        text: "Verifique fatos com base na legislação brasileira!",
+                        url: window.location.origin,
+                      });
+                    } else {
+                      navigator.clipboard.writeText(window.location.origin);
+                      toast.success("Link copiado!");
+                    }
+                  }}
+                  className="flex items-center gap-2 cursor-pointer"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Compartilhar app
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -88,6 +148,48 @@ export function Header() {
                   {link.label}
                 </Link>
               ))}
+              
+              {/* More Section in Mobile */}
+              <div className="mt-2 pt-2 border-t border-white/10">
+                <p className="px-4 py-2 text-xs text-muted-foreground font-semibold uppercase tracking-wider">
+                  Mais
+                </p>
+                {moreLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    to={link.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={cn(
+                      "px-4 py-3 rounded-xl text-base font-medium transition-colors flex items-center gap-3",
+                      location.pathname === link.href
+                        ? "bg-verde text-primary-foreground"
+                        : "text-foreground/80 hover:text-foreground hover:bg-white/10"
+                    )}
+                  >
+                    <link.icon className="w-5 h-5" />
+                    {link.label}
+                  </Link>
+                ))}
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (navigator.share) {
+                      navigator.share({
+                        title: "Verdade na Lei Brasil",
+                        text: "Verifique fatos com base na legislação brasileira!",
+                        url: window.location.origin,
+                      });
+                    } else {
+                      navigator.clipboard.writeText(window.location.origin);
+                      toast.success("Link copiado!");
+                    }
+                  }}
+                  className="w-full px-4 py-3 rounded-xl text-base font-medium transition-colors flex items-center gap-3 text-foreground/80 hover:text-foreground hover:bg-white/10"
+                >
+                  <Share2 className="w-5 h-5" />
+                  Compartilhar app
+                </button>
+              </div>
             </div>
           </nav>
         )}
