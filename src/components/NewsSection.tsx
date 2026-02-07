@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useNews, NewsCategory } from "@/hooks/useNews";
 import { useVerifyNews, VerdictType } from "@/hooks/useVerifyNews";
+import { useAnalyzeNews } from "@/hooks/useAnalyzeNews";
+import { generateNewsPdf } from "@/utils/generateNewsPdf";
 import {
   Newspaper,
   ExternalLink,
@@ -15,10 +17,13 @@ import {
   AlertTriangle,
   XCircle,
   HelpCircle,
+  FileText,
+  Download,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const categories: { id: NewsCategory; label: string; icon: typeof Globe }[] = [
   { id: "geral", label: "Geral", icon: Globe },
@@ -56,6 +61,7 @@ export function NewsSection() {
   const [category, setCategory] = useState<NewsCategory>("geral");
   const { data: news, isLoading, error, refetch, isFetching } = useNews(category);
   const { verify, isVerifying, results } = useVerifyNews();
+  const { analyze, isAnalyzing, results: analysisResults } = useAnalyzeNews();
 
   const formatDate = (dateString: string) => {
     try {
@@ -84,6 +90,20 @@ export function NewsSection() {
     e.preventDefault();
     e.stopPropagation();
     await verify(`${category}-${idx}`, item.title, item.description, item.source, item.link);
+  };
+
+  const handleAnalyze = async (
+    e: React.MouseEvent,
+    idx: number,
+    item: { title: string; description: string; source: string; link: string }
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const result = await analyze(`${category}-${idx}`, item.title, item.description, item.source, item.link);
+    if (result) {
+      generateNewsPdf(result);
+      toast.success("PDF gerado com sucesso!");
+    }
   };
 
   return (
@@ -159,6 +179,7 @@ export function NewsSection() {
             const newsId = `${category}-${idx}`;
             const verification = results[newsId];
             const isCurrentlyVerifying = isVerifying === newsId;
+            const isCurrentlyAnalyzing = isAnalyzing === newsId;
 
             return (
               <div key={idx} className="quick-item-glass block group">
@@ -220,31 +241,58 @@ export function NewsSection() {
                     </div>
                   )}
 
-                  {/* Verify Button */}
-                  {!verification && (
+                  {/* Action Buttons */}
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {/* Verify Button */}
+                    {!verification && (
+                      <button
+                        onClick={(e) => handleVerify(e, idx, item)}
+                        disabled={isCurrentlyVerifying || isCurrentlyAnalyzing}
+                        className={cn(
+                          "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                          "bg-white/5 hover:bg-white/10 text-white/70 hover:text-white",
+                          "border border-white/10 hover:border-white/20",
+                          (isCurrentlyVerifying || isCurrentlyAnalyzing) && "opacity-50 cursor-not-allowed"
+                        )}
+                      >
+                        {isCurrentlyVerifying ? (
+                          <>
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                            Verificando...
+                          </>
+                        ) : (
+                          <>
+                            <ShieldCheck className="w-3 h-3" />
+                            Verificar
+                          </>
+                        )}
+                      </button>
+                    )}
+
+                    {/* Analyze & PDF Button */}
                     <button
-                      onClick={(e) => handleVerify(e, idx, item)}
-                      disabled={isCurrentlyVerifying}
+                      onClick={(e) => handleAnalyze(e, idx, item)}
+                      disabled={isCurrentlyAnalyzing || isCurrentlyVerifying}
                       className={cn(
-                        "mt-2 flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
-                        "bg-white/5 hover:bg-white/10 text-white/70 hover:text-white",
-                        "border border-white/10 hover:border-white/20",
-                        isCurrentlyVerifying && "opacity-50 cursor-not-allowed"
+                        "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                        "bg-primary/20 hover:bg-primary/30 text-primary-foreground",
+                        "border border-primary/30 hover:border-primary/50",
+                        (isCurrentlyAnalyzing || isCurrentlyVerifying) && "opacity-50 cursor-not-allowed"
                       )}
                     >
-                      {isCurrentlyVerifying ? (
+                      {isCurrentlyAnalyzing ? (
                         <>
                           <Loader2 className="w-3 h-3 animate-spin" />
-                          Verificando...
+                          Analisando...
                         </>
                       ) : (
                         <>
-                          <ShieldCheck className="w-3 h-3" />
-                          Verificar veracidade
+                          <FileText className="w-3 h-3" />
+                          Analisar PDF
                         </>
                       )}
                     </button>
-                  )}
+                  </div>
                 </div>
 
                 <a
