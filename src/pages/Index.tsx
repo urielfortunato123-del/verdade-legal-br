@@ -1,17 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
+import { SearchBar } from "@/components/SearchBar";
 import {
-  MessageSquare,
-  Mic,
   History,
   MoreHorizontal,
-  Search,
   ChevronRight,
   User,
   Home,
   Star,
   Scale,
-  Video,
+  Search,
 } from "lucide-react";
 
 const Index = () => {
@@ -84,20 +82,8 @@ const Index = () => {
           </div>
 
           {/* Search Bar */}
-          <div className="search-bar mb-6 animate-fade-in animation-delay-100">
-            <Search className="w-5 h-5 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Pergunte sobre leis, notícias ou..."
-              className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
-              onFocus={() => navigate("/perguntar")}
-            />
-            <button 
-              onClick={() => navigate("/checar-audio")}
-              className="p-2 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
-            >
-              <Mic className="w-5 h-5" />
-            </button>
+          <div className="mb-6 animate-fade-in animation-delay-100">
+            <SearchBar />
           </div>
         </div>
 
