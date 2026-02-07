@@ -104,9 +104,12 @@ const Index = () => {
             <div className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden mb-4 shadow-lg">
               <span className="text-7xl leading-none">🇧🇷</span>
             </div>
-            <h1 className="text-2xl font-display font-bold text-white mb-2">
+            <h1 className="text-2xl font-display font-bold text-white mb-1">
               Olá Brasileiro
             </h1>
+            <p className="text-sm text-white/70 mb-2">
+              Antes de acreditar, verifique
+            </p>
             <div className="badge-glass">
               <span>Brasil</span>
             </div>
