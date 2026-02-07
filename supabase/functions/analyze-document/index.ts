@@ -6,7 +6,9 @@ const corsHeaders = {
 };
 
 interface AnalyzeRequest {
-  text: string;
+  text?: string;
+  imageUrl?: string;
+  imageBase64?: string;
   mode: "news_tv" | "document";
 }
 
@@ -16,16 +18,16 @@ serve(async (req) => {
   }
 
   try {
-    const { text, mode } = await req.json() as AnalyzeRequest;
+    const { text, imageUrl, imageBase64, mode } = await req.json() as AnalyzeRequest;
     const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
     
     if (!OPENROUTER_API_KEY) {
       throw new Error("OPENROUTER_API_KEY is not configured");
     }
 
-    if (!text || text.trim().length === 0) {
+    if (!text && !imageUrl && !imageBase64) {
       return new Response(
-        JSON.stringify({ error: "No text provided for analysis" }),
+        JSON.stringify({ error: "No text or image provided for analysis" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -76,6 +78,37 @@ Responda em JSON:
   "relatedLaws": [{"law": "Nome", "article": "Art.", "relevance": "Por que é relevante"}]
 }`;
 
+    // Build message content based on input type
+    let userContent: Array<{ type: string; text?: string; image_url?: { url: string } }>;
+
+    if (imageUrl || imageBase64) {
+      // Multimodal request with image
+      const imageSource = imageBase64 
+        ? `data:image/jpeg;base64,${imageBase64}`
+        : imageUrl;
+
+      userContent = [
+        {
+          type: "text",
+          text: `Analise o seguinte conteúdo (extraia o texto da imagem se necessário e verifique as informações):\n\n${text || "Extraia e analise o texto desta imagem."}`
+        },
+        {
+          type: "image_url",
+          image_url: {
+            url: imageSource!
+          }
+        }
+      ];
+    } else {
+      // Text-only request
+      userContent = [
+        {
+          type: "text",
+          text: `Analise o seguinte texto:\n\n${text}`
+        }
+      ];
+    }
+
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -85,10 +118,10 @@ Responda em JSON:
         "X-Title": "Verdade na Lei BR",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash-preview-05-20",
+        model: "openai/gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Analise o seguinte texto:\n\n${text}` },
+          { role: "user", content: userContent },
         ],
         response_format: { type: "json_object" },
       }),
