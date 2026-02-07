@@ -1,7 +1,9 @@
+import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { ActionCard } from "@/components/ActionCard";
 import { VerdictBadge } from "@/components/ui/VerdictBadge";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   MessageSquare,
   Image,
@@ -12,9 +14,13 @@ import {
   Search,
   MapPin,
   Shield,
+  Camera,
+  Paperclip,
 } from "lucide-react";
 
 const Index = () => {
+  const navigate = useNavigate();
+
   return (
     <Layout>
       {/* Hero Section - Brasil Blue */}
@@ -44,13 +50,48 @@ const Index = () => {
               </p>
             </div>
 
-            {/* Search Bar */}
+            {/* Search Bar with Action Buttons */}
             <div className="relative mb-8 animate-fade-in animation-delay-200">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-              <Input
-                placeholder="Pergunte sobre leis, notícias ou grave um áudio"
-                className="h-14 pl-12 pr-4 text-base rounded-2xl bg-card text-card-foreground border-0 shadow-lg placeholder:text-muted-foreground"
-              />
+              <div className="flex items-center gap-2 bg-card rounded-2xl shadow-lg p-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+                  <Input
+                    placeholder="Pergunte sobre leis, notícias..."
+                    className="h-12 pl-10 pr-4 text-base rounded-xl bg-transparent text-card-foreground border-0 placeholder:text-muted-foreground focus-visible:ring-0"
+                  />
+                </div>
+                
+                {/* Action Buttons */}
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-xl text-muted-foreground hover:text-verde-brasil hover:bg-verde-brasil/10"
+                    onClick={() => navigate("/checar-audio")}
+                    title="Gravar áudio"
+                  >
+                    <Mic className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-xl text-muted-foreground hover:text-amarelo-progresso hover:bg-amarelo-progresso/10"
+                    onClick={() => navigate("/checar-imagem?mode=camera")}
+                    title="Tirar foto"
+                  >
+                    <Camera className="w-5 h-5" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-10 w-10 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10"
+                    onClick={() => navigate("/checar-imagem?mode=file")}
+                    title="Anexar documento"
+                  >
+                    <Paperclip className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
             </div>
 
             {/* Verdict examples */}
