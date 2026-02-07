@@ -84,84 +84,103 @@ export function SearchBar() {
 
   return (
     <div ref={containerRef} className="relative">
-      <form onSubmit={handleSubmit} className="search-input">
-        <button 
-          type="button"
-          onClick={() => navigate("/checar-audio")}
-          className="p-1.5 rounded-lg bg-secondary/20 hover:bg-secondary/30 transition-colors"
-        >
-          <Mic className="w-4 h-4 text-secondary" />
-        </button>
+      <form onSubmit={handleSubmit} className="search-glass">
+        <Search className="w-5 h-5 text-white/50" />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
-          placeholder="Pesquisar..."
-          className="flex-1 bg-transparent text-white placeholder:text-white/50 outline-none text-sm"
+          placeholder="Pesquisar leis, direitos..."
+          className="flex-1 bg-transparent text-white placeholder:text-white/40 outline-none text-sm"
         />
-        <Search className="w-5 h-5 text-white/50" />
+        <button 
+          type="button"
+          onClick={() => navigate("/checar-audio")}
+          className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all hover:scale-105"
+        >
+          <Mic className="w-4 h-4 text-white/70" />
+        </button>
       </form>
 
-      {/* Search Results Dropdown */}
-      {isOpen && (query.trim() || true) && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
+      {/* Search Results Dropdown - Glass */}
+      {isOpen && (
+        <div className="absolute top-full left-0 right-0 mt-3 glass-panel p-4 z-50 animate-fade-in">
           {results.length > 0 ? (
-            <div className="max-h-80 overflow-y-auto">
+            <div className="max-h-80 overflow-y-auto space-y-1">
               {results.map((result, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleResultClick(result)}
-                  className={cn(
-                    "w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors",
-                    idx !== results.length - 1 && "border-b border-gray-50"
-                  )}
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-xl hover:bg-white/10 transition-all"
                 >
                   <div className={cn(
-                    "w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0",
-                    result.type === "question" ? "bg-primary/10" : "bg-accent/10"
+                    "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0",
+                    result.type === "question" 
+                      ? "bg-gradient-to-br from-verde-brasil to-verde-brasil-dark" 
+                      : "bg-gradient-to-br from-secondary to-amarelo-ouro-dark"
                   )}>
                     {result.type === "question" ? (
-                      <MessageSquare className="w-4 h-4 text-primary" />
+                      <MessageSquare className="w-5 h-5 text-white" />
                     ) : (
-                      <Scale className="w-4 h-4 text-accent" />
+                      <Scale className="w-5 h-5 text-secondary-foreground" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-800 text-sm truncate">{result.title}</p>
+                    <p className="font-medium text-white/90 text-sm truncate">{result.title}</p>
                     {result.description && (
-                      <p className="text-xs text-gray-500 truncate">{result.description}</p>
+                      <p className="text-xs text-white/50 truncate">{result.description}</p>
                     )}
                   </div>
-                  <ChevronRight className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-white/40 flex-shrink-0" />
                 </button>
               ))}
             </div>
           ) : query.trim() ? (
             <div className="p-4 text-center">
-              <p className="text-gray-500 text-sm mb-2">Nenhum resultado para "{query}"</p>
+              <p className="text-white/60 text-sm mb-3">Nenhum resultado para "{query}"</p>
               <button
                 onClick={handleSubmit}
-                className="text-primary font-medium text-sm hover:underline"
+                className="px-4 py-2 rounded-xl bg-secondary text-secondary-foreground font-medium text-sm hover:bg-secondary/90 transition-all"
               >
                 Perguntar sobre isso →
               </button>
             </div>
           ) : (
-            <div className="p-3">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 px-1">
-                Sugestões
-              </p>
-              {quickQuestions.slice(0, 3).map((q, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => navigate(q.href)}
-                  className="w-full flex items-center gap-3 px-3 py-2.5 text-left hover:bg-gray-50 rounded-lg transition-colors"
-                >
-                  <Search className="w-4 h-4 text-gray-400" />
-                  <span className="text-sm text-gray-700">{q.title}</span>
-                </button>
-              ))}
+            <div className="space-y-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-2 px-1">
+                  Sugestões
+                </p>
+                {quickQuestions.slice(0, 3).map((q, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => navigate(q.href)}
+                    className="w-full flex items-center gap-3 px-3 py-2.5 text-left rounded-xl hover:bg-white/10 transition-all"
+                  >
+                    <Search className="w-4 h-4 text-white/40" />
+                    <span className="text-sm text-white/70">{q.title}</span>
+                  </button>
+                ))}
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-2 px-1">
+                  Leis Populares
+                </p>
+                {laws.slice(0, 3).map((law, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => navigate(law.href)}
+                    className="w-full flex items-center justify-between px-3 py-2.5 text-left rounded-xl hover:bg-white/10 transition-all"
+                  >
+                    <div className="flex items-center gap-3">
+                      <Scale className="w-4 h-4 text-secondary" />
+                      <span className="text-sm text-white/70">{law.title}</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-white/30" />
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>
