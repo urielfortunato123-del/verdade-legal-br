@@ -1,0 +1,132 @@
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers":
+    "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
+
+// RSS feeds de notícias brasileiras
+const RSS_FEEDS = [
+  { name: "G1", url: "https://g1.globo.com/rss/g1/" },
+  { name: "Folha", url: "https://feeds.folha.uol.com.br/emcimadahora/rss091.xml" },
+  { name: "UOL", url: "https://rss.uol.com.br/feed/noticias.xml" },
+];
+
+interface NewsItem {
+  title: string;
+  link: string;
+  description: string;
+  pubDate: string;
+  source: string;
+}
+
+function parseRSSItem(item: string, source: string): NewsItem | null {
+  try {
+    const titleMatch = item.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>|<title>(.*?)<\/title>/s);
+    const linkMatch = item.match(/<link>(.*?)<\/link>/s);
+    const descMatch = item.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>|<description>(.*?)<\/description>/s);
+    const dateMatch = item.match(/<pubDate>(.*?)<\/pubDate>/s);
+
+    const title = titleMatch ? (titleMatch[1] || titleMatch[2])?.trim() : null;
+    const link = linkMatch ? linkMatch[1]?.trim() : null;
+    const description = descMatch ? (descMatch[1] || descMatch[2])?.trim() : "";
+    const pubDate = dateMatch ? dateMatch[1]?.trim() : new Date().toISOString();
+
+    if (!title || !link) return null;
+
+    // Limpar HTML do description
+    const cleanDescription = description
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ")
+      .replace(/&amp;/g, "&")
+      .replace(/&lt;/g, "<")
+      .replace(/&gt;/g, ">")
+      .replace(/&quot;/g, '"')
+      .substring(0, 200);
+
+    return {
+      title,
+      link,
+      description: cleanDescription,
+      pubDate,
+      source,
+    };
+  } catch {
+    return null;
+  }
+}
+
+async function fetchRSSFeed(feedUrl: string, sourceName: string): Promise<NewsItem[]> {
+  try {
+    const response = await fetch(feedUrl, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; NewsBot/1.0)",
+      },
+    });
+
+    if (!response.ok) {
+      console.error(`Failed to fetch ${sourceName}: ${response.status}`);
+      return [];
+    }
+
+    const xml = await response.text();
+    const items: NewsItem[] = [];
+
+    // Extrair itens do RSS
+    const itemMatches = xml.match(/<item>([\s\S]*?)<\/item>/g);
+    if (!itemMatches) return [];
+
+    for (const itemXml of itemMatches.slice(0, 5)) {
+      const parsed = parseRSSItem(itemXml, sourceName);
+      if (parsed) items.push(parsed);
+    }
+
+    return items;
+  } catch (error) {
+    console.error(`Error fetching ${sourceName}:`, error);
+    return [];
+  }
+}
+
+serve(async (req) => {
+  if (req.method === "OPTIONS") {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    console.log("Fetching news from RSS feeds...");
+
+    // Buscar de todos os feeds em paralelo
+    const feedPromises = RSS_FEEDS.map((feed) =>
+      fetchRSSFeed(feed.url, feed.name)
+    );
+
+    const results = await Promise.all(feedPromises);
+    const allNews = results.flat();
+
+    // Ordenar por data (mais recentes primeiro)
+    allNews.sort((a, b) => {
+      const dateA = new Date(a.pubDate).getTime();
+      const dateB = new Date(b.pubDate).getTime();
+      return dateB - dateA;
+    });
+
+    // Limitar a 15 notícias
+    const news = allNews.slice(0, 15);
+
+    console.log(`Fetched ${news.length} news items`);
+
+    return new Response(
+      JSON.stringify({ success: true, news }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  } catch (error) {
+    console.error("Error fetching news:", error);
+    const errorMessage = error instanceof Error ? error.message : "Unknown error";
+    return new Response(
+      JSON.stringify({ success: false, error: errorMessage }),
+      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    );
+  }
+});

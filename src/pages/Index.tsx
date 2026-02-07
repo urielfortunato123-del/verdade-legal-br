@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { SearchBar } from "@/components/SearchBar";
+import { NewsSection } from "@/components/NewsSection";
 import {
   User,
   Home,
@@ -170,6 +171,11 @@ const Index = () => {
                 </button>
               ))}
             </div>
+          </div>
+
+          {/* News Section */}
+          <div className="mt-6">
+            <NewsSection />
           </div>
         </div>
 
