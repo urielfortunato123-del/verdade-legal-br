@@ -107,7 +107,7 @@ const Index = () => {
             <h1 className="text-2xl font-display font-bold text-white mb-1">
               Olá Brasileiro
             </h1>
-            <p className="text-sm text-white/70 mb-2">
+            <p className="text-lg text-white/80 font-medium mb-2">
               Antes de acreditar, verifique
             </p>
             <div className="badge-glass">
