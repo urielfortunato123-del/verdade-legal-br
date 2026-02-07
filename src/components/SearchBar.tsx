@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Mic, BookOpen, MessageSquare, Scale, ChevronRight } from "lucide-react";
+import { Search, Mic, MessageSquare, Scale, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SearchResult {
@@ -77,39 +77,35 @@ export function SearchBar() {
   };
 
   const handleResultClick = (result: SearchResult) => {
-    if (result.type === "question") {
-      navigate(result.href);
-    } else {
-      navigate(result.href);
-    }
+    navigate(result.href);
     setIsOpen(false);
     setQuery("");
   };
 
   return (
     <div ref={containerRef} className="relative">
-      <form onSubmit={handleSubmit} className="search-bar">
-        <Search className="w-5 h-5 text-muted-foreground" />
+      <form onSubmit={handleSubmit} className="search-input">
+        <button 
+          type="button"
+          onClick={() => navigate("/checar-audio")}
+          className="p-1.5 rounded-lg bg-secondary/20 hover:bg-secondary/30 transition-colors"
+        >
+          <Mic className="w-4 h-4 text-secondary" />
+        </button>
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
-          placeholder="Pergunte sobre leis, notícias ou..."
-          className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
+          placeholder="Pesquisar..."
+          className="flex-1 bg-transparent text-white placeholder:text-white/50 outline-none text-sm"
         />
-        <button 
-          type="button"
-          onClick={() => navigate("/checar-audio")}
-          className="p-2 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
-        >
-          <Mic className="w-5 h-5" />
-        </button>
+        <Search className="w-5 h-5 text-white/50" />
       </form>
 
       {/* Search Results Dropdown */}
       {isOpen && (query.trim() || true) && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden z-50 animate-fade-in">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
           {results.length > 0 ? (
             <div className="max-h-80 overflow-y-auto">
               {results.map((result, idx) => (
