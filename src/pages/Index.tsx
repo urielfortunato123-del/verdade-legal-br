@@ -100,8 +100,8 @@ const Index = () => {
 
           {/* Avatar & Greeting */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-20 h-20 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-sm border-2 border-white/20 mb-4 shadow-lg">
-              <span className="text-5xl">🇧🇷</span>
+            <div className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden mb-4 shadow-lg">
+              <span className="text-7xl leading-none">🇧🇷</span>
             </div>
             <h1 className="text-2xl font-display font-bold text-white mb-2">
               Olá Brasileiro
