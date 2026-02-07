@@ -1,10 +1,19 @@
-import { useNews } from "@/hooks/useNews";
-import { Newspaper, ExternalLink, RefreshCw, Clock } from "lucide-react";
+import { useState } from "react";
+import { useNews, NewsCategory } from "@/hooks/useNews";
+import { Newspaper, ExternalLink, RefreshCw, Clock, Landmark, TrendingUp, Globe } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils";
+
+const categories: { id: NewsCategory; label: string; icon: typeof Globe }[] = [
+  { id: "geral", label: "Geral", icon: Globe },
+  { id: "politica", label: "Governo", icon: Landmark },
+  { id: "economia", label: "Economia", icon: TrendingUp },
+];
 
 export function NewsSection() {
-  const { data: news, isLoading, error, refetch, isFetching } = useNews();
+  const [category, setCategory] = useState<NewsCategory>("geral");
+  const { data: news, isLoading, error, refetch, isFetching } = useNews(category);
 
   const formatDate = (dateString: string) => {
     try {
@@ -16,16 +25,11 @@ export function NewsSection() {
   };
 
   const getSourceColor = (source: string) => {
-    switch (source) {
-      case "G1":
-        return "bg-red-500/20 text-red-300";
-      case "Folha":
-        return "bg-blue-500/20 text-blue-300";
-      case "UOL":
-        return "bg-yellow-500/20 text-yellow-300";
-      default:
-        return "bg-white/10 text-white/70";
-    }
+    if (source.includes("G1")) return "bg-red-500/20 text-red-300";
+    if (source.includes("Folha")) return "bg-blue-500/20 text-blue-300";
+    if (source.includes("UOL")) return "bg-yellow-500/20 text-yellow-300";
+    if (source.includes("Senado")) return "bg-green-500/20 text-green-300";
+    return "bg-white/10 text-white/70";
   };
 
   return (
@@ -51,6 +55,25 @@ export function NewsSection() {
             className={`w-5 h-5 text-white/70 ${isFetching ? "animate-spin" : ""}`}
           />
         </button>
+      </div>
+
+      {/* Category Tabs */}
+      <div className="flex gap-2 mb-4 overflow-x-auto pb-1">
+        {categories.map((cat) => (
+          <button
+            key={cat.id}
+            onClick={() => setCategory(cat.id)}
+            className={cn(
+              "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium transition-all whitespace-nowrap",
+              category === cat.id
+                ? "bg-secondary text-secondary-foreground"
+                : "bg-white/5 text-white/60 hover:bg-white/10 hover:text-white/80"
+            )}
+          >
+            <cat.icon className="w-4 h-4" />
+            {cat.label}
+          </button>
+        ))}
       </div>
 
       {isLoading ? (
@@ -87,7 +110,7 @@ export function NewsSection() {
               className="quick-item-glass block group"
             >
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center gap-2 mb-1 flex-wrap">
                   <span
                     className={`text-xs font-semibold px-2 py-0.5 rounded-full ${getSourceColor(item.source)}`}
                   >
