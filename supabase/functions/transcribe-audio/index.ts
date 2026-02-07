@@ -26,10 +26,20 @@ serve(async (req) => {
     if (!OPENROUTER_API_KEY) {
       throw new Error("OPENROUTER_API_KEY is not configured");
     }
-
-    // Convert audio to base64 for Gemini
+    // Convert audio to base64 using chunked approach to avoid stack overflow
     const audioBuffer = await audioFile.arrayBuffer();
-    const audioBase64 = btoa(String.fromCharCode(...new Uint8Array(audioBuffer)));
+    const bytes = new Uint8Array(audioBuffer);
+    const chunkSize = 8192;
+    let binary = "";
+    
+    for (let i = 0; i < bytes.length; i += chunkSize) {
+      const chunk = bytes.subarray(i, Math.min(i + chunkSize, bytes.length));
+      for (let j = 0; j < chunk.length; j++) {
+        binary += String.fromCharCode(chunk[j]);
+      }
+    }
+    
+    const audioBase64 = btoa(binary);
     
     // Use Gemini's multimodal capabilities for transcription
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
