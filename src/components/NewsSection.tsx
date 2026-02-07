@@ -27,8 +27,10 @@ export function NewsSection() {
   const getSourceColor = (source: string) => {
     if (source.includes("G1")) return "bg-red-500/20 text-red-300";
     if (source.includes("Folha")) return "bg-blue-500/20 text-blue-300";
-    if (source.includes("UOL")) return "bg-yellow-500/20 text-yellow-300";
+    if (source.includes("Metrópoles")) return "bg-purple-500/20 text-purple-300";
+    if (source.includes("Oeste")) return "bg-orange-500/20 text-orange-300";
     if (source.includes("Senado")) return "bg-green-500/20 text-green-300";
+    if (source.includes("UOL")) return "bg-yellow-500/20 text-yellow-300";
     return "bg-white/10 text-white/70";
   };
 
