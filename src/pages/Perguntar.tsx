@@ -98,7 +98,7 @@ const Perguntar = () => {
                   </Select>
                 </div>
 
-                <div className="flex gap-2 sm:items-end">
+                <div className="flex items-end">
                   <Button
                     variant="outline"
                     size="icon"
@@ -107,20 +107,27 @@ const Perguntar = () => {
                   >
                     <Mic className="w-5 h-5" />
                   </Button>
-                  <Button
-                    onClick={handleSubmit}
-                    disabled={!question.trim() || isLoading}
-                    className="flex-1 sm:flex-initial gap-2 bg-verde hover:bg-verde-brasil-light text-primary-foreground rounded-xl h-10 px-6 font-semibold"
-                  >
-                    {isLoading ? (
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                    ) : (
-                      <Send className="w-5 h-5" />
-                    )}
-                    Perguntar
-                  </Button>
                 </div>
               </div>
+
+              {/* Submit Button */}
+              <Button
+                onClick={handleSubmit}
+                disabled={!question.trim() || isLoading}
+                className="w-full gap-2 bg-verde hover:bg-verde-brasil-light text-primary-foreground rounded-xl h-14 text-lg font-semibold"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Analisando...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-5 h-5" />
+                    Enviar Pergunta
+                  </>
+                )}
+              </Button>
             </div>
           </div>
 
