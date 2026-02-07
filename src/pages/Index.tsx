@@ -103,11 +103,11 @@ const Index = () => {
             <div className="avatar-glass mb-4">
               <User className="w-10 h-10 text-white" />
             </div>
+            <span className="text-4xl mb-2">🇧🇷</span>
             <h1 className="text-2xl font-display font-bold text-white mb-2">
               Olá Brasileiro
             </h1>
             <div className="badge-glass">
-              <span className="text-lg">🇧🇷</span>
               <span>Brasil</span>
             </div>
           </div>
