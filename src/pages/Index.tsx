@@ -100,10 +100,9 @@ const Index = () => {
 
           {/* Avatar & Greeting */}
           <div className="flex flex-col items-center mb-8">
-            <div className="avatar-glass mb-4">
-              <User className="w-10 h-10 text-white" />
+            <div className="w-20 h-20 rounded-full flex items-center justify-center bg-white/10 backdrop-blur-sm border-2 border-white/20 mb-4 shadow-lg">
+              <span className="text-5xl">🇧🇷</span>
             </div>
-            <span className="text-4xl mb-2">🇧🇷</span>
             <h1 className="text-2xl font-display font-bold text-white mb-2">
               Olá Brasileiro
             </h1>
