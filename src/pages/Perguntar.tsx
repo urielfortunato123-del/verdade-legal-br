@@ -10,7 +10,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { VerdictBadge } from "@/components/ui/VerdictBadge";
 import {
   Send,
   Mic,
@@ -21,6 +20,8 @@ import {
   Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useAnalyzeQuestion } from "@/hooks/useAnalyzeQuestion";
+import { ShareButtons } from "@/components/ShareButtons";
 
 const categories = [
   { value: "auto", label: "Detectar automaticamente" },
@@ -32,40 +33,14 @@ const categories = [
   { value: "constituicao", label: "Direito Constitucional" },
 ];
 
-// Mock response for demo
-const mockResponse = {
-  answer:
-    "De acordo com o Código de Defesa do Consumidor (Lei 8.078/90), o consumidor tem direito à troca de produtos com defeito. O Art. 18 estabelece que o fornecedor tem 30 dias para sanar o vício. Caso não seja resolvido, o consumidor pode exigir a substituição do produto, restituição do valor ou abatimento proporcional.",
-  sources: [
-    {
-      law: "Código de Defesa do Consumidor",
-      article: "Art. 18",
-      url: "https://www.planalto.gov.br/ccivil_03/leis/l8078.htm",
-    },
-    {
-      law: "Código de Defesa do Consumidor",
-      article: "Art. 26",
-      url: "https://www.planalto.gov.br/ccivil_03/leis/l8078.htm",
-    },
-  ],
-  confidence: "high" as const,
-  category: "consumidor",
-};
-
 const Perguntar = () => {
   const [question, setQuestion] = useState("");
   const [category, setCategory] = useState("auto");
-  const [isLoading, setIsLoading] = useState(false);
-  const [response, setResponse] = useState<typeof mockResponse | null>(null);
+  const { askQuestion, isLoading, response } = useAnalyzeQuestion();
 
   const handleSubmit = async () => {
     if (!question.trim()) return;
-
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setResponse(mockResponse);
-    setIsLoading(false);
+    await askQuestion(question, category !== "auto" ? category : undefined);
   };
 
   const confidenceLabels = {
@@ -168,48 +143,51 @@ const Perguntar = () => {
                   </div>
 
                   <p className="text-foreground leading-relaxed">{response.answer}</p>
+
+                  {response.followUp && (
+                    <div className="mt-4 p-3 rounded-lg bg-secondary/50 flex items-start gap-2">
+                      <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+                      <p className="text-sm text-muted-foreground">{response.followUp}</p>
+                    </div>
+                  )}
                 </div>
 
                 {/* Sources */}
-                <div className="border-t border-border bg-secondary/30 p-6">
-                  <div className="flex items-center gap-2 mb-4">
-                    <BookOpen className="w-4 h-4 text-primary" />
-                    <h3 className="font-semibold text-sm">Base Legal</h3>
-                  </div>
+                {response.sources && response.sources.length > 0 && (
+                  <div className="border-t border-border bg-secondary/30 p-6">
+                    <div className="flex items-center gap-2 mb-4">
+                      <BookOpen className="w-4 h-4 text-primary" />
+                      <h3 className="font-semibold text-sm">Base Legal</h3>
+                    </div>
 
-                  <div className="space-y-3">
-                    {response.sources.map((source, index) => (
-                      <a
-                        key={index}
-                        href={source.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-between p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-colors group"
-                      >
-                        <div>
-                          <div className="font-medium text-sm">{source.law}</div>
-                          <div className="text-xs text-muted-foreground">
-                            {source.article}
+                    <div className="space-y-3">
+                      {response.sources.map((source, index) => (
+                        <a
+                          key={index}
+                          href={source.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-between p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-colors group"
+                        >
+                          <div>
+                            <div className="font-medium text-sm">{source.law}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {source.article}
+                            </div>
                           </div>
-                        </div>
-                        <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
-                      </a>
-                    ))}
+                          <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                        </a>
+                      ))}
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Actions */}
-              <div className="flex flex-wrap gap-3">
-                <Button variant="outline" className="gap-2">
-                  <FileText className="w-4 h-4" />
-                  Gerar Relatório PDF
-                </Button>
-                <Button variant="ghost" className="gap-2 text-muted-foreground">
-                  <Info className="w-4 h-4" />
-                  O que faltou para confirmar?
-                </Button>
-              </div>
+              <ShareButtons
+                summary={response.answer}
+                sources={response.sources}
+              />
             </div>
           )}
 
