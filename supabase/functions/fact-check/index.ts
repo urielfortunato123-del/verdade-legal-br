@@ -10,6 +10,54 @@ interface FactCheckRequest {
   inputType?: "text" | "link";
 }
 
+interface BraveSearchResult {
+  title: string;
+  url: string;
+  description: string;
+}
+
+async function searchBrave(query: string): Promise<BraveSearchResult[]> {
+  const BRAVE_SEARCH_API_KEY = Deno.env.get("BRAVE_SEARCH_API_KEY");
+  
+  if (!BRAVE_SEARCH_API_KEY) {
+    console.warn("BRAVE_SEARCH_API_KEY not configured, skipping web search");
+    return [];
+  }
+
+  try {
+    console.log("Searching Brave for:", query.substring(0, 100));
+    
+    const searchQuery = encodeURIComponent(query.substring(0, 200));
+    const response = await fetch(
+      `https://api.search.brave.com/res/v1/web/search?q=${searchQuery}&count=5&country=br&search_lang=pt`,
+      {
+        headers: {
+          "Accept": "application/json",
+          "X-Subscription-Token": BRAVE_SEARCH_API_KEY,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      console.error("Brave Search error:", response.status);
+      return [];
+    }
+
+    const data = await response.json();
+    const results: BraveSearchResult[] = (data.web?.results || []).slice(0, 5).map((r: any) => ({
+      title: r.title || "",
+      url: r.url || "",
+      description: r.description || "",
+    }));
+
+    console.log(`Found ${results.length} search results`);
+    return results;
+  } catch (error) {
+    console.error("Brave Search error:", error);
+    return [];
+  }
+}
+
 async function fetchUrlContent(url: string): Promise<string> {
   try {
     console.log("Fetching URL content:", url);
@@ -26,14 +74,13 @@ async function fetchUrlContent(url: string): Promise<string> {
     
     const html = await response.text();
     
-    // Extract text content from HTML (basic extraction)
     const textContent = html
       .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
       .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
       .replace(/<[^>]+>/g, " ")
       .replace(/\s+/g, " ")
       .trim()
-      .substring(0, 8000); // Limit content length
+      .substring(0, 8000);
     
     return textContent;
   } catch (error) {
@@ -64,11 +111,19 @@ serve(async (req) => {
 
     let contentToAnalyze = claim;
     
-    // If it's a link, fetch the content
     if (inputType === "link") {
       contentToAnalyze = await fetchUrlContent(claim);
       console.log("Fetched content length:", contentToAnalyze.length);
     }
+
+    // Search for real-time sources using Brave Search
+    const searchResults = await searchBrave(contentToAnalyze.substring(0, 200));
+    
+    const sourcesContext = searchResults.length > 0
+      ? `\n\nFONTES ENCONTRADAS EM TEMPO REAL (use estas para embasar sua análise):\n${searchResults.map((r, i) => 
+          `${i + 1}. "${r.title}" - ${r.url}\n   ${r.description}`
+        ).join("\n\n")}`
+      : "";
 
     console.log("Fact-checking:", inputType === "link" ? `URL: ${claim}` : claim.substring(0, 100) + "...");
 
@@ -83,6 +138,7 @@ REGRAS CRÍTICAS:
 4. Considere o CONTEXTO completo
 5. Identifique informações FORA DE CONTEXTO ou DISTORCIDAS
 6. NÃO invente dados ou estatísticas
+7. PRIORIZE as fontes encontradas em tempo real quando disponíveis
 
 CATEGORIAS DE VEREDITO (use exatamente estes valores):
 - "verdade": Afirmação comprovadamente verdadeira
@@ -122,7 +178,7 @@ Responda em JSON com esta estrutura EXATA:
         model: "openai/gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Verifique esta afirmação/publicação:\n\n${contentToAnalyze}` },
+          { role: "user", content: `Verifique esta afirmação/publicação:\n\n${contentToAnalyze}${sourcesContext}` },
         ],
         response_format: { type: "json_object" },
         temperature: 0.3,
@@ -154,11 +210,10 @@ Responda em JSON com esta estrutura EXATA:
       throw new Error("No content in AI response");
     }
 
-    console.log("Fact-check completed");
+    console.log("Fact-check completed with", searchResults.length, "real-time sources");
 
     let result;
     try {
-      // Try to extract JSON from the response
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         result = JSON.parse(jsonMatch[0]);
@@ -169,7 +224,7 @@ Responda em JSON com esta estrutura EXATA:
       console.error("JSON parse error:", parseError);
       result = { 
         postResumo: "Não foi possível analisar a afirmação",
-        veredito: "nao_verificavel",
+        veredito: "inconclusivo",
         vereditoTitulo: "Análise inconclusiva",
         explicacao: content,
         pontosChave: [],
@@ -177,6 +232,18 @@ Responda em JSON com esta estrutura EXATA:
         confianca: 0.3
       };
     }
+
+    // Merge AI sources with Brave Search sources
+    const braveSourcesFormatted = searchResults.map(r => ({
+      nome: r.title,
+      descricao: r.description,
+      url: r.url
+    }));
+    
+    // Combine and deduplicate sources
+    const existingUrls = new Set((result.fontes || []).map((f: any) => f.url));
+    const newSources = braveSourcesFormatted.filter(s => !existingUrls.has(s.url));
+    result.fontes = [...(result.fontes || []), ...newSources].slice(0, 8);
 
     return new Response(
       JSON.stringify({ success: true, ...result }),
