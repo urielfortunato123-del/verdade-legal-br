@@ -6,12 +6,23 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// RSS feeds de notícias brasileiras
-const RSS_FEEDS = [
-  { name: "G1", url: "https://g1.globo.com/rss/g1/" },
-  { name: "Folha", url: "https://feeds.folha.uol.com.br/emcimadahora/rss091.xml" },
-  { name: "UOL", url: "https://rss.uol.com.br/feed/noticias.xml" },
-];
+// RSS feeds de notícias brasileiras por categoria
+const RSS_FEEDS: Record<string, { name: string; url: string }[]> = {
+  geral: [
+    { name: "G1", url: "https://g1.globo.com/rss/g1/" },
+    { name: "Folha", url: "https://feeds.folha.uol.com.br/emcimadahora/rss091.xml" },
+    { name: "UOL", url: "https://rss.uol.com.br/feed/noticias.xml" },
+  ],
+  politica: [
+    { name: "G1 Política", url: "https://g1.globo.com/rss/g1/politica/" },
+    { name: "Folha Poder", url: "https://feeds.folha.uol.com.br/poder/rss091.xml" },
+    { name: "Senado", url: "https://www12.senado.leg.br/noticias/feed" },
+  ],
+  economia: [
+    { name: "G1 Economia", url: "https://g1.globo.com/rss/g1/economia/" },
+    { name: "Folha Mercado", url: "https://feeds.folha.uol.com.br/mercado/rss091.xml" },
+  ],
+};
 
 interface NewsItem {
   title: string;
@@ -100,10 +111,23 @@ serve(async (req) => {
   }
 
   try {
-    console.log("Fetching news from RSS feeds...");
+    // Pegar categoria do body (se houver)
+    let category = "geral";
+    try {
+      const body = await req.json();
+      if (body.category && RSS_FEEDS[body.category]) {
+        category = body.category;
+      }
+    } catch {
+      // Sem body, usar categoria geral
+    }
+
+    console.log(`Fetching news from RSS feeds (category: ${category})...`);
+
+    const feeds = RSS_FEEDS[category] || RSS_FEEDS.geral;
 
     // Buscar de todos os feeds em paralelo
-    const feedPromises = RSS_FEEDS.map((feed) =>
+    const feedPromises = feeds.map((feed) =>
       fetchRSSFeed(feed.url, feed.name)
     );
 
@@ -120,10 +144,10 @@ serve(async (req) => {
     // Limitar a 15 notícias
     const news = allNews.slice(0, 15);
 
-    console.log(`Fetched ${news.length} news items`);
+    console.log(`Fetched ${news.length} news items for category: ${category}`);
 
     return new Response(
-      JSON.stringify({ success: true, news }),
+      JSON.stringify({ success: true, news, category }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {

@@ -9,11 +9,15 @@ export interface NewsItem {
   source: string;
 }
 
-export function useNews() {
+export type NewsCategory = "geral" | "politica" | "economia";
+
+export function useNews(category: NewsCategory = "geral") {
   return useQuery({
-    queryKey: ["news"],
+    queryKey: ["news", category],
     queryFn: async (): Promise<NewsItem[]> => {
-      const { data, error } = await supabase.functions.invoke("fetch-news");
+      const { data, error } = await supabase.functions.invoke("fetch-news", {
+        body: { category },
+      });
 
       if (error) {
         console.error("Error fetching news:", error);
