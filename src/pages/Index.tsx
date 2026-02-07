@@ -24,7 +24,7 @@ const Index = () => {
             {/* Greeting */}
             <div className="flex items-center gap-2 mb-6 animate-fade-in">
               <span className="text-2xl md:text-3xl font-display font-bold text-foreground">
-                Olá, Irmão
+                Olá Brasileiros
               </span>
               <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 text-sm text-foreground/80">
                 <MapPin className="w-3 h-3" />
