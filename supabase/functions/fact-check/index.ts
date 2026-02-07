@@ -43,20 +43,18 @@ REGRAS CRÍTICAS:
 5. Identifique informações FORA DE CONTEXTO ou DISTORCIDAS
 6. NÃO invente dados ou estatísticas
 
-CATEGORIAS DE VEREDITO:
-- "verdadeiro": Afirmação comprovadamente verdadeira
-- "falso": Afirmação comprovadamente falsa  
-- "enganoso": Contém verdade parcial mas induz ao erro
-- "exagerado": Baseado em fatos mas com exagero
-- "fora_de_contexto": Verdadeiro mas usado fora do contexto original
-- "nao_verificavel": Impossível verificar com fontes disponíveis
+CATEGORIAS DE VEREDITO (use exatamente estes valores):
+- "verdade": Afirmação comprovadamente verdadeira
+- "mentira": Afirmação comprovadamente falsa  
+- "meia_verdade": Contém verdade parcial mas induz ao erro ou é exagerada
+- "inconclusivo": Impossível verificar com fontes disponíveis
 
 Responda em JSON com esta estrutura EXATA:
 {
   "postResumo": "Resumo objetivo do que a publicação/afirmação diz (2-3 linhas)",
-  "veredito": "verdadeiro" | "falso" | "enganoso" | "exagerado" | "fora_de_contexto" | "nao_verificavel",
-  "vereditoTitulo": "Título curto do veredito (ex: 'É falso', 'Falta contexto', 'É verdade')",
-  "explicacao": "Explicação detalhada de 4-8 linhas sobre por que a afirmação é verdadeira/falsa/enganosa. Use linguagem clara e acessível.",
+  "veredito": "verdade" | "mentira" | "meia_verdade" | "inconclusivo",
+  "vereditoTitulo": "Título curto e direto: 'VERDADE', 'MENTIRA', 'MEIA VERDADE' ou 'INCONCLUSIVO'",
+  "explicacao": "Explicação detalhada de 4-8 linhas sobre por que a afirmação é verdade/mentira. Use linguagem clara e acessível.",
   "pontosChave": [
     "Ponto importante 1",
     "Ponto importante 2", 
