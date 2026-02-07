@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -131,6 +132,37 @@ Forneça uma análise completa em JSON.`;
     }
 
     console.log("Analysis complete for:", title);
+
+    // Save to database
+    try {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL");
+      const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+      
+      if (supabaseUrl && supabaseKey) {
+        const supabase = createClient(supabaseUrl, supabaseKey);
+        
+        await supabase.from("news_verifications").insert({
+          news_title: title,
+          news_description: description || null,
+          news_source: source,
+          news_link: link || null,
+          news_category: body.category || null,
+          verdict: analysis.verificacao?.veredicto || "unverifiable",
+          confidence: analysis.verificacao?.confianca || 50,
+          explanation: analysis.verificacao?.explicacao || null,
+          resumo: analysis.resumo || null,
+          contexto: analysis.contexto || null,
+          pontos_principais: analysis.pontosPrincipais || [],
+          analise_critica: analysis.analiseCritica || null,
+          fontes_recomendadas: analysis.fontesRecomendadas || [],
+        });
+        
+        console.log("Verification saved to database");
+      }
+    } catch (dbError) {
+      console.error("Error saving to database:", dbError);
+      // Continue even if save fails
+    }
 
     return new Response(
       JSON.stringify({ 

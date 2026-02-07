@@ -7,25 +7,35 @@ const corsHeaders = {
 };
 
 // RSS feeds de notícias brasileiras por categoria
-const RSS_FEEDS: Record<string, { name: string; url: string }[]> = {
+const RSS_FEEDS: Record<string, { name: string; url: string; encoding?: string }[]> = {
   geral: [
     { name: "G1", url: "https://g1.globo.com/rss/g1/" },
     { name: "Metrópoles", url: "https://www.metropoles.com/feed" },
     { name: "Oeste", url: "https://revistaoeste.com/feed/" },
-    { name: "Folha", url: "https://feeds.folha.uol.com.br/emcimadahora/rss091.xml" },
   ],
   politica: [
     { name: "G1 Política", url: "https://g1.globo.com/rss/g1/politica/" },
     { name: "Metrópoles", url: "https://www.metropoles.com/brasil/politica-brasil/feed" },
     { name: "Oeste", url: "https://revistaoeste.com/politica/feed/" },
-    { name: "Folha Poder", url: "https://feeds.folha.uol.com.br/poder/rss091.xml" },
     { name: "Senado", url: "https://www12.senado.leg.br/noticias/feed" },
   ],
   economia: [
     { name: "G1 Economia", url: "https://g1.globo.com/rss/g1/economia/" },
     { name: "Metrópoles", url: "https://www.metropoles.com/negocios/feed" },
     { name: "Oeste", url: "https://revistaoeste.com/economia/feed/" },
-    { name: "Folha Mercado", url: "https://feeds.folha.uol.com.br/mercado/rss091.xml" },
+  ],
+  esportes: [
+    { name: "G1 Esportes", url: "https://g1.globo.com/rss/g1/esporte/" },
+    { name: "Metrópoles", url: "https://www.metropoles.com/esportes/feed" },
+    { name: "Oeste", url: "https://revistaoeste.com/esportes/feed/" },
+  ],
+  tecnologia: [
+    { name: "G1 Tecnologia", url: "https://g1.globo.com/rss/g1/tecnologia/" },
+    { name: "Metrópoles", url: "https://www.metropoles.com/tecnologia/feed" },
+  ],
+  entretenimento: [
+    { name: "G1 Pop & Arte", url: "https://g1.globo.com/rss/g1/pop-arte/" },
+    { name: "Metrópoles", url: "https://www.metropoles.com/entretenimento/feed" },
   ],
 };
 

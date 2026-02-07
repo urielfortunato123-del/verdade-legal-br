@@ -18,6 +18,9 @@ import {
   XCircle,
   HelpCircle,
   FileText,
+  Dumbbell,
+  Smartphone,
+  Film,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -27,6 +30,9 @@ const categories: { id: NewsCategory; label: string; icon: typeof Globe }[] = [
   { id: "geral", label: "Geral", icon: Globe },
   { id: "politica", label: "Governo", icon: Landmark },
   { id: "economia", label: "Economia", icon: TrendingUp },
+  { id: "esportes", label: "Esportes", icon: Dumbbell },
+  { id: "tecnologia", label: "Tech", icon: Smartphone },
+  { id: "entretenimento", label: "Entreter", icon: Film },
 ];
 
 const verdictConfig: Record<

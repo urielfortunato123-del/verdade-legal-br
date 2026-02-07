@@ -339,6 +339,66 @@ export type Database = {
         }
         Relationships: []
       }
+      news_verifications: {
+        Row: {
+          analise_critica: string | null
+          confidence: number
+          contexto: string | null
+          created_at: string
+          explanation: string | null
+          fontes_recomendadas: Json | null
+          id: string
+          news_category: string | null
+          news_description: string | null
+          news_link: string | null
+          news_source: string
+          news_title: string
+          pontos_principais: Json | null
+          resumo: string | null
+          session_id: string | null
+          user_id: string | null
+          verdict: string
+        }
+        Insert: {
+          analise_critica?: string | null
+          confidence: number
+          contexto?: string | null
+          created_at?: string
+          explanation?: string | null
+          fontes_recomendadas?: Json | null
+          id?: string
+          news_category?: string | null
+          news_description?: string | null
+          news_link?: string | null
+          news_source: string
+          news_title: string
+          pontos_principais?: Json | null
+          resumo?: string | null
+          session_id?: string | null
+          user_id?: string | null
+          verdict: string
+        }
+        Update: {
+          analise_critica?: string | null
+          confidence?: number
+          contexto?: string | null
+          created_at?: string
+          explanation?: string | null
+          fontes_recomendadas?: Json | null
+          id?: string
+          news_category?: string | null
+          news_description?: string | null
+          news_link?: string | null
+          news_source?: string
+          news_title?: string
+          pontos_principais?: Json | null
+          resumo?: string | null
+          session_id?: string | null
+          user_id?: string | null
+          verdict?: string
+        }
+        Relationships: []
+      }
       share_links: {
         Row: {
           check_id: string
