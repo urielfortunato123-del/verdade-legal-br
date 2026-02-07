@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect } from "react";
 import Index from "./pages/Index";
 import Perguntar from "./pages/Perguntar";
+import FactCheck from "./pages/FactCheck";
 import ChecarImagem from "./pages/ChecarImagem";
 import ChecarAudio from "./pages/ChecarAudio";
 import Biblioteca from "./pages/Biblioteca";
@@ -56,6 +57,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/perguntar" element={<Perguntar />} />
+            <Route path="/fact-check" element={<FactCheck />} />
             <Route path="/checar-imagem" element={<ChecarImagem />} />
             <Route path="/checar-audio" element={<ChecarAudio />} />
             <Route path="/biblioteca" element={<Biblioteca />} />
