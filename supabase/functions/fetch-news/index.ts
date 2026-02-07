@@ -95,19 +95,29 @@ async function fetchRSSFeed(feedUrl: string, sourceName: string): Promise<NewsIt
     const buffer = await response.arrayBuffer();
     let xml: string;
     
-    // Try to detect encoding from content-type header
+    // Check content-type header for encoding hints
     const contentType = response.headers.get("content-type") || "";
+    
+    // Folha uses ISO-8859-1, check URL or content-type
+    const isFolha = feedUrl.includes("folha.uol.com.br");
     const isLatin1 = contentType.toLowerCase().includes("iso-8859-1") || 
-                     contentType.toLowerCase().includes("latin1");
+                     contentType.toLowerCase().includes("latin1") ||
+                     isFolha;
     
     if (isLatin1) {
       xml = new TextDecoder("iso-8859-1").decode(buffer);
     } else {
-      // Try UTF-8 first
+      // First decode as UTF-8
       xml = new TextDecoder("utf-8").decode(buffer);
       
-      // If we see replacement characters (U+FFFD), try Latin-1
-      if (xml.includes("\uFFFD")) {
+      // Check XML declaration for encoding
+      const encodingMatch = xml.match(/<\?xml[^>]+encoding=["']([^"']+)["']/i);
+      const declaredEncoding = encodingMatch?.[1]?.toLowerCase();
+      
+      if (declaredEncoding === "iso-8859-1" || declaredEncoding === "latin1") {
+        xml = new TextDecoder("iso-8859-1").decode(buffer);
+      } else if (xml.includes("\uFFFD")) {
+        // Fallback: if we see replacement characters, try Latin-1
         xml = new TextDecoder("iso-8859-1").decode(buffer);
       }
     }
