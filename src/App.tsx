@@ -10,6 +10,8 @@ import ChecarImagem from "./pages/ChecarImagem";
 import ChecarAudio from "./pages/ChecarAudio";
 import Biblioteca from "./pages/Biblioteca";
 import Historico from "./pages/Historico";
+import Configuracoes from "./pages/Configuracoes";
+import Sobre from "./pages/Sobre";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -58,6 +60,8 @@ const App = () => (
             <Route path="/checar-audio" element={<ChecarAudio />} />
             <Route path="/biblioteca" element={<Biblioteca />} />
             <Route path="/historico" element={<Historico />} />
+            <Route path="/configuracoes" element={<Configuracoes />} />
+            <Route path="/sobre" element={<Sobre />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
