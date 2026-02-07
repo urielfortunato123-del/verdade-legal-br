@@ -1,6 +1,21 @@
 import { useState } from "react";
 import { useNews, NewsCategory } from "@/hooks/useNews";
-import { Newspaper, ExternalLink, RefreshCw, Clock, Landmark, TrendingUp, Globe } from "lucide-react";
+import { useVerifyNews, VerdictType } from "@/hooks/useVerifyNews";
+import {
+  Newspaper,
+  ExternalLink,
+  RefreshCw,
+  Clock,
+  Landmark,
+  TrendingUp,
+  Globe,
+  ShieldCheck,
+  Loader2,
+  CheckCircle2,
+  AlertTriangle,
+  XCircle,
+  HelpCircle,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
@@ -11,9 +26,36 @@ const categories: { id: NewsCategory; label: string; icon: typeof Globe }[] = [
   { id: "economia", label: "Economia", icon: TrendingUp },
 ];
 
+const verdictConfig: Record<
+  VerdictType,
+  { label: string; icon: typeof CheckCircle2; className: string }
+> = {
+  confirmed: {
+    label: "Confirmado",
+    icon: CheckCircle2,
+    className: "bg-green-500/20 text-green-300 border-green-500/30",
+  },
+  misleading: {
+    label: "Enganoso",
+    icon: AlertTriangle,
+    className: "bg-yellow-500/20 text-yellow-300 border-yellow-500/30",
+  },
+  false: {
+    label: "Falso",
+    icon: XCircle,
+    className: "bg-red-500/20 text-red-300 border-red-500/30",
+  },
+  unverifiable: {
+    label: "Não verificável",
+    icon: HelpCircle,
+    className: "bg-gray-500/20 text-gray-300 border-gray-500/30",
+  },
+};
+
 export function NewsSection() {
   const [category, setCategory] = useState<NewsCategory>("geral");
   const { data: news, isLoading, error, refetch, isFetching } = useNews(category);
+  const { verify, isVerifying, results } = useVerifyNews();
 
   const formatDate = (dateString: string) => {
     try {
@@ -32,6 +74,16 @@ export function NewsSection() {
     if (source.includes("Senado")) return "bg-green-500/20 text-green-300";
     if (source.includes("UOL")) return "bg-yellow-500/20 text-yellow-300";
     return "bg-white/10 text-white/70";
+  };
+
+  const handleVerify = async (
+    e: React.MouseEvent,
+    idx: number,
+    item: { title: string; description: string; source: string; link: string }
+  ) => {
+    e.preventDefault();
+    e.stopPropagation();
+    await verify(`${category}-${idx}`, item.title, item.description, item.source, item.link);
   };
 
   return (
@@ -102,39 +154,110 @@ export function NewsSection() {
           </button>
         </div>
       ) : (
-        <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
-          {news?.map((item, idx) => (
-            <a
-              key={idx}
-              href={item.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="quick-item-glass block group"
-            >
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span
-                    className={`text-xs font-semibold px-2 py-0.5 rounded-full ${getSourceColor(item.source)}`}
+        <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2">
+          {news?.map((item, idx) => {
+            const newsId = `${category}-${idx}`;
+            const verification = results[newsId];
+            const isCurrentlyVerifying = isVerifying === newsId;
+
+            return (
+              <div key={idx} className="quick-item-glass block group">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span
+                      className={`text-xs font-semibold px-2 py-0.5 rounded-full ${getSourceColor(item.source)}`}
+                    >
+                      {item.source}
+                    </span>
+                    <span className="text-xs text-white/40 flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {formatDate(item.pubDate)}
+                    </span>
+                  </div>
+
+                  <a
+                    href={item.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block"
                   >
-                    {item.source}
-                  </span>
-                  <span className="text-xs text-white/40 flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
-                    {formatDate(item.pubDate)}
-                  </span>
+                    <h3 className="font-medium text-white/90 text-sm leading-snug mb-1 group-hover:text-white transition-colors">
+                      {item.title}
+                    </h3>
+                    {item.description && (
+                      <p className="text-xs text-white/50 line-clamp-2 mb-2">
+                        {item.description}
+                      </p>
+                    )}
+                  </a>
+
+                  {/* Verification Result */}
+                  {verification && (
+                    <div
+                      className={cn(
+                        "mt-2 p-3 rounded-xl border",
+                        verdictConfig[verification.verdict].className
+                      )}
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        {(() => {
+                          const VerdictIcon = verdictConfig[verification.verdict].icon;
+                          return <VerdictIcon className="w-4 h-4" />;
+                        })()}
+                        <span className="font-semibold text-sm">
+                          {verdictConfig[verification.verdict].label}
+                        </span>
+                        <span className="text-xs opacity-70">
+                          ({verification.confidence}% confiança)
+                        </span>
+                      </div>
+                      <p className="text-xs opacity-90">{verification.explanation}</p>
+                      {verification.sources.length > 0 && (
+                        <div className="mt-1 text-xs opacity-70">
+                          Fontes: {verification.sources.join(", ")}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Verify Button */}
+                  {!verification && (
+                    <button
+                      onClick={(e) => handleVerify(e, idx, item)}
+                      disabled={isCurrentlyVerifying}
+                      className={cn(
+                        "mt-2 flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-medium transition-all",
+                        "bg-white/5 hover:bg-white/10 text-white/70 hover:text-white",
+                        "border border-white/10 hover:border-white/20",
+                        isCurrentlyVerifying && "opacity-50 cursor-not-allowed"
+                      )}
+                    >
+                      {isCurrentlyVerifying ? (
+                        <>
+                          <Loader2 className="w-3 h-3 animate-spin" />
+                          Verificando...
+                        </>
+                      ) : (
+                        <>
+                          <ShieldCheck className="w-3 h-3" />
+                          Verificar veracidade
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
-                <h3 className="font-medium text-white/90 text-sm leading-snug mb-1 group-hover:text-white transition-colors">
-                  {item.title}
-                </h3>
-                {item.description && (
-                  <p className="text-xs text-white/50 line-clamp-2">
-                    {item.description}
-                  </p>
-                )}
+
+                <a
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ml-3 flex-shrink-0"
+                >
+                  <ExternalLink className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors" />
+                </a>
               </div>
-              <ExternalLink className="w-4 h-4 text-white/30 group-hover:text-white/60 transition-colors flex-shrink-0 ml-3" />
-            </a>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
