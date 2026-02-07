@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 interface ActionCardProps {
   icon: LucideIcon;
+  emoji?: string;
   title: string;
   description: string;
   href: string;
@@ -11,83 +12,63 @@ interface ActionCardProps {
   className?: string;
 }
 
-const variantStyles = {
-  default: "bg-card hover:bg-secondary/50 border-border",
-  primary: "hero-gradient text-primary-foreground border-transparent hover:opacity-95",
-  accent: "gold-gradient text-accent-foreground border-transparent hover:opacity-95",
-};
-
 export function ActionCard({
   icon: Icon,
+  emoji,
   title,
   description,
   href,
   variant = "default",
   className,
 }: ActionCardProps) {
-  const isPrimary = variant === "primary" || variant === "accent";
-
   return (
     <Link
       to={href}
       className={cn(
-        "group relative flex flex-col p-6 rounded-xl border transition-all duration-300",
-        "shadow-card hover:shadow-elevated",
-        "transform hover:-translate-y-1",
-        variantStyles[variant],
+        "group relative flex flex-col p-6 rounded-2xl transition-all duration-300",
+        "bg-card shadow-card hover:shadow-elevated",
+        "transform hover:-translate-y-1 hover:scale-[1.02]",
+        "border-2 border-transparent hover:border-verde-brasil/30",
         className
       )}
     >
-      <div
-        className={cn(
-          "w-12 h-12 rounded-lg flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110",
-          isPrimary
-            ? "bg-primary-foreground/20"
-            : "bg-primary/10"
-        )}
-      >
-        <Icon
-          size={24}
+      {/* Icon */}
+      <div className="flex items-center gap-3 mb-4">
+        <div
           className={cn(
-            isPrimary ? "text-primary-foreground" : "text-primary"
+            "w-14 h-14 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 shadow-md",
+            variant === "primary" ? "bg-verde" : 
+            variant === "accent" ? "bg-gold" : 
+            "bg-azul-ordem"
           )}
-        />
+        >
+          {emoji ? (
+            <span className="text-2xl">{emoji}</span>
+          ) : (
+            <Icon size={26} className="text-white" />
+          )}
+        </div>
       </div>
 
-      <h3
-        className={cn(
-          "font-display font-semibold text-lg mb-2",
-          isPrimary ? "text-primary-foreground" : "text-foreground"
-        )}
-      >
+      {/* Content */}
+      <h3 className="font-display font-bold text-lg text-card-foreground mb-2 group-hover:text-verde-brasil transition-colors">
         {title}
       </h3>
 
-      <p
-        className={cn(
-          "text-sm leading-relaxed",
-          isPrimary
-            ? "text-primary-foreground/80"
-            : "text-muted-foreground"
-        )}
-      >
+      <p className="text-sm text-muted-foreground leading-relaxed">
         {description}
       </p>
 
+      {/* Arrow indicator */}
       <div
         className={cn(
           "absolute bottom-4 right-4 w-8 h-8 rounded-full flex items-center justify-center",
-          "opacity-0 group-hover:opacity-100 transition-opacity duration-300",
-          isPrimary
-            ? "bg-primary-foreground/20"
-            : "bg-primary/10"
+          "bg-muted/50 opacity-0 group-hover:opacity-100 transition-all duration-300",
+          "group-hover:bg-verde-brasil"
         )}
       >
         <svg
-          className={cn(
-            "w-4 h-4 transform group-hover:translate-x-0.5 transition-transform",
-            isPrimary ? "text-primary-foreground" : "text-primary"
-          )}
+          className="w-4 h-4 text-card-foreground group-hover:text-white transform group-hover:translate-x-0.5 transition-all"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"

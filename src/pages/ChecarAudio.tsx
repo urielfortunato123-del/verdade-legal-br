@@ -3,11 +3,11 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { VerdictBadge } from "@/components/ui/VerdictBadge";
+import { VerdictBadge, VerdictSeal } from "@/components/ui/VerdictBadge";
 import { ContentModeToggle } from "@/components/ContentModeToggle";
 import { ShareButtons } from "@/components/ShareButtons";
 import { useAnalyzeDocument, DocumentAnalysis, Claim } from "@/hooks/useAnalyzeDocument";
-import { uploadFile, calculateFileHash, getEdgeFunctionUrl } from "@/lib/supabase";
+import { uploadFile, getEdgeFunctionUrl } from "@/lib/supabase";
 import {
   Mic,
   Upload,
@@ -15,7 +15,7 @@ import {
   FileText,
   ExternalLink,
   Square,
-  Save,
+  BookOpen,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -93,10 +93,8 @@ const ChecarAudio = () => {
 
     setIsTranscribing(true);
     try {
-      // Upload the audio file
       await uploadFile(audioFile, "audios");
 
-      // Create FormData for transcription
       const formData = new FormData();
       formData.append("audio", audioFile);
 
@@ -117,8 +115,6 @@ const ChecarAudio = () => {
       if (result.transcript) {
         setTranscript(result.transcript);
         toast.success("Áudio transcrito com sucesso!");
-        
-        // Analyze the transcript
         await analyze(result.transcript, mode);
       } else {
         throw new Error("No transcript returned");
@@ -154,46 +150,52 @@ const ChecarAudio = () => {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-3">
-              Checar Áudio
+            <span className="text-4xl mb-4 block">🎙️</span>
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Gravar Áudio
             </h1>
-            <p className="text-muted-foreground">
-              Grave ou envie áudio para transcrição e verificação.
+            <p className="text-foreground/80">
+              Jornal, TV ou conversa. Transcrevemos e verificamos.
             </p>
           </div>
 
           {/* Recording/Upload Section */}
           {!analysis && (
-            <div className="bg-card rounded-xl border border-border shadow-card p-6 space-y-6">
+            <div className="bg-card rounded-2xl shadow-card p-6 space-y-6">
               <ContentModeToggle mode={mode} onChange={setMode} />
 
               {!audioFile && (
                 <>
                   {/* Recording Button */}
-                  <div className="flex flex-col items-center py-8">
+                  <div className="flex flex-col items-center py-10">
                     <button
                       onClick={isRecording ? stopRecording : startRecording}
                       disabled={isTranscribing}
                       className={cn(
-                        "w-28 h-28 rounded-full flex items-center justify-center transition-all duration-300",
-                        "shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-primary/20",
+                        "w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300",
+                        "shadow-xl hover:shadow-2xl focus:outline-none",
                         isRecording
-                          ? "bg-destructive animate-pulse"
-                          : "hero-gradient hover:opacity-90"
+                          ? "bg-vermelho-alerta animate-pulse"
+                          : "bg-verde hover:bg-verde-brasil-light animate-pulse-brasil"
                       )}
                     >
                       {isRecording ? (
-                        <Square className="w-10 h-10 text-destructive-foreground" />
+                        <Square className="w-12 h-12 text-white" />
                       ) : (
-                        <Mic className="w-10 h-10 text-primary-foreground" />
+                        <Mic className="w-12 h-12 text-white" />
                       )}
                     </button>
 
-                    <p className="mt-4 font-medium text-foreground">
+                    <p className="mt-6 font-display font-bold text-xl text-card-foreground">
                       {isRecording
                         ? `Gravando... ${formatTime(recordingTime)}`
                         : "Clique para gravar"}
                     </p>
+                    {isRecording && (
+                      <p className="text-muted-foreground text-sm mt-1">
+                        Clique novamente para parar
+                      </p>
+                    )}
                   </div>
 
                   {/* Upload Option */}
@@ -221,14 +223,11 @@ const ChecarAudio = () => {
 
                       <Button
                         variant="outline"
-                        className="w-full gap-2"
+                        className="w-full gap-2 h-14 text-base rounded-xl"
                         asChild
                       >
-                        <label
-                          htmlFor="audio-upload"
-                          className="cursor-pointer"
-                        >
-                          <Upload className="w-4 h-4" />
+                        <label htmlFor="audio-upload" className="cursor-pointer">
+                          <Upload className="w-5 h-5" />
                           Enviar arquivo de áudio
                         </label>
                       </Button>
@@ -240,12 +239,12 @@ const ChecarAudio = () => {
               {/* Audio Ready */}
               {audioFile && !transcript && (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-4 p-4 rounded-lg bg-secondary/30">
-                    <div className="w-12 h-12 rounded-full hero-gradient flex items-center justify-center">
-                      <Mic className="w-6 h-6 text-primary-foreground" />
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/30 border border-border">
+                    <div className="w-14 h-14 rounded-full bg-verde flex items-center justify-center shadow-md">
+                      <Mic className="w-7 h-7 text-white" />
                     </div>
                     <div className="flex-1">
-                      <p className="font-medium text-foreground">
+                      <p className="font-semibold text-card-foreground">
                         {audioFile.name}
                       </p>
                       <p className="text-sm text-muted-foreground">
@@ -260,25 +259,26 @@ const ChecarAudio = () => {
                   </div>
 
                   <div>
-                    <Label htmlFor="title">Título (opcional)</Label>
+                    <Label htmlFor="title" className="text-card-foreground font-semibold">
+                      Título (opcional)
+                    </Label>
                     <Input
                       id="title"
                       placeholder="Ex: Jornal das 7, Entrevista..."
                       value={audioTitle}
                       onChange={(e) => setAudioTitle(e.target.value)}
-                      className="mt-1"
+                      className="mt-2 rounded-xl h-12"
                     />
                   </div>
 
                   <Button
                     onClick={handleTranscribe}
                     disabled={isTranscribing || isAnalyzing}
-                    className="w-full gap-2"
-                    size="lg"
+                    className="w-full gap-2 bg-verde hover:bg-verde-brasil-light text-primary-foreground rounded-xl h-14 text-lg font-semibold"
                   >
                     {isTranscribing ? (
                       <>
-                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <Loader2 className="w-5 h-5 animate-spin" />
                         Transcrevendo...
                       </>
                     ) : (
@@ -293,41 +293,38 @@ const ChecarAudio = () => {
           {/* Analysis Results */}
           {analysis && newsAnalysis && (
             <div className="space-y-6 animate-fade-in">
-              {/* Transcript with Verdict */}
-              <div className="bg-card rounded-xl border border-border shadow-card overflow-hidden">
-                <div className="p-6 border-b border-border flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full hero-gradient flex items-center justify-center">
-                      <Mic className="w-5 h-5 text-primary-foreground" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        {audioTitle || audioFile?.name || "Áudio analisado"}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Transcrição completa
-                      </p>
-                    </div>
+              {/* Verdict Seal */}
+              <div className="bg-card rounded-2xl shadow-card p-8">
+                <VerdictSeal verdict={newsAnalysis.overallVerdict} />
+              </div>
+
+              {/* Transcript */}
+              <div className="bg-card rounded-2xl shadow-card overflow-hidden">
+                <div className="p-6 border-b border-border flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-full bg-verde flex items-center justify-center shadow-md">
+                    <Mic className="w-6 h-6 text-white" />
                   </div>
-                  <VerdictBadge
-                    verdict={newsAnalysis.overallVerdict}
-                    size="lg"
-                  />
+                  <div>
+                    <p className="font-display font-bold text-lg text-card-foreground">
+                      {audioTitle || "Áudio analisado"}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Transcrição completa
+                    </p>
+                  </div>
                 </div>
 
-                {/* Transcript */}
                 <div className="p-6">
-                  <h3 className="font-semibold text-sm mb-2 text-muted-foreground">
-                    Transcrição:
+                  <h3 className="font-semibold text-sm text-muted-foreground mb-3">
+                    📝 Transcrição:
                   </h3>
-                  <p className="text-foreground bg-secondary/30 p-4 rounded-lg italic">
+                  <p className="text-card-foreground bg-muted/30 p-4 rounded-xl border border-border italic">
                     "{transcript}"
                   </p>
                 </div>
 
-                {/* Summary */}
                 <div className="px-6 pb-6">
-                  <p className="text-foreground leading-relaxed">
+                  <p className="text-card-foreground leading-relaxed">
                     {newsAnalysis.summary}
                   </p>
                 </div>
@@ -335,10 +332,10 @@ const ChecarAudio = () => {
 
               {/* Claims Analysis */}
               {newsAnalysis.claims && newsAnalysis.claims.length > 0 && (
-                <div className="bg-card rounded-xl border border-border shadow-card">
+                <div className="bg-card rounded-2xl shadow-card overflow-hidden">
                   <div className="p-6 border-b border-border">
-                    <h2 className="font-display font-semibold text-lg">
-                      Afirmações Identificadas
+                    <h2 className="font-display font-bold text-xl text-card-foreground flex items-center gap-2">
+                      <BookOpen className="w-6 h-6 text-verde-brasil" /> O que a lei diz
                     </h2>
                   </div>
 
@@ -346,12 +343,12 @@ const ChecarAudio = () => {
                     {newsAnalysis.claims.map((claim: Claim, index: number) => (
                       <div key={index} className="p-6">
                         <div className="flex items-start gap-4">
-                          <VerdictBadge verdict={claim.verdict} size="sm" />
+                          <VerdictBadge verdict={claim.verdict} size="md" showEmoji />
                           <div className="flex-1">
-                            <p className="font-medium text-foreground mb-2">
+                            <p className="font-semibold text-card-foreground mb-2">
                               "{claim.text}"
                             </p>
-                            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                            <p className="text-muted-foreground leading-relaxed mb-4">
                               {claim.explanation}
                             </p>
 
@@ -363,9 +360,9 @@ const ChecarAudio = () => {
                                     href={source.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                                    className="inline-flex items-center gap-2 text-sm text-verde-brasil hover:underline font-medium"
                                   >
-                                    <FileText className="w-3 h-3" />
+                                    <FileText className="w-4 h-4" />
                                     {source.law} - {source.article}
                                     <ExternalLink className="w-3 h-3" />
                                   </a>
@@ -387,7 +384,11 @@ const ChecarAudio = () => {
                   summary={newsAnalysis.summary}
                   sources={newsAnalysis.claims?.flatMap((c: Claim) => c.sources || [])}
                 />
-                <Button variant="ghost" onClick={clearAudio}>
+                <Button 
+                  variant="ghost" 
+                  onClick={clearAudio}
+                  className="text-foreground/70 hover:text-foreground"
+                >
                   Analisar outro áudio
                 </Button>
               </div>
