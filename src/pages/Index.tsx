@@ -3,11 +3,6 @@ import { Layout } from "@/components/Layout";
 import { SearchBar } from "@/components/SearchBar";
 import { NewsSection } from "@/components/NewsSection";
 import {
-  User,
-  Home,
-  Star,
-  Scale,
-  Menu,
   MessageSquare,
   FileText,
   BookOpen,
@@ -25,7 +20,7 @@ const Index = () => {
       icon: MessageSquare,
       label: "Perguntar",
       href: "/perguntar",
-      variant: "default" as const,
+      variant: "green" as const,
     },
     {
       icon: FileText,
@@ -49,7 +44,7 @@ const Index = () => {
       icon: Clock,
       label: "Histórico",
       href: "/historico",
-      variant: "default" as const,
+      variant: "green" as const,
     },
     {
       icon: MoreHorizontal,
@@ -65,52 +60,36 @@ const Index = () => {
     "Posso ser multado?",
   ];
 
-  const getIconClass = (variant: string) => {
+  const getIconBgClass = (variant: string) => {
     switch (variant) {
       case "yellow":
-        return "menu-icon menu-icon-yellow";
+        return "bg-gradient-to-br from-amarelo-ouro to-amarelo-ouro-dark";
       case "blue":
-        return "menu-icon menu-icon-blue";
+        return "bg-gradient-to-br from-azul-ordem to-azul-ordem-light";
       case "pink":
-        return "menu-icon menu-icon-pink";
+        return "bg-gradient-to-br from-rose-500 to-pink-600";
       default:
-        return "menu-icon";
+        return "bg-gradient-to-br from-verde to-verde-dark";
     }
   };
 
   return (
-    <Layout hideHeader hideFooter>
-      <div className="min-h-screen bg-gradient-orbs pb-28">
-        {/* Decorative Orbs */}
-        <div className="orb-green" />
-        <div className="orb-yellow" />
-
-        {/* Content */}
-        <div className="relative z-10 px-5 pt-6">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-white/40" />
-              <div className="w-2 h-2 rounded-full bg-white/40" />
-              <div className="w-2 h-2 rounded-full bg-white/40" />
-            </div>
-            <button className="p-2 text-white/60 hover:text-white transition-colors">
-              <Menu className="w-6 h-6" />
-            </button>
-          </div>
-
+    <Layout>
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="max-w-4xl mx-auto">
           {/* Avatar & Greeting */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden mb-4 shadow-lg">
+            <div className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden mb-4 shadow-lg bg-muted">
               <span className="text-[126px] leading-none">🇧🇷</span>
             </div>
-            <h1 className="text-2xl font-display font-bold text-white mb-1">
+            <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-1">
               Olá Brasileiro
             </h1>
-            <p className="text-lg text-white/80 font-medium mb-2">
+            <p className="text-lg text-foreground/80 font-medium mb-3">
               Antes de acreditar, verifique!
             </p>
-            <div className="badge-glass">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-muted text-muted-foreground">
+              <span>🇧🇷</span>
               <span>Brasil</span>
             </div>
           </div>
@@ -122,18 +101,20 @@ const Index = () => {
 
           {/* Main Menu */}
           <div className="mb-8">
-            <p className="section-label">MENU PRINCIPAL</p>
-            <div className="grid grid-cols-3 gap-4">
+            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
+              MENU PRINCIPAL
+            </p>
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
               {menuItems.map((item) => (
                 <button
                   key={item.label}
                   onClick={() => navigate(item.href)}
-                  className="menu-card"
+                  className="flex flex-col items-center justify-center gap-3 p-5 cursor-pointer bg-card border border-border rounded-2xl shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 hover:-translate-y-1"
                 >
-                  <div className={getIconClass(item.variant)}>
+                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-md ${getIconBgClass(item.variant)}`}>
                     <item.icon className="w-6 h-6 text-white" />
                   </div>
-                  <span className="text-xs font-medium text-white/90 text-center leading-tight">
+                  <span className="text-xs font-medium text-card-foreground text-center leading-tight">
                     {item.label}
                   </span>
                 </button>
@@ -141,17 +122,20 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Quick Questions - Glass Panel */}
-          <div className="glass-panel p-5">
+          {/* Quick Questions */}
+          <div className="bg-card rounded-2xl shadow-card p-6 mb-8">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="font-display font-bold text-white text-lg">
+                <h2 className="font-display font-bold text-card-foreground text-lg">
                   Consulta Rápida
                 </h2>
-                <p className="text-sm text-white/60">Dúvidas Frequentes</p>
+                <p className="text-sm text-muted-foreground">Dúvidas Frequentes</p>
               </div>
-              <button className="w-10 h-10 rounded-full bg-secondary flex items-center justify-center hover:bg-secondary/90 transition-all hover:scale-105">
-                <ChevronRight className="w-5 h-5 text-secondary-foreground" />
+              <button 
+                onClick={() => navigate("/perguntar")}
+                className="w-10 h-10 rounded-full bg-verde flex items-center justify-center hover:bg-verde-light transition-all hover:scale-105"
+              >
+                <ChevronRight className="w-5 h-5 text-white" />
               </button>
             </div>
 
@@ -162,37 +146,22 @@ const Index = () => {
                   onClick={() =>
                     navigate(`/perguntar?q=${encodeURIComponent(question)}`)
                   }
-                  className="quick-item-glass w-full"
+                  className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-muted/50 border border-border hover:bg-muted hover:border-primary/30 transition-all"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-verde-brasil to-verde-brasil-dark flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-xl bg-verde flex items-center justify-center">
                       <MessageSquare className="w-5 h-5 text-white" />
                     </div>
-                    <span className="font-medium text-white/90">{question}</span>
+                    <span className="font-medium text-card-foreground">{question}</span>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-white/40" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </button>
               ))}
             </div>
           </div>
 
           {/* News Section */}
-          <div className="mt-6">
-            <NewsSection />
-          </div>
-        </div>
-
-        {/* Bottom Navigation */}
-        <div className="nav-bottom">
-          <button className="nav-item active">
-            <Home className="w-6 h-6" />
-          </button>
-          <button onClick={() => navigate("/historico")} className="nav-item">
-            <Star className="w-6 h-6" />
-          </button>
-          <button onClick={() => navigate("/biblioteca")} className="nav-item">
-            <Scale className="w-6 h-6" />
-          </button>
+          <NewsSection />
         </div>
       </div>
     </Layout>
