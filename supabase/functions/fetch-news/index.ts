@@ -91,7 +91,27 @@ async function fetchRSSFeed(feedUrl: string, sourceName: string): Promise<NewsIt
       return [];
     }
 
-    const xml = await response.text();
+    // Get as ArrayBuffer and decode with proper encoding
+    const buffer = await response.arrayBuffer();
+    let xml: string;
+    
+    // Try to detect encoding from content-type header
+    const contentType = response.headers.get("content-type") || "";
+    const isLatin1 = contentType.toLowerCase().includes("iso-8859-1") || 
+                     contentType.toLowerCase().includes("latin1");
+    
+    if (isLatin1) {
+      xml = new TextDecoder("iso-8859-1").decode(buffer);
+    } else {
+      // Try UTF-8 first
+      xml = new TextDecoder("utf-8").decode(buffer);
+      
+      // If we see replacement characters (U+FFFD), try Latin-1
+      if (xml.includes("\uFFFD")) {
+        xml = new TextDecoder("iso-8859-1").decode(buffer);
+      }
+    }
+    
     const items: NewsItem[] = [];
 
     // Extrair itens do RSS
