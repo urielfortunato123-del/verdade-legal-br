@@ -1,25 +1,23 @@
 import { useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
+import { Button } from "@/components/ui/button";
 import { ShareButtons } from "@/components/ShareButtons";
+import { ContentModeToggle } from "@/components/ContentModeToggle";
 import { useAnalyzeDocument, DocumentAnalysis, DocumentModeAnalysis } from "@/hooks/useAnalyzeDocument";
 import { VerdictSeal, VerdictBadge } from "@/components/ui/VerdictBadge";
 import { 
   Camera, 
   FileText, 
   Loader2, 
-  ChevronLeft,
-  Image as ImageIcon,
+  Upload,
   CheckCircle,
-  Menu,
-  Shield,
+  BookOpen,
+  ExternalLink,
 } from "lucide-react";
 import { toast } from "sonner";
 
 const ChecarImagem = () => {
-  const navigate = useNavigate();
   const [mode, setMode] = useState<"news_tv" | "document">("news_tv");
-  const [extractedText, setExtractedText] = useState("");
   const [fileName, setFileName] = useState("");
   const { analyze, isAnalyzing, analysis } = useAnalyzeDocument();
   
@@ -44,7 +42,6 @@ const ChecarImagem = () => {
       reader.readAsDataURL(file);
     } else {
       const text = `Documento: ${file.name}\nTipo: ${file.type}\n\nTexto será extraído...`;
-      setExtractedText(text);
       await analyze(text, mode);
     }
   };
@@ -53,188 +50,256 @@ const ChecarImagem = () => {
     cameraInputRef.current?.click();
   };
 
+  const clearFile = () => {
+    setFileName("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+    if (cameraInputRef.current) cameraInputRef.current.value = "";
+  };
+
   const isNewsMode = mode === "news_tv";
   const newsAnalysis = analysis as DocumentAnalysis | null;
   const docAnalysis = analysis as DocumentModeAnalysis | null;
 
   return (
-    <Layout hideHeader hideFooter>
-      <div className="min-h-screen pb-8">
-        {/* Header */}
-        <div className="bg-brasil-sparkle px-4 pt-6 pb-8">
-          <div className="flex items-center justify-between mb-6">
-            <button 
-              onClick={() => navigate(-1)}
-              className="p-2 text-white/70 hover:text-white"
-            >
-              <ChevronLeft className="w-6 h-6" />
-            </button>
-            <div className="flex items-center gap-2">
-              <Shield className="w-6 h-6 text-verde-brasil-light" />
-              <span className="font-display font-bold text-white">
-                VERDADE<br/><span className="text-amarelo-ouro">NA LEI</span> BR
-              </span>
-            </div>
-            <button className="p-2 text-white/70 hover:text-white">
-              <Menu className="w-6 h-6" />
-            </button>
-          </div>
-
-          <div className="text-center">
-            <h1 className="text-2xl font-display font-bold text-white mb-1">
-              CHECAR NOTÍCIA
+    <Layout>
+      <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="max-w-3xl mx-auto">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <span className="text-4xl mb-4 block">📸</span>
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Checar Notícia
             </h1>
-            <p className="text-white/70 text-sm flex items-center justify-center gap-2">
-              <ImageIcon className="w-4 h-4" />
-              Foto / PDF / Word
+            <p className="text-foreground/80">
+              Envie foto ou documento para verificar a veracidade.
             </p>
           </div>
-        </div>
 
-        {/* Content Card */}
-        <div className="px-4 -mt-4">
-          <div className="card-light p-5">
-            <p className="text-center text-gray-600 mb-5">
-              <span className="font-semibold text-gray-800">Enviar</span> foto ou documento para checar a veracidade.
-            </p>
+          {/* Upload Section */}
+          {!analysis && (
+            <div className="bg-card rounded-2xl shadow-card p-6 space-y-6">
+              <ContentModeToggle mode={mode} onChange={setMode} />
 
-            {/* Upload Buttons */}
-            <div className="space-y-3 mb-6">
-              <button 
-                onClick={handleCameraCapture}
-                className="btn-action btn-green"
-                disabled={isAnalyzing}
-              >
-                <div className="flex items-center gap-3">
-                  <Camera className="w-6 h-6" />
-                  <span>TIRAR FOTO</span>
+              {!fileName ? (
+                <div className="space-y-3">
+                  {/* Camera Button */}
+                  <Button
+                    onClick={handleCameraCapture}
+                    disabled={isAnalyzing}
+                    className="w-full h-16 gap-3 bg-verde hover:bg-verde-brasil-light text-primary-foreground rounded-xl text-lg font-semibold justify-start px-6"
+                  >
+                    <Camera className="w-6 h-6" />
+                    Tirar Foto
+                  </Button>
+
+                  {/* PDF Button */}
+                  <Button
+                    onClick={() => {
+                      if (fileInputRef.current) {
+                        fileInputRef.current.accept = ".pdf";
+                        fileInputRef.current.click();
+                      }
+                    }}
+                    disabled={isAnalyzing}
+                    variant="outline"
+                    className="w-full h-16 gap-3 rounded-xl text-lg font-semibold justify-start px-6 border-2"
+                  >
+                    <div className="bg-vermelho-alerta text-white text-xs px-2 py-1 rounded font-bold">
+                      PDF
+                    </div>
+                    Enviar PDF
+                  </Button>
+
+                  {/* Word Button */}
+                  <Button
+                    onClick={() => {
+                      if (fileInputRef.current) {
+                        fileInputRef.current.accept = ".doc,.docx";
+                        fileInputRef.current.click();
+                      }
+                    }}
+                    disabled={isAnalyzing}
+                    variant="outline"
+                    className="w-full h-16 gap-3 rounded-xl text-lg font-semibold justify-start px-6 border-2"
+                  >
+                    <div className="bg-azul-info text-white text-xs px-2 py-1 rounded font-bold">
+                      DOCX
+                    </div>
+                    Enviar Word
+                  </Button>
+
+                  {/* Image Upload */}
+                  <Button
+                    onClick={() => {
+                      if (fileInputRef.current) {
+                        fileInputRef.current.accept = "image/*";
+                        fileInputRef.current.click();
+                      }
+                    }}
+                    disabled={isAnalyzing}
+                    variant="outline"
+                    className="w-full h-16 gap-3 rounded-xl text-lg font-semibold justify-start px-6 border-2"
+                  >
+                    <Upload className="w-6 h-6" />
+                    Enviar Imagem
+                  </Button>
                 </div>
-                <Camera className="w-5 h-5 opacity-60" />
-              </button>
-
-              <button 
-                onClick={() => fileInputRef.current?.click()}
-                className="btn-action btn-yellow"
-                disabled={isAnalyzing}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="bg-red-500 text-white text-xs px-2 py-0.5 rounded font-bold">PDF</div>
-                  <span>ENVIAR PDF</span>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/30 border border-border">
+                    <div className="w-14 h-14 rounded-full bg-verde flex items-center justify-center shadow-md">
+                      <FileText className="w-7 h-7 text-white" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold text-card-foreground">{fileName}</p>
+                      <p className="text-sm text-muted-foreground">Pronto para análise</p>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={clearFile}>
+                      Remover
+                    </Button>
+                  </div>
                 </div>
-                <FileText className="w-5 h-5 opacity-60" />
-              </button>
+              )}
 
-              <button 
-                onClick={() => fileInputRef.current?.click()}
-                className="btn-action btn-blue"
-                disabled={isAnalyzing}
-              >
-                <div className="flex items-center gap-3">
-                  <div className="bg-blue-600 text-white text-xs px-2 py-0.5 rounded font-bold">DOCX</div>
-                  <span>ENVIAR WORD</span>
+              {/* Hidden Inputs */}
+              <input
+                ref={fileInputRef}
+                type="file"
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+              <input
+                ref={cameraInputRef}
+                type="file"
+                accept="image/*"
+                capture="environment"
+                className="hidden"
+                onChange={handleFileSelect}
+              />
+
+              {/* Loading State */}
+              {isAnalyzing && (
+                <div className="text-center py-8 space-y-4">
+                  <Loader2 className="w-12 h-12 animate-spin text-verde mx-auto" />
+                  <div>
+                    <p className="text-card-foreground font-semibold">Analisando conteúdo...</p>
+                    <p className="text-muted-foreground text-sm">Verificando base legal</p>
+                  </div>
                 </div>
-                <FileText className="w-5 h-5 opacity-60" />
-              </button>
+              )}
             </div>
+          )}
 
-            {/* Mode Toggle */}
-            <div className="mode-toggle">
-              <button 
-                onClick={() => setMode("news_tv")}
-                className={`mode-toggle-btn ${mode === "news_tv" ? "active" : ""}`}
-              >
-                <span className="w-2 h-2 rounded-full bg-current"></span>
-                Notícia / TV
-              </button>
-              <button 
-                onClick={() => setMode("document")}
-                className={`mode-toggle-btn ${mode === "document" ? "active" : ""}`}
-              >
-                <span className="w-2 h-2 rounded-full bg-current"></span>
-                Documento
-              </button>
-            </div>
-
-            {/* Hidden File Inputs */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept=".pdf,.doc,.docx,image/*"
-              className="hidden"
-              onChange={handleFileSelect}
-            />
-            <input
-              ref={cameraInputRef}
-              type="file"
-              accept="image/*"
-              capture="environment"
-              className="hidden"
-              onChange={handleFileSelect}
-            />
-
-            {/* Loading State */}
-            {isAnalyzing && (
-              <div className="mt-6 text-center py-8">
-                <Loader2 className="w-10 h-10 animate-spin text-verde-brasil mx-auto mb-3" />
-                <p className="text-gray-600 font-medium">Analisando conteúdo...</p>
-                <p className="text-gray-400 text-sm">Verificando base legal</p>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Analysis Results */}
-        {analysis && !isAnalyzing && (
-          <div className="px-4 mt-4">
-            <div className="card-light p-5">
+          {/* Analysis Results */}
+          {analysis && !isAnalyzing && (
+            <div className="space-y-6 animate-fade-in">
               {isNewsMode && newsAnalysis?.overallVerdict && (
                 <>
-                  <div className="flex justify-center mb-6">
+                  {/* Verdict Seal */}
+                  <div className="bg-card rounded-2xl shadow-card p-8">
                     <VerdictSeal verdict={newsAnalysis.overallVerdict} />
                   </div>
 
-                  <div className="space-y-4">
-                    <div>
-                      <h4 className="font-bold text-gray-800 mb-2">Resumo</h4>
-                      <p className="text-gray-600 text-sm">{newsAnalysis.summary}</p>
-                    </div>
-
-                    {newsAnalysis.claims?.map((claim, idx) => (
-                      <div key={idx} className="p-3 bg-gray-50 rounded-xl">
-                        <div className="flex items-start gap-2 mb-2">
-                          <VerdictBadge verdict={claim.verdict} size="sm" />
-                        </div>
-                        <p className="text-gray-700 text-sm mb-1">"{claim.text}"</p>
-                        <p className="text-gray-500 text-xs">{claim.explanation}</p>
-                      </div>
-                    ))}
+                  {/* Summary */}
+                  <div className="bg-card rounded-2xl shadow-card p-6">
+                    <h2 className="font-display font-bold text-xl text-card-foreground mb-4">
+                      Resumo da Análise
+                    </h2>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {newsAnalysis.summary}
+                    </p>
                   </div>
 
-                  <div className="mt-6">
+                  {/* Claims */}
+                  {newsAnalysis.claims && newsAnalysis.claims.length > 0 && (
+                    <div className="bg-card rounded-2xl shadow-card overflow-hidden">
+                      <div className="p-6 border-b border-border">
+                        <h2 className="font-display font-bold text-xl text-card-foreground flex items-center gap-2">
+                          <BookOpen className="w-6 h-6 text-verde" />
+                          O que a lei diz
+                        </h2>
+                      </div>
+
+                      <div className="divide-y divide-border">
+                        {newsAnalysis.claims.map((claim, idx) => (
+                          <div key={idx} className="p-6">
+                            <div className="flex items-start gap-4">
+                              <VerdictBadge verdict={claim.verdict} size="md" showEmoji />
+                              <div className="flex-1">
+                                <p className="font-semibold text-card-foreground mb-2">
+                                  "{claim.text}"
+                                </p>
+                                <p className="text-muted-foreground leading-relaxed mb-4">
+                                  {claim.explanation}
+                                </p>
+
+                                {claim.sources && claim.sources.length > 0 && (
+                                  <div className="space-y-2">
+                                    {claim.sources.map((source, sIndex) => (
+                                      <a
+                                        key={sIndex}
+                                        href={source.url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 text-sm text-verde hover:underline font-medium"
+                                      >
+                                        <FileText className="w-4 h-4" />
+                                        {source.law} - {source.article}
+                                        <ExternalLink className="w-3 h-3" />
+                                      </a>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Share */}
+                  <div className="flex flex-wrap items-center justify-between gap-4">
                     <ShareButtons 
                       verdict={newsAnalysis.overallVerdict}
                       summary={newsAnalysis.summary}
                       sources={newsAnalysis.claims?.[0]?.sources || []}
                     />
+                    <Button 
+                      variant="ghost" 
+                      onClick={clearFile}
+                      className="text-foreground/70 hover:text-foreground"
+                    >
+                      Analisar outro documento
+                    </Button>
                   </div>
                 </>
               )}
 
               {!isNewsMode && docAnalysis?.summary && (
-                <div className="space-y-4">
+                <div className="bg-card rounded-2xl shadow-card p-6 space-y-6">
                   <div>
-                    <h4 className="font-bold text-gray-800 mb-2">Resumo do Documento</h4>
-                    <p className="text-gray-600 text-sm">{docAnalysis.summary}</p>
+                    <h2 className="font-display font-bold text-xl text-card-foreground mb-3">
+                      Resumo do Documento
+                    </h2>
+                    <p className="text-muted-foreground leading-relaxed">
+                      {docAnalysis.summary}
+                    </p>
                   </div>
 
                   {docAnalysis.keyInfo?.length > 0 && (
                     <div>
-                      <h4 className="font-bold text-gray-800 mb-2">Informações Extraídas</h4>
+                      <h3 className="font-semibold text-card-foreground mb-3">
+                        Informações Extraídas
+                      </h3>
                       <div className="space-y-2">
                         {docAnalysis.keyInfo.map((info, idx) => (
-                          <div key={idx} className="flex justify-between p-2 bg-gray-50 rounded-lg">
-                            <span className="text-gray-500 text-sm">{info.key}</span>
-                            <span className="text-gray-800 font-medium text-sm">{info.value}</span>
+                          <div 
+                            key={idx} 
+                            className="flex justify-between p-3 rounded-xl bg-muted/30 border border-border"
+                          >
+                            <span className="text-muted-foreground">{info.key}</span>
+                            <span className="text-card-foreground font-medium">{info.value}</span>
                           </div>
                         ))}
                       </div>
@@ -243,48 +308,34 @@ const ChecarImagem = () => {
 
                   {docAnalysis.legalPoints?.length > 0 && (
                     <div>
-                      <h4 className="font-bold text-gray-800 mb-2">Pontos Legais</h4>
-                      <ul className="space-y-1">
+                      <h3 className="font-semibold text-card-foreground mb-3">
+                        Pontos Legais
+                      </h3>
+                      <ul className="space-y-2">
                         {docAnalysis.legalPoints.map((point, idx) => (
-                          <li key={idx} className="text-gray-600 text-sm flex gap-2">
-                            <CheckCircle className="w-4 h-4 text-verde-brasil flex-shrink-0 mt-0.5" />
+                          <li 
+                            key={idx} 
+                            className="text-muted-foreground flex gap-3 items-start"
+                          >
+                            <CheckCircle className="w-5 h-5 text-verde flex-shrink-0 mt-0.5" />
                             {point}
                           </li>
                         ))}
                       </ul>
                     </div>
                   )}
+
+                  <Button 
+                    variant="outline" 
+                    onClick={clearFile}
+                    className="w-full"
+                  >
+                    Analisar outro documento
+                  </Button>
                 </div>
               )}
             </div>
-          </div>
-        )}
-
-        {/* History Preview */}
-        <div className="px-4 mt-6">
-          <h2 className="section-title text-white/60">HISTÓRICO</h2>
-          
-          <div className="space-y-3">
-            {[
-              { verdict: "misleading" as const, title: "Enganoso", desc: "Post afirmou que cierto...", date: "24/04/2024 12:45" },
-              { verdict: "confirmed" as const, title: "Confirmado", desc: "Jornal da Noite", date: "23/04/2024 20:30" },
-              { verdict: "false" as const, title: "Falso", desc: "Dano e fraude?", date: "23/04/2024 15:00" },
-            ].map((item, idx) => (
-              <div key={idx} className="history-item">
-                <div className="flex-shrink-0">
-                  <VerdictBadge verdict={item.verdict} size="sm" showIcon />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-gray-800 text-sm">{item.title}</p>
-                  <p className="text-gray-500 text-xs truncate">{item.desc}</p>
-                  <p className="text-gray-400 text-xs mt-1">{item.date}</p>
-                </div>
-                <div className="flex-shrink-0">
-                  <div className="w-12 h-12 bg-gray-100 rounded-lg"></div>
-                </div>
-              </div>
-            ))}
-          </div>
+          )}
         </div>
       </div>
     </Layout>
