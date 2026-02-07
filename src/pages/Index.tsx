@@ -101,8 +101,8 @@ const Index = () => {
 
           {/* Avatar & Greeting */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden mb-4 shadow-lg bg-[#009c3b]">
-              <span className="text-7xl leading-none">🇧🇷</span>
+            <div className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden mb-4 shadow-lg">
+              <span className="text-[140px] leading-none scale-150">🇧🇷</span>
             </div>
             <h1 className="text-2xl font-display font-bold text-white mb-1">
               Olá Brasileiro
