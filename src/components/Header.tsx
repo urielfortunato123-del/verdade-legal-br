@@ -58,8 +58,8 @@ export function Header() {
                 className={cn(
                   "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200",
                   location.pathname === link.href
-                    ? "bg-verde text-primary-foreground shadow-md"
-                    : "text-foreground/80 hover:text-foreground hover:bg-white/10"
+                    ? "bg-verde text-white shadow-md"
+                    : "text-foreground/80 hover:text-foreground hover:bg-muted/50"
                 )}
               >
                 {link.label}
@@ -74,8 +74,8 @@ export function Header() {
                   className={cn(
                     "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 gap-1",
                     moreLinks.some(l => location.pathname === l.href)
-                      ? "bg-verde text-primary-foreground shadow-md"
-                      : "text-foreground/80 hover:text-foreground hover:bg-white/10"
+                      ? "bg-verde text-white shadow-md"
+                      : "text-foreground/80 hover:text-foreground hover:bg-muted/50"
                   )}
                 >
                   Mais
@@ -131,7 +131,7 @@ export function Header() {
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <nav className="lg:hidden py-4 border-t border-white/10 animate-fade-in">
+          <nav className="lg:hidden py-4 border-t border-border animate-fade-in">
             <div className="flex flex-col gap-1">
               {navLinks.map((link) => (
                 <Link
@@ -141,8 +141,8 @@ export function Header() {
                   className={cn(
                     "px-4 py-3 rounded-xl text-base font-medium transition-colors",
                     location.pathname === link.href
-                      ? "bg-verde text-primary-foreground"
-                      : "text-foreground/80 hover:text-foreground hover:bg-white/10"
+                      ? "bg-verde text-white"
+                      : "text-foreground/80 hover:text-foreground hover:bg-muted/50"
                   )}
                 >
                   {link.label}
@@ -150,7 +150,7 @@ export function Header() {
               ))}
               
               {/* More Section in Mobile */}
-              <div className="mt-2 pt-2 border-t border-white/10">
+              <div className="mt-2 pt-2 border-t border-border">
                 <p className="px-4 py-2 text-xs text-muted-foreground font-semibold uppercase tracking-wider">
                   Mais
                 </p>
@@ -162,8 +162,8 @@ export function Header() {
                     className={cn(
                       "px-4 py-3 rounded-xl text-base font-medium transition-colors flex items-center gap-3",
                       location.pathname === link.href
-                        ? "bg-verde text-primary-foreground"
-                        : "text-foreground/80 hover:text-foreground hover:bg-white/10"
+                        ? "bg-verde text-white"
+                        : "text-foreground/80 hover:text-foreground hover:bg-muted/50"
                     )}
                   >
                     <link.icon className="w-5 h-5" />
@@ -184,7 +184,7 @@ export function Header() {
                       toast.success("Link copiado!");
                     }
                   }}
-                  className="w-full px-4 py-3 rounded-xl text-base font-medium transition-colors flex items-center gap-3 text-foreground/80 hover:text-foreground hover:bg-white/10"
+                  className="w-full px-4 py-3 rounded-xl text-base font-medium transition-colors flex items-center gap-3 text-foreground/80 hover:text-foreground hover:bg-muted/50"
                 >
                   <Share2 className="w-5 h-5" />
                   Compartilhar app
