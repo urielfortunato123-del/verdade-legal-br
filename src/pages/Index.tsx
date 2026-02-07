@@ -108,7 +108,7 @@ const Index = () => {
               Olá Brasileiro
             </h1>
             <p className="text-lg text-white/80 font-medium mb-2">
-              Antes de acreditar, verifique
+              Antes de acreditar, verifique!
             </p>
             <div className="badge-glass">
               <span>Brasil</span>
