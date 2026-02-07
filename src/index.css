@@ -133,21 +133,35 @@
 
   /* Menu Icon Cards */
   .menu-card {
-    @apply flex flex-col items-center justify-center gap-2 p-4 rounded-2xl transition-all duration-200;
-    @apply hover:scale-105 active:scale-95 cursor-pointer;
+    @apply flex flex-col items-center justify-center gap-2 p-4 rounded-2xl cursor-pointer;
     background: hsl(145, 50%, 28%);
     border: 1px solid hsl(145, 45%, 35%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(0);
   }
 
   .menu-card:hover {
     background: hsl(145, 50%, 32%);
-    box-shadow: 0 4px 16px -2px hsl(145, 60%, 20% / 0.4);
+    box-shadow: 0 8px 24px -4px hsl(145, 60%, 15% / 0.5);
+    transform: translateY(-4px) scale(1.02);
+    border-color: hsl(48, 95%, 52%);
+  }
+
+  .menu-card:active {
+    transform: translateY(0) scale(0.98);
+    transition-duration: 0.1s;
   }
 
   .menu-icon {
     @apply w-12 h-12 rounded-xl flex items-center justify-center;
     background: linear-gradient(135deg, hsl(145, 55%, 38%) 0%, hsl(145, 50%, 32%) 100%);
     border: 1px solid hsl(145, 45%, 45%);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .menu-card:hover .menu-icon {
+    transform: scale(1.1) rotate(3deg);
+    box-shadow: 0 4px 12px -2px hsl(145, 55%, 25% / 0.4);
   }
 
   .menu-icon-yellow {
@@ -155,9 +169,17 @@
     border: 1px solid hsl(48, 85%, 60%);
   }
 
+  .menu-card:hover .menu-icon-yellow {
+    box-shadow: 0 4px 12px -2px hsl(48, 90%, 40% / 0.5);
+  }
+
   .menu-icon-blue {
     background: linear-gradient(135deg, hsl(220, 70%, 50%) 0%, hsl(220, 65%, 45%) 100%);
     border: 1px solid hsl(220, 60%, 60%);
+  }
+
+  .menu-card:hover .menu-icon-blue {
+    box-shadow: 0 4px 12px -2px hsl(220, 70%, 35% / 0.5);
   }
 
   /* White Card Section */
