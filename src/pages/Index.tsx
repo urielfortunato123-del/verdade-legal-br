@@ -8,7 +8,7 @@ import {
   BookOpen,
   Mic,
   Clock,
-  MoreHorizontal,
+  Search,
   ChevronRight,
 } from "lucide-react";
 
@@ -17,6 +17,12 @@ const Index = () => {
 
   const menuItems = [
     {
+      icon: Search,
+      label: "Fact Check",
+      href: "/fact-check",
+      variant: "pink" as const,
+    },
+    {
       icon: MessageSquare,
       label: "Perguntar",
       href: "/perguntar",
@@ -24,32 +30,26 @@ const Index = () => {
     },
     {
       icon: FileText,
-      label: "Checar Notícia",
+      label: "Checar Imagem",
       href: "/checar-imagem",
-      variant: "pink" as const,
+      variant: "blue" as const,
+    },
+    {
+      icon: Mic,
+      label: "Checar Áudio",
+      href: "/checar-audio",
+      variant: "yellow" as const,
     },
     {
       icon: BookOpen,
       label: "Biblioteca",
       href: "/biblioteca",
-      variant: "blue" as const,
-    },
-    {
-      icon: Mic,
-      label: "Gravar Áudio",
-      href: "/checar-audio",
-      variant: "yellow" as const,
+      variant: "green" as const,
     },
     {
       icon: Clock,
       label: "Histórico",
       href: "/historico",
-      variant: "green" as const,
-    },
-    {
-      icon: MoreHorizontal,
-      label: "Mais",
-      href: "/sobre",
       variant: "blue" as const,
     },
   ];
