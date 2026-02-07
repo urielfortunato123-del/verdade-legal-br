@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNews, NewsCategory } from "@/hooks/useNews";
 import { useVerifyNews, VerdictType } from "@/hooks/useVerifyNews";
-import { useAnalyzeNews } from "@/hooks/useAnalyzeNews";
-import { generateNewsPdf } from "@/utils/generateNewsPdf";
+import { useAnalyzeNews, AnalysisResult } from "@/hooks/useAnalyzeNews";
+import { AnalysisModal } from "@/components/AnalysisModal";
 import {
   Newspaper,
   ExternalLink,
@@ -18,12 +18,10 @@ import {
   XCircle,
   HelpCircle,
   FileText,
-  Download,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
-import { toast } from "sonner";
 
 const categories: { id: NewsCategory; label: string; icon: typeof Globe }[] = [
   { id: "geral", label: "Geral", icon: Globe },
@@ -59,6 +57,7 @@ const verdictConfig: Record<
 
 export function NewsSection() {
   const [category, setCategory] = useState<NewsCategory>("geral");
+  const [modalData, setModalData] = useState<AnalysisResult | null>(null);
   const { data: news, isLoading, error, refetch, isFetching } = useNews(category);
   const { verify, isVerifying, results } = useVerifyNews();
   const { analyze, isAnalyzing, results: analysisResults } = useAnalyzeNews();
@@ -101,8 +100,7 @@ export function NewsSection() {
     e.stopPropagation();
     const result = await analyze(`${category}-${idx}`, item.title, item.description, item.source, item.link);
     if (result) {
-      generateNewsPdf(result);
-      toast.success("PDF gerado com sucesso!");
+      setModalData(result);
     }
   };
 
@@ -308,6 +306,13 @@ export function NewsSection() {
           })}
         </div>
       )}
+
+      {/* Analysis Modal */}
+      <AnalysisModal
+        isOpen={!!modalData}
+        onClose={() => setModalData(null)}
+        data={modalData}
+      />
     </div>
   );
 }

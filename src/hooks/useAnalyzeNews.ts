@@ -67,5 +67,13 @@ export function useAnalyzeNews() {
     }
   };
 
-  return { analyze, isAnalyzing, results };
+  const clearResult = (newsId: string) => {
+    setResults((prev) => {
+      const newResults = { ...prev };
+      delete newResults[newsId];
+      return newResults;
+    });
+  };
+
+  return { analyze, isAnalyzing, results, clearResult };
 }

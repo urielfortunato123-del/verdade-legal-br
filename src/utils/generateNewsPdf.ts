@@ -2,13 +2,13 @@ import jsPDF from "jspdf";
 import type { AnalysisResult } from "@/hooks/useAnalyzeNews";
 
 const verdictLabels: Record<string, string> = {
-  confirmed: "✅ Confirmado",
-  misleading: "⚠️ Enganoso",
-  false: "❌ Falso",
-  unverifiable: "❓ Não Verificável",
+  confirmed: "Confirmado",
+  misleading: "Enganoso",
+  false: "Falso",
+  unverifiable: "Nao Verificavel",
 };
 
-export function generateNewsPdf(data: AnalysisResult): void {
+export function createNewsPdf(data: AnalysisResult): jsPDF {
   const doc = new jsPDF();
   const pageWidth = doc.internal.pageSize.getWidth();
   const margin = 20;
@@ -21,7 +21,6 @@ export function generateNewsPdf(data: AnalysisResult): void {
     doc.setTextColor(...color);
     const lines = doc.splitTextToSize(text, maxWidth);
     
-    // Check if we need a new page
     if (y + lines.length * (fontSize * 0.4) > 280) {
       doc.addPage();
       y = 20;
@@ -43,7 +42,7 @@ export function generateNewsPdf(data: AnalysisResult): void {
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(18);
   doc.setFont("helvetica", "bold");
-  doc.text("Análise de Notícia", margin, 25);
+  doc.text("Analise de Noticia", margin, 25);
   doc.setFontSize(10);
   doc.setFont("helvetica", "normal");
   doc.text(`Gerado em: ${new Date().toLocaleDateString("pt-BR")}`, margin, 35);
@@ -60,7 +59,7 @@ export function generateNewsPdf(data: AnalysisResult): void {
 
   // Verification Badge
   const verdict = data.analysis.verificacao;
-  const verdictText = `${verdictLabels[verdict.veredicto]} (${verdict.confianca}% de confiança)`;
+  const verdictText = `${verdictLabels[verdict.veredicto]} (${verdict.confianca}% de confianca)`;
   addText(verdictText, 12, true, verdict.veredicto === "confirmed" ? [34, 197, 94] : 
           verdict.veredicto === "misleading" ? [234, 179, 8] : 
           verdict.veredicto === "false" ? [239, 68, 68] : [107, 114, 128]);
@@ -88,13 +87,13 @@ export function generateNewsPdf(data: AnalysisResult): void {
   }
 
   if (data.analysis.analiseCritica) {
-    addSection("ANÁLISE CRÍTICA", data.analysis.analiseCritica);
+    addSection("ANALISE CRITICA", data.analysis.analiseCritica);
   }
 
   if (data.analysis.fontesRecomendadas?.length > 0) {
     addText("FONTES RECOMENDADAS", 12, true, [41, 98, 255]);
     data.analysis.fontesRecomendadas.forEach((fonte) => {
-      addText(`• ${fonte}`, 10, false);
+      addText(`- ${fonte}`, 10, false);
     });
   }
 
@@ -105,14 +104,108 @@ export function generateNewsPdf(data: AnalysisResult): void {
     doc.setFontSize(8);
     doc.setTextColor(150, 150, 150);
     doc.text(
-      `Página ${i} de ${pageCount} | Verificador de Notícias`,
+      `Pagina ${i} de ${pageCount} | Verificador de Noticias`,
       pageWidth / 2,
       290,
       { align: "center" }
     );
   }
 
-  // Generate filename and download
+  return doc;
+}
+
+export function generateNewsPdf(data: AnalysisResult): void {
+  const doc = createNewsPdf(data);
   const fileName = `analise-${data.newsData.source.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.pdf`;
   doc.save(fileName);
+}
+
+export function getPdfBlob(data: AnalysisResult): Blob {
+  const doc = createNewsPdf(data);
+  return doc.output("blob");
+}
+
+export function getPdfFileName(data: AnalysisResult): string {
+  return `analise-${data.newsData.source.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}.pdf`;
+}
+
+export async function sharePdf(data: AnalysisResult): Promise<boolean> {
+  const blob = getPdfBlob(data);
+  const fileName = getPdfFileName(data);
+  const file = new File([blob], fileName, { type: "application/pdf" });
+
+  // Check if Web Share API with files is supported
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try {
+      await navigator.share({
+        title: `Análise: ${data.newsData.title}`,
+        text: `Confira a análise da notícia "${data.newsData.title}" da fonte ${data.newsData.source}`,
+        files: [file],
+      });
+      return true;
+    } catch (err) {
+      if ((err as Error).name === "AbortError") {
+        // User cancelled, not an error
+        return false;
+      }
+      console.error("Share failed:", err);
+      return false;
+    }
+  }
+  
+  return false;
+}
+
+export async function shareText(data: AnalysisResult): Promise<boolean> {
+  const verdict = verdictLabels[data.analysis.verificacao.veredicto];
+  const text = `📰 *Análise de Notícia*
+
+*${data.newsData.title}*
+Fonte: ${data.newsData.source}
+
+✅ *Veredicto:* ${verdict} (${data.analysis.verificacao.confianca}% confiança)
+
+📝 *Resumo:*
+${data.analysis.resumo}
+
+🔍 *Análise:*
+${data.analysis.verificacao.explicacao}
+
+${data.newsData.link ? `🔗 Link: ${data.newsData.link}` : ""}
+
+_Gerado pelo Verificador de Notícias_`;
+
+  if (navigator.share) {
+    try {
+      await navigator.share({
+        title: `Análise: ${data.newsData.title}`,
+        text: text,
+      });
+      return true;
+    } catch (err) {
+      if ((err as Error).name === "AbortError") {
+        return false;
+      }
+      console.error("Share failed:", err);
+      return false;
+    }
+  }
+  
+  return false;
+}
+
+export function canShareFiles(): boolean {
+  if (typeof navigator === "undefined") return false;
+  if (!navigator.canShare) return false;
+  
+  try {
+    const testFile = new File(["test"], "test.pdf", { type: "application/pdf" });
+    return navigator.canShare({ files: [testFile] });
+  } catch {
+    return false;
+  }
+}
+
+export function canShare(): boolean {
+  return typeof navigator !== "undefined" && !!navigator.share;
 }
