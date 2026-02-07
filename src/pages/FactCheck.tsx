@@ -2,7 +2,9 @@ import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Search,
   Loader2,
@@ -12,8 +14,9 @@ import {
   HelpCircle,
   ExternalLink,
   RotateCcw,
-  Share2,
   Calendar,
+  Link2,
+  FileText,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFactCheck, FactCheckResponse } from "@/hooks/useFactCheck";
@@ -54,19 +57,26 @@ const veredictoConfig: Record<
 };
 
 const FactCheck = () => {
+  const [inputType, setInputType] = useState<"text" | "link">("text");
   const [claim, setClaim] = useState("");
+  const [url, setUrl] = useState("");
   const { checkFact, isLoading, response, reset } = useFactCheck();
 
   const handleSubmit = async () => {
-    if (!claim.trim()) return;
-    await checkFact(claim);
+    if (inputType === "text" && !claim.trim()) return;
+    if (inputType === "link" && !url.trim()) return;
+    
+    const input = inputType === "text" ? claim : url;
+    await checkFact(input, inputType);
   };
 
   const handleReset = () => {
     setClaim("");
+    setUrl("");
     reset();
   };
 
+  const isValid = inputType === "text" ? claim.trim() : url.trim();
   const config = response ? veredictoConfig[response.veredito] : null;
   const VeredictIcon = config?.icon || HelpCircle;
 
@@ -81,48 +91,80 @@ const FactCheck = () => {
               Verificador de Fatos
             </h1>
             <p className="text-foreground/80">
-              Cole uma notícia, post ou afirmação para verificar se é verdade
+              Cole uma notícia, post, link ou afirmação para verificar se é verdade
             </p>
           </div>
 
           {/* Input Section */}
           {!response && (
             <div className="bg-card rounded-2xl shadow-card p-6 mb-8">
-              <div className="space-y-4">
-                <div>
-                  <Label htmlFor="claim" className="text-base font-semibold text-card-foreground">
-                    Afirmação ou publicação
-                  </Label>
-                  <Textarea
-                    id="claim"
-                    placeholder="Cole aqui o texto da notícia, post de rede social ou afirmação que deseja verificar..."
-                    value={claim}
-                    onChange={(e) => setClaim(e.target.value)}
-                    className="mt-2 min-h-[200px] resize-none text-base rounded-xl"
-                  />
-                  <p className="text-sm text-muted-foreground mt-2">
-                    💡 Dica: Quanto mais contexto você fornecer, mais precisa será a análise
-                  </p>
-                </div>
+              <Tabs value={inputType} onValueChange={(v) => setInputType(v as "text" | "link")} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 mb-6">
+                  <TabsTrigger value="text" className="gap-2">
+                    <FileText className="w-4 h-4" />
+                    Texto
+                  </TabsTrigger>
+                  <TabsTrigger value="link" className="gap-2">
+                    <Link2 className="w-4 h-4" />
+                    Link
+                  </TabsTrigger>
+                </TabsList>
 
-                <Button
-                  onClick={handleSubmit}
-                  disabled={!claim.trim() || isLoading}
-                  className="w-full gap-2 bg-verde hover:bg-verde-brasil-light text-primary-foreground rounded-xl h-14 text-lg font-semibold"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Verificando...
-                    </>
-                  ) : (
-                    <>
-                      <Search className="w-5 h-5" />
-                      Verificar Afirmação
-                    </>
-                  )}
-                </Button>
-              </div>
+                <TabsContent value="text" className="space-y-4">
+                  <div>
+                    <Label htmlFor="claim" className="text-base font-semibold text-card-foreground">
+                      Afirmação ou publicação
+                    </Label>
+                    <Textarea
+                      id="claim"
+                      placeholder="Cole aqui o texto da notícia, post de rede social ou afirmação que deseja verificar..."
+                      value={claim}
+                      onChange={(e) => setClaim(e.target.value)}
+                      className="mt-2 min-h-[200px] resize-none text-base rounded-xl"
+                    />
+                    <p className="text-sm text-muted-foreground mt-2">
+                      💡 Dica: Quanto mais contexto você fornecer, mais precisa será a análise
+                    </p>
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="link" className="space-y-4">
+                  <div>
+                    <Label htmlFor="url" className="text-base font-semibold text-card-foreground">
+                      Link da notícia
+                    </Label>
+                    <Input
+                      id="url"
+                      type="url"
+                      placeholder="https://exemplo.com/noticia"
+                      value={url}
+                      onChange={(e) => setUrl(e.target.value)}
+                      className="mt-2 h-14 text-base rounded-xl"
+                    />
+                    <p className="text-sm text-muted-foreground mt-2">
+                      🔗 Cole o link completo da notícia ou post que deseja verificar
+                    </p>
+                  </div>
+                </TabsContent>
+              </Tabs>
+
+              <Button
+                onClick={handleSubmit}
+                disabled={!isValid || isLoading}
+                className="w-full gap-2 bg-verde hover:bg-verde-brasil-light text-primary-foreground rounded-xl h-14 text-lg font-semibold mt-6"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    {inputType === "link" ? "Buscando e verificando..." : "Verificando..."}
+                  </>
+                ) : (
+                  <>
+                    <Search className="w-5 h-5" />
+                    Verificar {inputType === "link" ? "Link" : "Afirmação"}
+                  </>
+                )}
+              </Button>
             </div>
           )}
 

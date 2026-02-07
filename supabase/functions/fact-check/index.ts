@@ -7,6 +7,39 @@ const corsHeaders = {
 
 interface FactCheckRequest {
   claim: string;
+  inputType?: "text" | "link";
+}
+
+async function fetchUrlContent(url: string): Promise<string> {
+  try {
+    console.log("Fetching URL content:", url);
+    const response = await fetch(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 (compatible; FactCheckBot/1.0)",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      },
+    });
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch URL: ${response.status}`);
+    }
+    
+    const html = await response.text();
+    
+    // Extract text content from HTML (basic extraction)
+    const textContent = html
+      .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+      .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+      .replace(/<[^>]+>/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .substring(0, 8000); // Limit content length
+    
+    return textContent;
+  } catch (error) {
+    console.error("Error fetching URL:", error);
+    throw new Error("Não foi possível acessar o link fornecido");
+  }
 }
 
 serve(async (req) => {
@@ -15,7 +48,7 @@ serve(async (req) => {
   }
 
   try {
-    const { claim } = await req.json() as FactCheckRequest;
+    const { claim, inputType = "text" } = await req.json() as FactCheckRequest;
     const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
     
     if (!OPENROUTER_API_KEY) {
@@ -29,7 +62,15 @@ serve(async (req) => {
       );
     }
 
-    console.log("Fact-checking claim:", claim.substring(0, 100) + "...");
+    let contentToAnalyze = claim;
+    
+    // If it's a link, fetch the content
+    if (inputType === "link") {
+      contentToAnalyze = await fetchUrlContent(claim);
+      console.log("Fetched content length:", contentToAnalyze.length);
+    }
+
+    console.log("Fact-checking:", inputType === "link" ? `URL: ${claim}` : claim.substring(0, 100) + "...");
 
     const systemPrompt = `Você é um verificador de fatos especializado no Brasil, similar ao "Fato ou Fake" do G1 e às agências de checagem como Aos Fatos e Lupa.
 
@@ -81,7 +122,7 @@ Responda em JSON com esta estrutura EXATA:
         model: "openai/gpt-4o-mini",
         messages: [
           { role: "system", content: systemPrompt },
-          { role: "user", content: `Verifique esta afirmação/publicação:\n\n${claim}` },
+          { role: "user", content: `Verifique esta afirmação/publicação:\n\n${contentToAnalyze}` },
         ],
         response_format: { type: "json_object" },
         temperature: 0.3,
