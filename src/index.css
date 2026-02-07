@@ -6,53 +6,48 @@
 
 @layer base {
   :root {
-    /* 🇧🇷 VERDE BRASIL MODERN THEME */
-    --verde-principal: 145 55% 28%;
-    --verde-claro: 145 50% 38%;
-    --verde-escuro: 145 55% 12%;
-    --verde-brilho: 145 60% 45%;
+    /* 🇧🇷 CORES DA BANDEIRA DO BRASIL */
+    --verde-principal: 145 63% 25%;
+    --verde-claro: 145 55% 35%;
+    --verde-escuro: 145 70% 15%;
     
     --amarelo-ouro: 48 95% 52%;
     --amarelo-claro: 48 90% 62%;
     
-    --azul-ordem: 210 70% 45%;
-    --azul-claro: 210 65% 55%;
+    --azul-ordem: 220 70% 50%;
+    --azul-claro: 220 65% 60%;
     
-    --vermelho-alerta: 0 70% 50%;
-    
-    --branco: 0 0% 98%;
-    --branco-off: 45 30% 96%;
-    --cinza-claro: 45 10% 90%;
-    --cinza-texto: 0 0% 35%;
+    --branco: 0 0% 100%;
+    --branco-off: 45 20% 98%;
 
-    /* Core semantic tokens - Verde Theme */
-    --background: 145 55% 14%;
-    --foreground: 0 0% 98%;
+    /* Core semantic tokens */
+    --background: 145 70% 18%;
+    --foreground: 0 0% 100%;
 
-    --card: 145 40% 20%;
-    --card-foreground: 0 0% 98%;
+    --card: 145 50% 22%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 145 40% 20%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 145 50% 22%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 145 55% 40%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 145 55% 35%;
+    --primary-foreground: 0 0% 100%;
 
     --secondary: 48 95% 52%;
-    --secondary-foreground: 145 55% 12%;
+    --secondary-foreground: 145 70% 15%;
 
-    --muted: 145 25% 25%;
-    --muted-foreground: 145 15% 70%;
+    --muted: 145 40% 28%;
+    --muted-foreground: 145 20% 75%;
 
-    --accent: 210 70% 50%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 220 70% 50%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 70% 50%;
-    --destructive-foreground: 0 0% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 145 30% 28%;
-    --input: 145 25% 22%;
-    --ring: 145 55% 45%;
+    --border: 145 40% 30%;
+    --input: 145 35% 25%;
+    --ring: 48 95% 52%;
 
     --radius: 1rem;
 
@@ -66,35 +61,27 @@
     --verdict-unverifiable: 210 20% 55%;
     --verdict-unverifiable-bg: 210 15% 90%;
 
-    /* Legacy support */
-    --verde-brasil: 145 55% 38%;
-    --verde-brasil-light: 145 50% 50%;
-    --amarelo-progresso: 48 95% 52%;
-
     /* Shadows */
-    --shadow-sm: 0 2px 4px 0 hsl(145 55% 10% / 0.15);
-    --shadow-md: 0 4px 12px -2px hsl(145 55% 10% / 0.2);
-    --shadow-lg: 0 8px 24px -4px hsl(145 55% 10% / 0.25);
-    --shadow-card: 0 4px 16px -4px hsl(145 55% 10% / 0.2);
-    --shadow-elevated: 0 8px 32px -8px hsl(145 55% 10% / 0.3);
+    --shadow-card: 0 4px 20px -4px hsl(145 70% 10% / 0.3);
+    --shadow-elevated: 0 8px 32px -8px hsl(145 70% 10% / 0.4);
 
-    --sidebar-background: 145 55% 12%;
-    --sidebar-foreground: 0 0% 98%;
-    --sidebar-primary: 145 55% 40%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 145 40% 22%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 145 40% 25%;
-    --sidebar-ring: 145 55% 45%;
+    --sidebar-background: 145 70% 15%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 145 55% 35%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 145 50% 25%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 145 45% 28%;
+    --sidebar-ring: 48 95% 52%;
   }
 
   .dark {
-    --background: 145 55% 8%;
-    --foreground: 0 0% 98%;
-    --card: 145 40% 12%;
-    --card-foreground: 0 0% 98%;
-    --border: 145 30% 20%;
-    --input: 145 25% 15%;
+    --background: 145 70% 10%;
+    --foreground: 0 0% 100%;
+    --card: 145 50% 15%;
+    --card-foreground: 0 0% 100%;
+    --border: 145 40% 22%;
+    --input: 145 35% 18%;
   }
 }
 
@@ -106,7 +93,6 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-family: 'Inter', system-ui, sans-serif;
-    background: linear-gradient(180deg, hsl(145, 50%, 20%) 0%, hsl(145, 55%, 10%) 100%);
     min-height: 100vh;
   }
 
@@ -116,110 +102,126 @@
 }
 
 @layer components {
-  /* Sparkle Background Effect */
-  .bg-brasil-sparkle {
+  /* Starry Background */
+  .bg-starry {
+    background: linear-gradient(180deg, hsl(145, 70%, 18%) 0%, hsl(145, 70%, 12%) 100%);
     position: relative;
-    overflow: hidden;
   }
 
-  .bg-brasil-sparkle::before {
+  .bg-starry::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background-image: 
-      radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.25), transparent),
-      radial-gradient(2px 2px at 60px 80px, rgba(255,255,255,0.15), transparent),
-      radial-gradient(1px 1px at 100px 50px, rgba(255,255,255,0.2), transparent),
-      radial-gradient(2px 2px at 150px 100px, rgba(255,255,255,0.15), transparent),
-      radial-gradient(1px 1px at 180px 140px, rgba(255,255,255,0.3), transparent);
+      radial-gradient(1px 1px at 20px 30px, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 60px 80px, rgba(255,255,255,0.3), transparent),
+      radial-gradient(1.5px 1.5px at 100px 50px, rgba(255,255,255,0.5), transparent),
+      radial-gradient(1px 1px at 150px 100px, rgba(255,255,255,0.25), transparent),
+      radial-gradient(1.5px 1.5px at 180px 140px, rgba(255,255,255,0.4), transparent),
+      radial-gradient(1px 1px at 220px 60px, rgba(255,255,255,0.3), transparent),
+      radial-gradient(1px 1px at 280px 120px, rgba(255,255,255,0.35), transparent);
     background-repeat: repeat;
-    background-size: 200px 160px;
+    background-size: 300px 200px;
     pointer-events: none;
-    animation: sparkle 5s ease-in-out infinite;
+    animation: twinkle 4s ease-in-out infinite;
   }
 
-  @keyframes sparkle {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 0.8; }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
   }
 
-  /* Modern Action Cards */
-  .card-action {
-    @apply rounded-2xl p-5 transition-all duration-300 cursor-pointer relative overflow-hidden;
-    @apply hover:scale-[1.02] hover:shadow-xl active:scale-[0.98];
+  /* Menu Icon Cards */
+  .menu-card {
+    @apply flex flex-col items-center justify-center gap-2 p-4 rounded-2xl transition-all duration-200;
+    @apply hover:scale-105 active:scale-95 cursor-pointer;
+    background: hsl(145, 50%, 28%);
+    border: 1px solid hsl(145, 45%, 35%);
   }
 
-  .card-action-green {
-    background: linear-gradient(135deg, hsl(145, 55%, 38%) 0%, hsl(160, 50%, 32%) 100%);
-    box-shadow: 0 8px 24px -4px hsla(145, 55%, 30%, 0.5);
+  .menu-card:hover {
+    background: hsl(145, 50%, 32%);
+    box-shadow: 0 4px 16px -2px hsl(145, 60%, 20% / 0.4);
   }
 
-  .card-action-blue {
-    background: linear-gradient(135deg, hsl(210, 70%, 45%) 0%, hsl(205, 65%, 38%) 100%);
-    box-shadow: 0 8px 24px -4px hsla(210, 70%, 35%, 0.5);
+  .menu-icon {
+    @apply w-12 h-12 rounded-xl flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(145, 55%, 38%) 0%, hsl(145, 50%, 32%) 100%);
+    border: 1px solid hsl(145, 45%, 45%);
   }
 
-  .card-action-yellow {
+  .menu-icon-yellow {
     background: linear-gradient(135deg, hsl(48, 95%, 52%) 0%, hsl(45, 90%, 48%) 100%);
-    box-shadow: 0 8px 24px -4px hsla(48, 95%, 45%, 0.5);
-    color: hsl(145, 55%, 12%);
+    border: 1px solid hsl(48, 85%, 60%);
   }
 
-  .card-action-dark {
-    background: linear-gradient(135deg, hsl(145, 40%, 22%) 0%, hsl(145, 45%, 18%) 100%);
-    box-shadow: 0 8px 24px -4px hsla(145, 45%, 10%, 0.4);
+  .menu-icon-blue {
+    background: linear-gradient(135deg, hsl(220, 70%, 50%) 0%, hsl(220, 65%, 45%) 100%);
+    border: 1px solid hsl(220, 60%, 60%);
   }
 
-  /* Light Cards for Content Areas */
-  .card-light {
-    @apply bg-white/95 rounded-2xl shadow-lg;
-    backdrop-filter: blur(10px);
+  /* White Card Section */
+  .card-white {
+    @apply bg-white rounded-t-3xl shadow-2xl;
   }
 
-  /* Action Buttons - Full Width Style */
-  .btn-action {
-    @apply flex items-center justify-between w-full px-5 py-4 rounded-xl font-bold transition-all;
-    @apply hover:brightness-105 active:scale-[0.98] text-base;
+  /* Avatar */
+  .avatar-ring {
+    @apply w-20 h-20 rounded-full flex items-center justify-center;
+    background: linear-gradient(135deg, hsl(145, 55%, 40%) 0%, hsl(145, 50%, 35%) 100%);
+    border: 3px solid hsl(48, 95%, 52%);
+    box-shadow: 0 4px 20px -4px hsl(145, 60%, 25% / 0.5);
   }
 
-  .btn-green {
-    background: linear-gradient(135deg, hsl(145, 55%, 40%) 0%, hsl(155, 50%, 35%) 100%);
-    @apply text-white;
-    box-shadow: 0 4px 16px -2px hsla(145, 55%, 35%, 0.5);
+  /* Search Bar */
+  .search-input {
+    @apply flex items-center gap-3 px-4 py-3 rounded-xl w-full;
+    background: hsl(145, 45%, 25%);
+    border: 1px solid hsl(145, 40%, 32%);
   }
 
-  .btn-yellow {
-    background: linear-gradient(135deg, hsl(48, 95%, 52%) 0%, hsl(45, 90%, 48%) 100%);
-    color: hsl(145, 55%, 12%);
-    box-shadow: 0 4px 16px -2px hsla(48, 95%, 45%, 0.5);
+  .search-input:focus-within {
+    border-color: hsl(48, 95%, 52%);
+    box-shadow: 0 0 0 2px hsl(48, 95%, 52% / 0.2);
   }
 
-  .btn-blue {
-    background: linear-gradient(135deg, hsl(210, 70%, 48%) 0%, hsl(205, 65%, 42%) 100%);
-    @apply text-white;
-    box-shadow: 0 4px 16px -2px hsla(210, 70%, 40%, 0.5);
+  /* Section Title */
+  .section-label {
+    @apply text-xs font-bold uppercase tracking-wider text-white/70 mb-3;
   }
 
-  /* Compact Buttons */
-  .btn-compact {
-    @apply flex items-center justify-center gap-2 px-4 py-3 rounded-xl font-semibold transition-all text-sm;
-    @apply hover:brightness-105 active:scale-[0.98];
-    background: hsla(145, 40%, 25%, 0.8);
-    @apply text-white/90;
+  /* Bottom Navigation */
+  .nav-bottom {
+    @apply fixed bottom-0 left-0 right-0 z-50;
+    @apply px-8 py-4 flex items-center justify-around;
+    background: hsl(145, 70%, 15%);
+    border-top: 1px solid hsl(145, 50%, 25%);
   }
 
-  /* Search Bar Modern */
-  .search-bar {
-    @apply flex items-center bg-white/95 rounded-full px-4 py-3 gap-3;
-    box-shadow: 0 4px 20px -4px hsla(0, 0%, 0%, 0.15);
+  .nav-item {
+    @apply flex flex-col items-center gap-1 text-white/50 transition-colors;
   }
 
-  /* Section Headers */
-  .section-title {
-    @apply text-xs font-bold uppercase tracking-widest text-white/60 mb-3 px-1;
+  .nav-item.active {
+    @apply text-secondary;
+  }
+
+  .nav-item:hover {
+    @apply text-white/80;
+  }
+
+  /* Flag Badge */
+  .badge-flag {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm;
+    background: hsl(145, 45%, 28%);
+    border: 1px solid hsl(145, 40%, 35%);
+  }
+
+  /* Quick Item */
+  .quick-item {
+    @apply flex items-center justify-between px-4 py-3.5 rounded-xl;
+    @apply text-gray-700 hover:bg-gray-50 transition-colors cursor-pointer;
+    @apply border border-gray-100 bg-white;
   }
 
   /* Verdict Badges */
@@ -238,58 +240,6 @@
   .verdict-unverifiable {
     @apply bg-[hsl(210,15%,92%)] text-[hsl(210,20%,45%)] border border-[hsl(210,15%,80%)] font-semibold;
   }
-
-  /* Quick Question Items */
-  .quick-item {
-    @apply flex items-center justify-between px-4 py-3.5 bg-white/95 rounded-xl;
-    @apply text-gray-700 hover:bg-white transition-colors cursor-pointer;
-    @apply border border-gray-100;
-  }
-
-  /* History Items */
-  .history-item {
-    @apply flex gap-3 p-3 bg-white/95 rounded-xl border border-gray-100;
-    @apply hover:shadow-md transition-all cursor-pointer;
-  }
-
-  /* Bottom Navigation */
-  .bottom-nav {
-    @apply fixed bottom-0 left-0 right-0 z-50;
-    @apply px-6 py-3 flex items-center justify-around;
-    background: linear-gradient(180deg, hsla(145, 50%, 18%, 0.95) 0%, hsla(145, 55%, 12%, 0.98) 100%);
-    backdrop-filter: blur(12px);
-    border-top: 1px solid hsla(145, 40%, 30%, 0.3);
-  }
-
-  /* Avatar Circle */
-  .avatar-circle {
-    @apply w-12 h-12 rounded-full bg-gradient-to-br from-verde-brasil to-verde-brasil-light;
-    @apply flex items-center justify-center text-white;
-    box-shadow: 0 4px 12px -2px hsla(145, 55%, 30%, 0.4);
-  }
-
-  /* Flag Badge */
-  .flag-badge {
-    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-sm;
-    @apply bg-white/15 text-white/90 backdrop-blur-sm;
-  }
-
-  /* Mode Toggle */
-  .mode-toggle {
-    @apply flex rounded-xl overflow-hidden border border-gray-200;
-  }
-
-  .mode-toggle-btn {
-    @apply flex-1 flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium transition-all;
-  }
-
-  .mode-toggle-btn.active {
-    @apply bg-verde-brasil text-white;
-  }
-
-  .mode-toggle-btn:not(.active) {
-    @apply bg-white text-gray-600 hover:bg-gray-50;
-  }
 }
 
 @layer utilities {
@@ -304,8 +254,4 @@
   .animation-delay-100 { animation-delay: 100ms; }
   .animation-delay-200 { animation-delay: 200ms; }
   .animation-delay-300 { animation-delay: 300ms; }
-
-  .text-shadow {
-    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-  }
 }
