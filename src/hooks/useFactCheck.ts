@@ -10,7 +10,7 @@ export interface FactCheckSource {
 
 export interface FactCheckResponse {
   postResumo: string;
-  veredito: "verdadeiro" | "falso" | "enganoso" | "exagerado" | "fora_de_contexto" | "nao_verificavel";
+  veredito: "verdade" | "mentira" | "meia_verdade" | "inconclusivo";
   vereditoTitulo: string;
   explicacao: string;
   pontosChave: string[];

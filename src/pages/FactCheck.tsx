@@ -10,12 +10,10 @@ import {
   CheckCircle2,
   XCircle,
   HelpCircle,
-  AlertCircle,
   ExternalLink,
   RotateCcw,
   Share2,
   Calendar,
-  TrendingUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useFactCheck, FactCheckResponse } from "@/hooks/useFactCheck";
@@ -23,40 +21,32 @@ import { ShareButtons } from "@/components/ShareButtons";
 
 const veredictoConfig: Record<
   FactCheckResponse["veredito"],
-  { icon: React.ElementType; color: string; bgColor: string; borderColor: string }
+  { icon: React.ElementType; label: string; color: string; bgColor: string; borderColor: string }
 > = {
-  verdadeiro: {
+  verdade: {
     icon: CheckCircle2,
+    label: "VERDADE",
     color: "text-green-600 dark:text-green-400",
     bgColor: "bg-green-50 dark:bg-green-500/10",
     borderColor: "border-green-200 dark:border-green-500/30",
   },
-  falso: {
+  mentira: {
     icon: XCircle,
+    label: "MENTIRA",
     color: "text-red-600 dark:text-red-400",
     bgColor: "bg-red-50 dark:bg-red-500/10",
     borderColor: "border-red-200 dark:border-red-500/30",
   },
-  enganoso: {
+  meia_verdade: {
     icon: AlertTriangle,
+    label: "MEIA VERDADE",
     color: "text-amber-600 dark:text-amber-400",
     bgColor: "bg-amber-50 dark:bg-amber-500/10",
     borderColor: "border-amber-200 dark:border-amber-500/30",
   },
-  exagerado: {
-    icon: TrendingUp,
-    color: "text-orange-600 dark:text-orange-400",
-    bgColor: "bg-orange-50 dark:bg-orange-500/10",
-    borderColor: "border-orange-200 dark:border-orange-500/30",
-  },
-  fora_de_contexto: {
-    icon: AlertCircle,
-    color: "text-purple-600 dark:text-purple-400",
-    bgColor: "bg-purple-50 dark:bg-purple-500/10",
-    borderColor: "border-purple-200 dark:border-purple-500/30",
-  },
-  nao_verificavel: {
+  inconclusivo: {
     icon: HelpCircle,
+    label: "INCONCLUSIVO",
     color: "text-gray-600 dark:text-gray-400",
     bgColor: "bg-gray-50 dark:bg-gray-500/10",
     borderColor: "border-gray-200 dark:border-gray-500/30",
@@ -202,8 +192,8 @@ const FactCheck = () => {
                 <div className="p-6 border-b border-border">
                   <h3 className={cn("font-semibold text-lg mb-3 flex items-center gap-2", config.color)}>
                     <VeredictIcon className="w-5 h-5" />
-                    {response.veredito === "verdadeiro" ? "Por que é verdade?" : 
-                     response.veredito === "falso" ? "Por que é falso?" :
+                    {response.veredito === "verdade" ? "Por que é verdade?" : 
+                     response.veredito === "mentira" ? "Por que é mentira?" :
                      "Por que não é bem assim?"}
                   </h3>
                   <p className="text-card-foreground leading-relaxed text-base">
