@@ -9,7 +9,7 @@ export interface NewsItem {
   source: string;
 }
 
-export type NewsCategory = "geral" | "politica" | "economia";
+export type NewsCategory = "geral" | "politica" | "economia" | "esportes" | "tecnologia" | "entretenimento";
 
 export function useNews(category: NewsCategory = "geral") {
   return useQuery({
