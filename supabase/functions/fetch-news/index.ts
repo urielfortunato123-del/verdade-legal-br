@@ -35,7 +35,7 @@ function parseRSSItem(item: string, source: string): NewsItem | null {
 
     if (!title || !link) return null;
 
-    // Limpar HTML do description
+    // Limpar HTML do description e corrigir encoding
     const cleanDescription = description
       .replace(/<[^>]*>/g, "")
       .replace(/&nbsp;/g, " ")
@@ -43,7 +43,12 @@ function parseRSSItem(item: string, source: string): NewsItem | null {
       .replace(/&lt;/g, "<")
       .replace(/&gt;/g, ">")
       .replace(/&quot;/g, '"')
-      .substring(0, 200);
+      .replace(/&apos;/g, "'")
+      .replace(/&#39;/g, "'")
+      .replace(/&#x27;/g, "'")
+      .replace(/\]\]>/g, "")
+      .substring(0, 200)
+      .trim();
 
     return {
       title,
