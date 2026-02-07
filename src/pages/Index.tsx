@@ -1,240 +1,204 @@
 import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
-import { ActionCard } from "@/components/ActionCard";
-import { VerdictBadge } from "@/components/ui/VerdictBadge";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import {
   MessageSquare,
-  Image,
   Mic,
-  BookOpen,
   History,
-  Settings,
+  MoreHorizontal,
   Search,
-  MapPin,
-  Shield,
-  Camera,
-  Paperclip,
+  ChevronRight,
+  User,
+  Home,
+  Star,
+  Scale,
+  Video,
 } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
 
+  const mainCards = [
+    {
+      emoji: "📘",
+      title: "Perguntar",
+      subtitle: "Lei",
+      href: "/perguntar",
+      variant: "green" as const,
+    },
+    {
+      emoji: "📺",
+      title: "Checar Notícia",
+      subtitle: "",
+      href: "/checar-imagem",
+      variant: "green" as const,
+    },
+    {
+      emoji: "⚖️",
+      title: "Biblioteca",
+      subtitle: "de Leis",
+      href: "/biblioteca",
+      variant: "blue" as const,
+    },
+    {
+      emoji: "🎙️",
+      title: "Gravar Áudio",
+      subtitle: "",
+      href: "/checar-audio",
+      variant: "yellow" as const,
+    },
+  ];
+
+  const quickQuestions = [
+    "Isso é crime?",
+    "Estou no meu direito?",
+    "Posso ser multado?",
+  ];
+
   return (
-    <Layout>
-      {/* Hero Section - Brasil Blue */}
-      <section className="bg-hero py-10 md:py-16">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto">
-            {/* Greeting */}
-            <div className="flex items-center gap-2 mb-6 animate-fade-in">
-              <span className="text-2xl md:text-3xl font-display font-bold text-foreground">
-                Olá Brasileiros
-              </span>
-              <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 text-sm text-foreground/80">
-                <MapPin className="w-3 h-3" />
-                <span>Brasil</span>
-              </div>
+    <Layout hideHeader hideFooter>
+      <div className="min-h-screen bg-brasil-sparkle pb-24">
+        {/* Header Section */}
+        <div className="px-4 pt-6 pb-4">
+          {/* Top Bar */}
+          <div className="flex items-center justify-between mb-6">
+            <button className="p-2 text-white/70 hover:text-white">
+              <ChevronRight className="w-6 h-6 rotate-180" />
+            </button>
+            <div className="avatar-circle">
+              <User className="w-6 h-6" />
             </div>
+            <button className="p-2 text-white/70 hover:text-white">
+              <MoreHorizontal className="w-6 h-6" />
+            </button>
+          </div>
 
-            {/* Tagline */}
-            <div className="mb-8 animate-fade-in animation-delay-100">
-              <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3 leading-tight">
-                A verdade precisa de base.
-                <br />
-                <span className="text-amarelo-progresso">Não de opinião.</span>
-              </h1>
-              <p className="text-lg text-foreground/80">
-                Aqui a lei fala. Sem mentira.
-              </p>
-            </div>
-
-            {/* Search Bar with Action Buttons */}
-            <div className="relative mb-8 animate-fade-in animation-delay-200">
-              <div className="flex items-center gap-2 bg-card rounded-2xl shadow-lg p-2">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
-                  <Input
-                    placeholder="Pergunte sobre leis, notícias..."
-                    className="h-12 pl-10 pr-4 text-base rounded-xl bg-transparent text-card-foreground border-0 placeholder:text-muted-foreground focus-visible:ring-0"
-                  />
-                </div>
-                
-                {/* Action Buttons */}
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 rounded-xl text-muted-foreground hover:text-verde-brasil hover:bg-verde-brasil/10"
-                    onClick={() => navigate("/checar-audio")}
-                    title="Gravar áudio"
-                  >
-                    <Mic className="w-5 h-5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 rounded-xl text-muted-foreground hover:text-amarelo-progresso hover:bg-amarelo-progresso/10"
-                    onClick={() => navigate("/checar-imagem?mode=camera")}
-                    title="Tirar foto"
-                  >
-                    <Camera className="w-5 h-5" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-10 w-10 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10"
-                    onClick={() => navigate("/checar-imagem?mode=file")}
-                    title="Anexar documento"
-                  >
-                    <Paperclip className="w-5 h-5" />
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Verdict examples */}
-            <div className="flex flex-wrap items-center justify-center gap-3 animate-fade-in animation-delay-300">
-              <VerdictBadge verdict="confirmed" size="lg" showEmoji />
-              <VerdictBadge verdict="misleading" size="lg" showEmoji />
-              <VerdictBadge verdict="false" size="lg" showEmoji />
-              <VerdictBadge verdict="unverifiable" size="lg" showEmoji />
+          {/* Greeting */}
+          <div className="text-center mb-6 animate-fade-in">
+            <h1 className="text-3xl font-display font-bold text-white mb-2 text-shadow">
+              Olá Brasileiros
+            </h1>
+            <div className="flag-badge inline-flex">
+              <span className="text-lg">🇧🇷</span>
+              <span>Brasil</span>
             </div>
           </div>
-        </div>
-      </section>
 
-      {/* Main Actions - Cards Grid */}
-      <section className="py-10 md:py-14 bg-hero">
-        <div className="container mx-auto px-4">
-          <div className="max-w-5xl mx-auto">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-              <ActionCard
-                icon={MessageSquare}
-                emoji="📘"
-                title="Perguntar Lei"
-                description="Tire dúvidas sobre leis por texto ou voz. Resposta com base legal."
-                href="/perguntar"
-                variant="primary"
-              />
-
-              <ActionCard
-                icon={Image}
-                emoji="📸"
-                title="Checar Notícia"
-                description="Foto, PDF ou Word. Analisamos e verificamos na legislação."
-                href="/checar-imagem"
-              />
-
-              <ActionCard
-                icon={Mic}
-                emoji="🎙️"
-                title="Gravar Áudio"
-                description="Grave jornal, TV ou conversa. Transcrevemos e checamos."
-                href="/checar-audio"
-              />
-
-              <ActionCard
-                icon={BookOpen}
-                emoji="⚖️"
-                title="Biblioteca de Leis"
-                description="Constituição, códigos e leis. Pesquisa completa."
-                href="/biblioteca"
-              />
-
-              <ActionCard
-                icon={History}
-                emoji="🗂️"
-                title="Histórico"
-                description="Suas consultas e relatórios salvos."
-                href="/historico"
-              />
-
-              <ActionCard
-                icon={Settings}
-                emoji="⚙️"
-                title="Mais"
-                description="Configurações, ajuda e informações."
-                href="/sobre"
-                variant="accent"
-              />
-            </div>
+          {/* Search Bar */}
+          <div className="search-bar mb-6 animate-fade-in animation-delay-100">
+            <Search className="w-5 h-5 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder="Pergunte sobre leis, notícias ou..."
+              className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm"
+              onFocus={() => navigate("/perguntar")}
+            />
+            <button 
+              onClick={() => navigate("/checar-audio")}
+              className="p-2 rounded-full bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
+            >
+              <Mic className="w-5 h-5" />
+            </button>
           </div>
         </div>
-      </section>
 
-      {/* Trust Indicators */}
-      <section className="py-10 md:py-14 bg-hero border-t border-white/10">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="grid sm:grid-cols-3 gap-6 text-center">
-              {[
-                { value: "10.000+", label: "Leis indexadas", icon: "⚖️" },
-                { value: "100%", label: "Fontes oficiais", icon: "📜" },
-                { value: "0%", label: "Opinião política", icon: "🚫" },
-              ].map((stat) => (
-                <div
-                  key={stat.label}
-                  className="p-6 rounded-2xl bg-card shadow-card"
-                >
-                  <span className="text-3xl mb-2 block">{stat.icon}</span>
-                  <div className="font-display text-3xl font-bold text-verde-brasil mb-1">
-                    {stat.value}
+        {/* Main Menu */}
+        <div className="px-4 mb-6">
+          <h2 className="section-title">MENU PRINCIPAL</h2>
+          
+          <div className="grid grid-cols-2 gap-3 mb-4 animate-fade-in animation-delay-200">
+            {mainCards.map((card) => (
+              <button
+                key={card.title}
+                onClick={() => navigate(card.href)}
+                className={`card-action card-action-${card.variant} text-left`}
+              >
+                <div className="flex flex-col h-full min-h-[100px]">
+                  <div className="text-3xl mb-2">{card.emoji}</div>
+                  <div className="mt-auto">
+                    <div className="font-bold text-lg text-white leading-tight">
+                      {card.title}
+                    </div>
+                    {card.subtitle && (
+                      <div className="font-bold text-lg text-white/90 leading-tight">
+                        {card.subtitle}
+                      </div>
+                    )}
                   </div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </div>
-              ))}
-            </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Secondary Buttons */}
+          <div className="grid grid-cols-2 gap-3 animate-fade-in animation-delay-300">
+            <button 
+              onClick={() => navigate("/historico")}
+              className="btn-compact"
+            >
+              <History className="w-5 h-5 text-secondary" />
+              <span>Histórico</span>
+            </button>
+            <button 
+              onClick={() => navigate("/sobre")}
+              className="btn-compact"
+            >
+              <MoreHorizontal className="w-5 h-5 text-secondary" />
+              <span>Mais</span>
+              <ChevronRight className="w-4 h-4 ml-auto" />
+            </button>
           </div>
         </div>
-      </section>
 
-      {/* For Who Section */}
-      <section className="py-10 md:py-14 bg-hero border-t border-white/10">
-        <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-6">
-              Para quem é
-            </h2>
-            <div className="flex flex-wrap justify-center gap-3">
-              {[
-                "Cidadãos comuns",
-                "Trabalhadores",
-                "Estudantes",
-                "Jornalistas",
-                "Advogados",
-                "Qualquer brasileiro",
-              ].map((audience) => (
-                <span
-                  key={audience}
-                  className="px-4 py-2 rounded-full bg-white/10 text-foreground text-sm font-medium"
+        {/* Quick Questions Section */}
+        <div className="px-4 mb-6">
+          <div className="card-light p-4 animate-fade-in animation-delay-300">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <h3 className="font-bold text-card-light-foreground">Consulta Rápida</h3>
+                <p className="text-sm text-muted-foreground">Dúvidas Frequentes</p>
+              </div>
+              <button className="p-2 rounded-full bg-secondary text-secondary-foreground">
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              {quickQuestions.map((question) => (
+                <button
+                  key={question}
+                  onClick={() => navigate(`/perguntar?q=${encodeURIComponent(question)}`)}
+                  className="quick-item w-full"
                 >
-                  {audience}
-                </span>
+                  <div className="flex items-center gap-3">
+                    <Search className="w-4 h-4 text-primary" />
+                    <span className="font-medium">{question}</span>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                </button>
               ))}
             </div>
           </div>
         </div>
-      </section>
 
-      {/* CTA Section */}
-      <section className="py-10 md:py-14 bg-hero border-t border-white/10">
-        <div className="container mx-auto px-4">
-          <div className="max-w-2xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-verde-brasil/20 text-verde-brasil-light text-sm font-medium mb-4">
-              <Shield className="w-4 h-4" />
-              Verificação baseada em legislação oficial
-            </div>
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4">
-              Cansou de ser enganado?
-            </h2>
-            <p className="text-foreground/80 mb-6">
-              Use a lei a seu favor. Verifique antes de acreditar.
-            </p>
-          </div>
+        {/* Bottom Navigation */}
+        <div className="bottom-nav">
+          <button className="flex flex-col items-center gap-1 text-secondary">
+            <Home className="w-6 h-6" />
+          </button>
+          <button 
+            onClick={() => navigate("/historico")}
+            className="flex flex-col items-center gap-1 text-white/50 hover:text-white/80"
+          >
+            <Star className="w-6 h-6" />
+          </button>
+          <button 
+            onClick={() => navigate("/biblioteca")}
+            className="flex flex-col items-center gap-1 text-white/50 hover:text-white/80"
+          >
+            <Scale className="w-6 h-6" />
+          </button>
         </div>
-      </section>
+      </div>
     </Layout>
   );
 };
