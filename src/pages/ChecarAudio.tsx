@@ -17,6 +17,7 @@ import {
   Square,
   BookOpen,
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -27,6 +28,7 @@ const ChecarAudio = () => {
   const [mode, setMode] = useState<"news_tv" | "document">("news_tv");
   const [transcript, setTranscript] = useState<string | null>(null);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [transcriptionStep, setTranscriptionStep] = useState<"idle" | "uploading" | "transcribing" | "analyzing">("idle");
   const [recordingTime, setRecordingTime] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
@@ -92,8 +94,12 @@ const ChecarAudio = () => {
     if (!audioFile) return;
 
     setIsTranscribing(true);
+    setTranscriptionStep("uploading");
+    
     try {
       await uploadFile(audioFile, "audios");
+      
+      setTranscriptionStep("transcribing");
 
       const formData = new FormData();
       formData.append("audio", audioFile);
@@ -115,6 +121,8 @@ const ChecarAudio = () => {
       if (result.transcript) {
         setTranscript(result.transcript);
         toast.success("Áudio transcrito com sucesso!");
+        
+        setTranscriptionStep("analyzing");
         await analyze(result.transcript, mode);
       } else {
         throw new Error("No transcript returned");
@@ -124,6 +132,20 @@ const ChecarAudio = () => {
       toast.error("Erro na transcrição. Tente novamente.");
     } finally {
       setIsTranscribing(false);
+      setTranscriptionStep("idle");
+    }
+  };
+
+  const getStepInfo = () => {
+    switch (transcriptionStep) {
+      case "uploading":
+        return { text: "Enviando áudio...", progress: 20 };
+      case "transcribing":
+        return { text: "Transcrevendo com IA...", progress: 50 };
+      case "analyzing":
+        return { text: "Analisando conteúdo...", progress: 80 };
+      default:
+        return { text: "", progress: 0 };
     }
   };
 
@@ -271,20 +293,43 @@ const ChecarAudio = () => {
                     />
                   </div>
 
-                  <Button
-                    onClick={handleTranscribe}
-                    disabled={isTranscribing || isAnalyzing}
-                    className="w-full gap-2 bg-verde hover:bg-verde-brasil-light text-primary-foreground rounded-xl h-14 text-lg font-semibold"
-                  >
-                    {isTranscribing ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Transcrevendo...
-                      </>
-                    ) : (
-                      <>Transcrever e Analisar</>
-                    )}
-                  </Button>
+                  {isTranscribing ? (
+                    <div className="space-y-4 animate-fade-in">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-verde/20 flex items-center justify-center">
+                          <Loader2 className="w-5 h-5 text-verde animate-spin" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-card-foreground">
+                            {getStepInfo().text}
+                          </p>
+                          <p className="text-sm text-muted-foreground">
+                            Isso pode levar alguns segundos...
+                          </p>
+                        </div>
+                      </div>
+                      <Progress value={getStepInfo().progress} className="h-2" />
+                      <div className="flex justify-between text-xs text-muted-foreground">
+                        <span className={transcriptionStep === "uploading" ? "text-verde font-medium" : ""}>
+                          📤 Upload
+                        </span>
+                        <span className={transcriptionStep === "transcribing" ? "text-verde font-medium" : ""}>
+                          🎙️ Transcrição
+                        </span>
+                        <span className={transcriptionStep === "analyzing" ? "text-verde font-medium" : ""}>
+                          ⚖️ Análise
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <Button
+                      onClick={handleTranscribe}
+                      disabled={isAnalyzing}
+                      className="w-full gap-2 bg-verde hover:bg-verde-brasil-light text-primary-foreground rounded-xl h-14 text-lg font-semibold"
+                    >
+                      Transcrever e Analisar
+                    </Button>
+                  )}
                 </div>
               )}
             </div>
