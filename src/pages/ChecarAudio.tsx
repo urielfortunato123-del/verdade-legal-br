@@ -16,6 +16,7 @@ import {
   ExternalLink,
   Square,
   BookOpen,
+  Download,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
@@ -210,7 +211,7 @@ const ChecarAudio = () => {
 
                     <p className="mt-6 font-display font-bold text-xl text-card-foreground">
                       {isRecording
-                        ? `Gravando... ${formatTime(recordingTime)}`
+                        ? "Gravando..."
                         : "Clique para gravar"}
                     </p>
                     {isRecording && (
@@ -270,14 +271,29 @@ const ChecarAudio = () => {
                         {audioFile.name}
                       </p>
                       <p className="text-sm text-muted-foreground">
-                        {audioFile.size > 0
-                          ? `${(audioFile.size / 1024 / 1024).toFixed(2)} MB`
-                          : `Duração: ${formatTime(recordingTime)}`}
+                        {(audioFile.size / 1024 / 1024).toFixed(2)} MB
                       </p>
                     </div>
-                    <Button variant="ghost" size="sm" onClick={clearAudio}>
-                      Remover
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button 
+                        variant="outline" 
+                        size="sm" 
+                        onClick={() => {
+                          const url = URL.createObjectURL(audioFile);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = audioFile.name;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                          toast.success("Áudio salvo!");
+                        }}
+                      >
+                        <Download className="w-4 h-4" />
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={clearAudio}>
+                        Remover
+                      </Button>
+                    </div>
                   </div>
 
                   <div>
