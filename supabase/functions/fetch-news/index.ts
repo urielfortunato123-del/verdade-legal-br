@@ -10,16 +10,21 @@ const corsHeaders = {
 const RSS_FEEDS: Record<string, { name: string; url: string }[]> = {
   geral: [
     { name: "G1", url: "https://g1.globo.com/rss/g1/" },
+    { name: "Metrópoles", url: "https://www.metropoles.com/feed" },
+    { name: "Oeste", url: "https://revistaoeste.com/feed/" },
     { name: "Folha", url: "https://feeds.folha.uol.com.br/emcimadahora/rss091.xml" },
-    { name: "UOL", url: "https://rss.uol.com.br/feed/noticias.xml" },
   ],
   politica: [
     { name: "G1 Política", url: "https://g1.globo.com/rss/g1/politica/" },
+    { name: "Metrópoles", url: "https://www.metropoles.com/brasil/politica-brasil/feed" },
+    { name: "Oeste", url: "https://revistaoeste.com/politica/feed/" },
     { name: "Folha Poder", url: "https://feeds.folha.uol.com.br/poder/rss091.xml" },
     { name: "Senado", url: "https://www12.senado.leg.br/noticias/feed" },
   ],
   economia: [
     { name: "G1 Economia", url: "https://g1.globo.com/rss/g1/economia/" },
+    { name: "Metrópoles", url: "https://www.metropoles.com/negocios/feed" },
+    { name: "Oeste", url: "https://revistaoeste.com/economia/feed/" },
     { name: "Folha Mercado", url: "https://feeds.folha.uol.com.br/mercado/rss091.xml" },
   ],
 };
