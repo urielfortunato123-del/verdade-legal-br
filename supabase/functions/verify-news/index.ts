@@ -13,10 +13,10 @@ serve(async (req) => {
   }
 
   try {
-    // Validate API key first
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      console.error("LOVABLE_API_KEY is not configured");
+    // Validate OpenRouter API key
+    const OPENROUTER_API_KEY = Deno.env.get("OPENROUTER_API_KEY");
+    if (!OPENROUTER_API_KEY) {
+      console.error("OPENROUTER_API_KEY is not configured");
       return new Response(
         JSON.stringify({ success: false, error: "Serviço de verificação não configurado" }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -72,14 +72,16 @@ Verifique a veracidade e responda com o JSON.`;
 
     console.log("Verifying news:", title);
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
+        "HTTP-Referer": "https://lovable.dev",
+        "X-Title": "Verificador de Noticias",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-2.0-flash-001",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
