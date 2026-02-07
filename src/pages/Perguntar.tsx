@@ -16,7 +16,6 @@ import {
   Loader2,
   BookOpen,
   ExternalLink,
-  FileText,
   Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -44,9 +43,9 @@ const Perguntar = () => {
   };
 
   const confidenceLabels = {
-    high: { label: "Alta confiança", color: "text-verdict-confirmed" },
-    medium: { label: "Média confiança", color: "text-verdict-misleading" },
-    low: { label: "Baixa confiança", color: "text-verdict-unverifiable" },
+    high: { label: "Alta confiança", color: "text-verde-brasil" },
+    medium: { label: "Média confiança", color: "text-amarelo-progresso" },
+    low: { label: "Baixa confiança", color: "text-muted-foreground" },
   };
 
   return (
@@ -55,19 +54,20 @@ const Perguntar = () => {
         <div className="max-w-3xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-3">
+            <span className="text-4xl mb-4 block">📘</span>
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
               Perguntar sobre Leis
             </h1>
-            <p className="text-muted-foreground">
-              Faça sua pergunta jurídica e receba uma resposta baseada em legislação oficial.
+            <p className="text-foreground/80">
+              Tire suas dúvidas jurídicas. Resposta com base na legislação oficial.
             </p>
           </div>
 
           {/* Input Section */}
-          <div className="bg-card rounded-xl border border-border shadow-card p-6 mb-8">
+          <div className="bg-card rounded-2xl shadow-card p-6 mb-8">
             <div className="space-y-4">
               <div>
-                <Label htmlFor="question" className="text-base font-medium">
+                <Label htmlFor="question" className="text-base font-semibold text-card-foreground">
                   Sua pergunta
                 </Label>
                 <Textarea
@@ -75,17 +75,17 @@ const Perguntar = () => {
                   placeholder="Ex: Qual o prazo para troca de produto com defeito? O que diz a lei sobre demissão sem justa causa?"
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
-                  className="mt-2 min-h-[120px] resize-none"
+                  className="mt-2 min-h-[140px] resize-none text-base rounded-xl"
                 />
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4">
                 <div className="flex-1">
-                  <Label htmlFor="category" className="text-sm">
+                  <Label htmlFor="category" className="text-sm text-card-foreground">
                     Categoria (opcional)
                   </Label>
                   <Select value={category} onValueChange={setCategory}>
-                    <SelectTrigger id="category" className="mt-1">
+                    <SelectTrigger id="category" className="mt-1 rounded-xl">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -102,20 +102,20 @@ const Perguntar = () => {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="shrink-0"
+                    className="shrink-0 rounded-xl h-10 w-10"
                     title="Gravar pergunta por voz"
                   >
-                    <Mic className="w-4 h-4" />
+                    <Mic className="w-5 h-5" />
                   </Button>
                   <Button
                     onClick={handleSubmit}
                     disabled={!question.trim() || isLoading}
-                    className="flex-1 sm:flex-initial gap-2"
+                    className="flex-1 sm:flex-initial gap-2 bg-verde hover:bg-verde-brasil-light text-primary-foreground rounded-xl h-10 px-6 font-semibold"
                   >
                     {isLoading ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-5 h-5 animate-spin" />
                     ) : (
-                      <Send className="w-4 h-4" />
+                      <Send className="w-5 h-5" />
                     )}
                     Perguntar
                   </Button>
@@ -128,13 +128,15 @@ const Perguntar = () => {
           {response && (
             <div className="space-y-6 animate-fade-in">
               {/* Answer Card */}
-              <div className="bg-card rounded-xl border border-border shadow-card overflow-hidden">
+              <div className="bg-card rounded-2xl shadow-card overflow-hidden">
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="font-display font-semibold text-lg">Resposta</h2>
+                    <h2 className="font-display font-bold text-xl text-card-foreground">
+                      O que a lei diz
+                    </h2>
                     <span
                       className={cn(
-                        "text-sm font-medium",
+                        "text-sm font-semibold",
                         confidenceLabels[response.confidence].color
                       )}
                     >
@@ -142,22 +144,24 @@ const Perguntar = () => {
                     </span>
                   </div>
 
-                  <p className="text-foreground leading-relaxed">{response.answer}</p>
+                  <p className="text-card-foreground leading-relaxed text-base">
+                    {response.answer}
+                  </p>
 
                   {response.followUp && (
-                    <div className="mt-4 p-3 rounded-lg bg-secondary/50 flex items-start gap-2">
-                      <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
-                      <p className="text-sm text-muted-foreground">{response.followUp}</p>
+                    <div className="mt-4 p-4 rounded-xl bg-amarelo-progresso/10 border border-amarelo-progresso/20 flex items-start gap-3">
+                      <Info className="w-5 h-5 text-amarelo-progresso shrink-0 mt-0.5" />
+                      <p className="text-sm text-card-foreground">{response.followUp}</p>
                     </div>
                   )}
                 </div>
 
                 {/* Sources */}
                 {response.sources && response.sources.length > 0 && (
-                  <div className="border-t border-border bg-secondary/30 p-6">
+                  <div className="border-t border-border bg-muted/30 p-6">
                     <div className="flex items-center gap-2 mb-4">
-                      <BookOpen className="w-4 h-4 text-primary" />
-                      <h3 className="font-semibold text-sm">Base Legal</h3>
+                      <BookOpen className="w-5 h-5 text-verde-brasil" />
+                      <h3 className="font-semibold text-card-foreground">Artigos Citados</h3>
                     </div>
 
                     <div className="space-y-3">
@@ -167,15 +171,15 @@ const Perguntar = () => {
                           href={source.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center justify-between p-3 rounded-lg bg-card border border-border hover:border-primary/50 transition-colors group"
+                          className="flex items-center justify-between p-4 rounded-xl bg-card border border-border hover:border-verde-brasil/50 transition-colors group"
                         >
                           <div>
-                            <div className="font-medium text-sm">{source.law}</div>
-                            <div className="text-xs text-muted-foreground">
+                            <div className="font-semibold text-card-foreground">{source.law}</div>
+                            <div className="text-sm text-muted-foreground">
                               {source.article}
                             </div>
                           </div>
-                          <ExternalLink className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors" />
+                          <ExternalLink className="w-5 h-5 text-muted-foreground group-hover:text-verde-brasil transition-colors" />
                         </a>
                       ))}
                     </div>
@@ -193,17 +197,17 @@ const Perguntar = () => {
 
           {/* Empty State */}
           {!response && !isLoading && (
-            <div className="text-center py-12 text-muted-foreground">
-              <BookOpen className="w-12 h-12 mx-auto mb-4 opacity-50" />
-              <p>Digite sua pergunta para começar</p>
+            <div className="text-center py-12">
+              <BookOpen className="w-16 h-16 mx-auto mb-4 text-foreground/30" />
+              <p className="text-foreground/60 text-lg">Digite sua pergunta para começar</p>
             </div>
           )}
 
           {/* Loading State */}
           {isLoading && (
             <div className="text-center py-12">
-              <Loader2 className="w-8 h-8 mx-auto mb-4 animate-spin text-primary" />
-              <p className="text-muted-foreground">Buscando na legislação...</p>
+              <Loader2 className="w-10 h-10 mx-auto mb-4 animate-spin text-verde-brasil" />
+              <p className="text-foreground/80 text-lg">Buscando na legislação...</p>
             </div>
           )}
         </div>

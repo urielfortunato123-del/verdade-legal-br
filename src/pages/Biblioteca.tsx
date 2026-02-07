@@ -30,7 +30,6 @@ const lawTypes = [
   { value: "estatuto", label: "Estatutos" },
 ];
 
-// Mock data
 const mockLaws = [
   {
     id: 1,
@@ -138,9 +137,9 @@ const Biblioteca = () => {
   });
 
   const statusColors = {
-    vigente: "text-verdict-confirmed bg-verdict-confirmed-bg",
-    revogada: "text-verdict-false bg-verdict-false-bg",
-    parcial: "text-verdict-misleading bg-verdict-misleading-bg",
+    vigente: "text-verde-brasil bg-verde-brasil/10 border-verde-brasil/30",
+    revogada: "text-vermelho-alerta bg-vermelho-alerta/10 border-vermelho-alerta/30",
+    parcial: "text-amarelo-progresso bg-amarelo-progresso/10 border-amarelo-progresso/30",
   };
 
   return (
@@ -149,28 +148,29 @@ const Biblioteca = () => {
         <div className="max-w-5xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-3">
+            <span className="text-4xl mb-4 block">⚖️</span>
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
               Biblioteca de Leis
             </h1>
-            <p className="text-muted-foreground">
-              Pesquise na base completa de legislação brasileira.
+            <p className="text-foreground/80">
+              Constituição, códigos e leis. Pesquisa completa.
             </p>
           </div>
 
           {/* Search and Filters */}
-          <div className="bg-card rounded-xl border border-border shadow-card p-4 mb-8">
+          <div className="bg-card rounded-2xl shadow-card p-4 mb-8">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar por assunto, lei nº, artigo ou palavras..."
+                  placeholder="Buscar por assunto, lei nº, artigo..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
+                  className="pl-12 h-12 rounded-xl text-base"
                 />
               </div>
               <Select value={selectedType} onValueChange={setSelectedType}>
-                <SelectTrigger className="md:w-[200px]">
+                <SelectTrigger className="md:w-[220px] h-12 rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -195,20 +195,21 @@ const Biblioteca = () => {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={cn(
-                    "block bg-card rounded-xl border border-border shadow-card p-6",
-                    "transition-all duration-200 hover:shadow-elevated hover:border-primary/30",
+                    "block bg-card rounded-2xl shadow-card p-6",
+                    "transition-all duration-200 hover:shadow-elevated",
+                    "border-2 border-transparent hover:border-verde-brasil/30",
                     "group"
                   )}
                 >
                   <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-lg hero-gradient flex items-center justify-center shrink-0">
-                      <Icon className="w-6 h-6 text-primary-foreground" />
+                    <div className="w-14 h-14 rounded-xl bg-azul-ordem flex items-center justify-center shrink-0 shadow-md">
+                      <Icon className="w-7 h-7 text-white" />
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <h3 className="font-display font-semibold text-lg text-foreground group-hover:text-primary transition-colors">
+                          <h3 className="font-display font-bold text-lg text-card-foreground group-hover:text-verde-brasil transition-colors">
                             {law.title}
                           </h3>
                           {law.number && (
@@ -218,20 +219,20 @@ const Biblioteca = () => {
                           )}
                         </div>
 
-                        <div className="flex items-center gap-2 shrink-0">
+                        <div className="flex items-center gap-3 shrink-0">
                           <span
                             className={cn(
-                              "px-2 py-1 rounded text-xs font-medium capitalize",
+                              "px-3 py-1 rounded-full text-xs font-semibold capitalize border",
                               statusColors[law.status as keyof typeof statusColors]
                             )}
                           >
                             {law.status}
                           </span>
-                          <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-all" />
+                          <ChevronRight className="w-5 h-5 text-muted-foreground group-hover:text-verde-brasil group-hover:translate-x-1 transition-all" />
                         </div>
                       </div>
 
-                      <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
+                      <p className="mt-3 text-sm text-muted-foreground line-clamp-2 leading-relaxed">
                         {law.summary}
                       </p>
                     </div>
@@ -241,17 +242,17 @@ const Biblioteca = () => {
             })}
 
             {filteredLaws.length === 0 && (
-              <div className="text-center py-12">
-                <BookOpen className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-                <p className="text-muted-foreground">
-                  Nenhuma norma encontrada com os filtros selecionados.
+              <div className="text-center py-16">
+                <BookOpen className="w-16 h-16 mx-auto mb-4 text-foreground/30" />
+                <p className="text-foreground/60 text-lg">
+                  Nenhuma norma encontrada.
                 </p>
               </div>
             )}
           </div>
 
           {/* Stats */}
-          <div className="mt-8 p-4 rounded-lg bg-secondary/30 text-center text-sm text-muted-foreground">
+          <div className="mt-8 p-4 rounded-xl bg-card shadow-card text-center text-sm text-muted-foreground">
             <p>
               Mostrando {filteredLaws.length} de {mockLaws.length} normas •
               Última sincronização: {new Date().toLocaleDateString("pt-BR")}

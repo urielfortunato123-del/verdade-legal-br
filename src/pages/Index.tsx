@@ -1,104 +1,121 @@
 import { Layout } from "@/components/Layout";
 import { ActionCard } from "@/components/ActionCard";
 import { VerdictBadge } from "@/components/ui/VerdictBadge";
+import { Input } from "@/components/ui/input";
 import {
   MessageSquare,
   Image,
   Mic,
   BookOpen,
   History,
-  Shield,
+  Settings,
   Search,
-  FileCheck,
+  MapPin,
+  Shield,
 } from "lucide-react";
 
 const Index = () => {
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className="hero-gradient text-primary-foreground py-16 md:py-24">
+      {/* Hero Section - Brasil Blue */}
+      <section className="bg-hero py-10 md:py-16">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl mx-auto text-center">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/10 backdrop-blur-sm mb-6 animate-fade-in">
-              <Shield className="w-4 h-4" />
-              <span className="text-sm font-medium">
-                Verificação baseada em legislação oficial
+          <div className="max-w-3xl mx-auto">
+            {/* Greeting */}
+            <div className="flex items-center gap-2 mb-6 animate-fade-in">
+              <span className="text-2xl md:text-3xl font-display font-bold text-foreground">
+                Olá, Irmão
               </span>
+              <div className="flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 text-sm text-foreground/80">
+                <MapPin className="w-3 h-3" />
+                <span>Brasil</span>
+              </div>
             </div>
 
-            <h1 className="font-display text-4xl md:text-5xl lg:text-6xl font-bold mb-6 animate-fade-in animation-delay-100">
-              Verdade na Lei BR
-            </h1>
+            {/* Tagline */}
+            <div className="mb-8 animate-fade-in animation-delay-100">
+              <h1 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3 leading-tight">
+                A verdade precisa de base.
+                <br />
+                <span className="text-amarelo-progresso">Não de opinião.</span>
+              </h1>
+              <p className="text-lg text-foreground/80">
+                Aqui a lei fala. Sem mentira.
+              </p>
+            </div>
 
-            <p className="text-lg md:text-xl text-primary-foreground/90 leading-relaxed mb-8 animate-fade-in animation-delay-200">
-              Verifique informações jurídicas com base na legislação brasileira oficial.
-              Sem opinião política. Só fatos verificáveis e base legal.
-            </p>
+            {/* Search Bar */}
+            <div className="relative mb-8 animate-fade-in animation-delay-200">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Input
+                placeholder="Pergunte sobre leis, notícias ou grave um áudio"
+                className="h-14 pl-12 pr-4 text-base rounded-2xl bg-card text-card-foreground border-0 shadow-lg placeholder:text-muted-foreground"
+              />
+            </div>
 
+            {/* Verdict examples */}
             <div className="flex flex-wrap items-center justify-center gap-3 animate-fade-in animation-delay-300">
-              <VerdictBadge verdict="confirmed" size="lg" />
-              <VerdictBadge verdict="misleading" size="lg" />
-              <VerdictBadge verdict="false" size="lg" />
-              <VerdictBadge verdict="unverifiable" size="lg" />
+              <VerdictBadge verdict="confirmed" size="lg" showEmoji />
+              <VerdictBadge verdict="misleading" size="lg" showEmoji />
+              <VerdictBadge verdict="false" size="lg" showEmoji />
+              <VerdictBadge verdict="unverifiable" size="lg" showEmoji />
             </div>
           </div>
         </div>
       </section>
 
-      {/* Main Actions */}
-      <section className="py-12 md:py-16">
+      {/* Main Actions - Cards Grid */}
+      <section className="py-10 md:py-14 bg-hero">
         <div className="container mx-auto px-4">
           <div className="max-w-5xl mx-auto">
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-4">
-              O que você quer verificar?
-            </h2>
-            <p className="text-muted-foreground text-center mb-10 max-w-2xl mx-auto">
-              Escolha uma opção para começar. Todas as verificações são feitas com base em
-              legislação oficial e fontes públicas.
-            </p>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
               <ActionCard
                 icon={MessageSquare}
-                title="Perguntar"
-                description="Faça perguntas sobre leis e direitos. Receba respostas baseadas em legislação oficial."
+                emoji="📘"
+                title="Perguntar Lei"
+                description="Tire dúvidas sobre leis por texto ou voz. Resposta com base legal."
                 href="/perguntar"
                 variant="primary"
               />
 
               <ActionCard
                 icon={Image}
-                title="Checar Imagem"
-                description="Envie foto de TV ou print de matéria para verificar afirmações jurídicas."
+                emoji="📸"
+                title="Checar Notícia"
+                description="Foto, PDF ou Word. Analisamos e verificamos na legislação."
                 href="/checar-imagem"
               />
 
               <ActionCard
                 icon={Mic}
-                title="Checar Áudio"
-                description="Grave ou envie áudio para transcrição e verificação de informações legais."
+                emoji="🎙️"
+                title="Gravar Áudio"
+                description="Grave jornal, TV ou conversa. Transcrevemos e checamos."
                 href="/checar-audio"
               />
 
               <ActionCard
                 icon={BookOpen}
+                emoji="⚖️"
                 title="Biblioteca de Leis"
-                description="Pesquise na base completa de legislação brasileira: Constituição, códigos e leis."
+                description="Constituição, códigos e leis. Pesquisa completa."
                 href="/biblioteca"
               />
 
               <ActionCard
                 icon={History}
+                emoji="🗂️"
                 title="Histórico"
-                description="Acesse suas consultas anteriores e relatórios salvos."
+                description="Suas consultas e relatórios salvos."
                 href="/historico"
               />
 
               <ActionCard
-                icon={FileCheck}
-                title="Relatórios"
-                description="Gere PDFs detalhados com análise completa e cadeia de custódia."
-                href="/historico"
+                icon={Settings}
+                emoji="⚙️"
+                title="Mais"
+                description="Configurações, ajuda e informações."
+                href="/sobre"
                 variant="accent"
               />
             </div>
@@ -106,51 +123,25 @@ const Index = () => {
         </div>
       </section>
 
-      {/* How it Works */}
-      <section className="py-12 md:py-16 bg-secondary/30">
+      {/* Trust Indicators */}
+      <section className="py-10 md:py-14 bg-hero border-t border-white/10">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h2 className="font-display text-2xl md:text-3xl font-bold text-center mb-4">
-              Como funciona
-            </h2>
-            <p className="text-muted-foreground text-center mb-10">
-              Processo transparente de verificação em 3 etapas
-            </p>
-
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid sm:grid-cols-3 gap-6 text-center">
               {[
-                {
-                  step: "1",
-                  icon: Search,
-                  title: "Envie sua dúvida",
-                  description:
-                    "Pergunte sobre uma lei, envie foto de matéria ou grave um áudio.",
-                },
-                {
-                  step: "2",
-                  icon: BookOpen,
-                  title: "Análise legal",
-                  description:
-                    "Nosso sistema busca na base de legislação oficial e identifica artigos relevantes.",
-                },
-                {
-                  step: "3",
-                  icon: FileCheck,
-                  title: "Resultado verificado",
-                  description:
-                    "Receba a classificação com fontes legais, links e nível de confiança.",
-                },
-              ].map((item) => (
-                <div key={item.step} className="text-center">
-                  <div className="w-14 h-14 mx-auto mb-4 hero-gradient rounded-full flex items-center justify-center shadow-lg">
-                    <item.icon className="w-6 h-6 text-primary-foreground" />
+                { value: "10.000+", label: "Leis indexadas", icon: "⚖️" },
+                { value: "100%", label: "Fontes oficiais", icon: "📜" },
+                { value: "0%", label: "Opinião política", icon: "🚫" },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="p-6 rounded-2xl bg-card shadow-card"
+                >
+                  <span className="text-3xl mb-2 block">{stat.icon}</span>
+                  <div className="font-display text-3xl font-bold text-verde-brasil mb-1">
+                    {stat.value}
                   </div>
-                  <h3 className="font-display font-semibold text-lg mb-2">
-                    {item.title}
-                  </h3>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
-                    {item.description}
-                  </p>
+                  <div className="text-sm text-muted-foreground">{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -158,27 +149,48 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Trust Indicators */}
-      <section className="py-12 md:py-16">
+      {/* For Who Section */}
+      <section className="py-10 md:py-14 bg-hero border-t border-white/10">
         <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto">
-            <div className="grid md:grid-cols-3 gap-6 text-center">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-6">
+              Para quem é
+            </h2>
+            <div className="flex flex-wrap justify-center gap-3">
               {[
-                { value: "10.000+", label: "Leis indexadas" },
-                { value: "100%", label: "Fontes oficiais" },
-                { value: "0%", label: "Opinião política" },
-              ].map((stat) => (
-                <div
-                  key={stat.label}
-                  className="p-6 rounded-xl bg-card border border-border shadow-card"
+                "Cidadãos comuns",
+                "Trabalhadores",
+                "Estudantes",
+                "Jornalistas",
+                "Advogados",
+                "Qualquer brasileiro",
+              ].map((audience) => (
+                <span
+                  key={audience}
+                  className="px-4 py-2 rounded-full bg-white/10 text-foreground text-sm font-medium"
                 >
-                  <div className="font-display text-3xl font-bold text-primary mb-1">
-                    {stat.value}
-                  </div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                </div>
+                  {audience}
+                </span>
               ))}
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-10 md:py-14 bg-hero border-t border-white/10">
+        <div className="container mx-auto px-4">
+          <div className="max-w-2xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-verde-brasil/20 text-verde-brasil-light text-sm font-medium mb-4">
+              <Shield className="w-4 h-4" />
+              Verificação baseada em legislação oficial
+            </div>
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-foreground mb-4">
+              Cansou de ser enganado?
+            </h2>
+            <p className="text-foreground/80 mb-6">
+              Use a lei a seu favor. Verifique antes de acreditar.
+            </p>
           </div>
         </div>
       </section>

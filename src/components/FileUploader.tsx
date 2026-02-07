@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 
 interface FileUploaderProps {
   accept?: string;
-  maxSize?: number; // in MB
+  maxSize?: number;
   onFileSelect: (file: File) => void;
   onClear?: () => void;
   file?: File | null;
@@ -39,7 +39,6 @@ export function FileUploader({
     (selectedFile: File) => {
       setError(null);
 
-      // Check file size
       if (selectedFile.size > maxSize * 1024 * 1024) {
         setError(`Arquivo muito grande. Máximo: ${maxSize}MB`);
         return;
@@ -100,23 +99,23 @@ export function FileUploader({
   if (file) {
     const Icon = getFileIcon();
     return (
-      <div className="bg-card rounded-xl border border-border shadow-card p-4">
+      <div className="rounded-xl border-2 border-border bg-muted/30 p-5">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 rounded-lg hero-gradient flex items-center justify-center shrink-0">
-            <Icon className="w-6 h-6 text-primary-foreground" />
+          <div className="w-14 h-14 rounded-xl bg-azul-ordem flex items-center justify-center shrink-0 shadow-md">
+            <Icon className="w-7 h-7 text-white" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-foreground truncate">{file.name}</p>
+            <p className="font-semibold text-card-foreground truncate">{file.name}</p>
             <p className="text-sm text-muted-foreground">
               {formatFileSize(file.size)}
             </p>
           </div>
           {!isLoading && (
-            <Button variant="ghost" size="icon" onClick={handleClear}>
-              <X className="w-4 h-4" />
+            <Button variant="ghost" size="icon" onClick={handleClear} className="rounded-xl">
+              <X className="w-5 h-5" />
             </Button>
           )}
-          {isLoading && <Loader2 className="w-5 h-5 animate-spin text-primary" />}
+          {isLoading && <Loader2 className="w-6 h-6 animate-spin text-verde-brasil" />}
         </div>
       </div>
     );
@@ -153,18 +152,18 @@ export function FileUploader({
         onDrop={handleDrop}
         className={cn(
           "flex flex-col items-center justify-center",
-          "min-h-[200px] rounded-xl border-2 border-dashed",
+          "min-h-[220px] rounded-xl border-2 border-dashed",
           "cursor-pointer transition-all duration-200",
           dragActive
-            ? "border-primary bg-primary/5"
-            : "border-border hover:border-primary/50 hover:bg-secondary/30"
+            ? "border-verde-brasil bg-verde-brasil/5"
+            : "border-border hover:border-verde-brasil/50 hover:bg-muted/30"
         )}
       >
-        <div className="w-14 h-14 rounded-full bg-secondary flex items-center justify-center mb-4">
-          <Upload className="w-7 h-7 text-muted-foreground" />
+        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mb-4">
+          <Upload className="w-8 h-8 text-muted-foreground" />
         </div>
-        <p className="font-medium text-foreground mb-1">
-          Clique ou arraste um arquivo
+        <p className="font-semibold text-card-foreground mb-1 text-lg">
+          Clique ou arraste
         </p>
         <p className="text-sm text-muted-foreground">
           PDF, Word ou imagem até {maxSize}MB
@@ -172,28 +171,28 @@ export function FileUploader({
       </label>
 
       {showCamera && (
-        <div className="flex gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <Button
             variant="outline"
-            className="flex-1 gap-2"
+            className="h-14 gap-2 rounded-xl text-base font-semibold"
             onClick={() => fileInputRef.current?.click()}
           >
-            <Upload className="w-4 h-4" />
-            Escolher arquivo
+            <Upload className="w-5 h-5" />
+            Arquivo
           </Button>
           <Button
             variant="outline"
-            className="flex-1 gap-2"
+            className="h-14 gap-2 rounded-xl text-base font-semibold"
             onClick={() => cameraInputRef.current?.click()}
           >
-            <Camera className="w-4 h-4" />
-            Usar câmera
+            <Camera className="w-5 h-5" />
+            Câmera
           </Button>
         </div>
       )}
 
       {error && (
-        <p className="text-sm text-destructive text-center">{error}</p>
+        <p className="text-sm text-vermelho-alerta text-center font-medium">{error}</p>
       )}
     </div>
   );

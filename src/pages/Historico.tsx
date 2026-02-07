@@ -27,7 +27,6 @@ interface HistoryItem {
   isFavorite: boolean;
 }
 
-// Mock data
 const mockHistory: HistoryItem[] = [
   {
     id: "1",
@@ -86,6 +85,12 @@ const typeLabels = {
   audio: "Áudio",
 };
 
+const typeEmojis = {
+  question: "📘",
+  image: "📸",
+  audio: "🎙️",
+};
+
 const Historico = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [history, setHistory] = useState(mockHistory);
@@ -124,84 +129,78 @@ const Historico = () => {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-3">
+            <span className="text-4xl mb-4 block">🗂️</span>
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
               Histórico
             </h1>
-            <p className="text-muted-foreground">
-              Suas consultas anteriores e relatórios salvos.
+            <p className="text-foreground/80">
+              Suas consultas e relatórios salvos.
             </p>
           </div>
 
           {/* Search */}
-          <div className="bg-card rounded-xl border border-border shadow-card p-4 mb-6">
+          <div className="bg-card rounded-2xl shadow-card p-4 mb-6">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
               <Input
                 placeholder="Buscar no histórico..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
+                className="pl-12 h-12 rounded-xl text-base"
               />
             </div>
           </div>
 
           {/* Filter Tabs */}
           <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-2">
-            <Button variant="secondary" size="sm" className="shrink-0">
+            <Button className="shrink-0 rounded-xl bg-verde text-primary-foreground">
               Todos
             </Button>
-            <Button variant="ghost" size="sm" className="shrink-0 gap-1">
-              <Star className="w-3 h-3" />
+            <Button variant="outline" className="shrink-0 gap-2 rounded-xl">
+              <Star className="w-4 h-4" />
               Favoritos
             </Button>
-            <Button variant="ghost" size="sm" className="shrink-0 gap-1">
-              <MessageSquare className="w-3 h-3" />
-              Perguntas
+            <Button variant="outline" className="shrink-0 gap-2 rounded-xl">
+              📘 Perguntas
             </Button>
-            <Button variant="ghost" size="sm" className="shrink-0 gap-1">
-              <Image className="w-3 h-3" />
-              Imagens
+            <Button variant="outline" className="shrink-0 gap-2 rounded-xl">
+              📸 Imagens
             </Button>
-            <Button variant="ghost" size="sm" className="shrink-0 gap-1">
-              <Mic className="w-3 h-3" />
-              Áudios
+            <Button variant="outline" className="shrink-0 gap-2 rounded-xl">
+              🎙️ Áudios
             </Button>
           </div>
 
           {/* History List */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             {filteredHistory.map((item) => {
               const Icon = typeIcons[item.type];
               return (
                 <div
                   key={item.id}
                   className={cn(
-                    "bg-card rounded-xl border border-border shadow-card p-4",
-                    "transition-all duration-200 hover:shadow-elevated"
+                    "bg-card rounded-2xl shadow-card p-5",
+                    "transition-all duration-200 hover:shadow-elevated",
+                    "border-2 border-transparent hover:border-verde-brasil/30"
                   )}
                 >
                   <div className="flex items-start gap-4">
-                    <div
-                      className={cn(
-                        "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
-                        "bg-secondary"
-                      )}
-                    >
-                      <Icon className="w-5 h-5 text-muted-foreground" />
+                    <div className="w-12 h-12 rounded-xl bg-azul-ordem flex items-center justify-center shrink-0 shadow-md">
+                      <span className="text-xl">{typeEmojis[item.type]}</span>
                     </div>
 
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2">
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs font-medium text-muted-foreground uppercase">
+                            <span className="text-xs font-semibold text-muted-foreground uppercase">
                               {typeLabels[item.type]}
                             </span>
                             {item.verdict && (
-                              <VerdictBadge verdict={item.verdict} size="sm" />
+                              <VerdictBadge verdict={item.verdict} size="sm" showEmoji />
                             )}
                           </div>
-                          <h3 className="font-medium text-foreground truncate">
+                          <h3 className="font-semibold text-card-foreground truncate">
                             {item.title}
                           </h3>
                           <p className="text-sm text-muted-foreground line-clamp-1 mt-1">
@@ -213,31 +212,31 @@ const Historico = () => {
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-9 w-9 rounded-xl"
                             onClick={() => toggleFavorite(item.id)}
                           >
                             {item.isFavorite ? (
-                              <Star className="w-4 h-4 text-accent fill-accent" />
+                              <Star className="w-5 h-5 text-amarelo-progresso fill-amarelo-progresso" />
                             ) : (
-                              <StarOff className="w-4 h-4 text-muted-foreground" />
+                              <StarOff className="w-5 h-5 text-muted-foreground" />
                             )}
                           </Button>
-                          <Button variant="ghost" size="icon" className="h-8 w-8">
-                            <Download className="w-4 h-4 text-muted-foreground" />
+                          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-xl">
+                            <Download className="w-5 h-5 text-muted-foreground" />
                           </Button>
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-8 w-8"
+                            className="h-9 w-9 rounded-xl"
                             onClick={() => deleteItem(item.id)}
                           >
-                            <Trash2 className="w-4 h-4 text-muted-foreground" />
+                            <Trash2 className="w-5 h-5 text-muted-foreground hover:text-vermelho-alerta" />
                           </Button>
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-1 mt-2 text-xs text-muted-foreground">
-                        <Calendar className="w-3 h-3" />
+                      <div className="flex items-center gap-1 mt-3 text-xs text-muted-foreground">
+                        <Calendar className="w-3.5 h-3.5" />
                         {formatDate(item.date)}
                       </div>
                     </div>
@@ -247,10 +246,10 @@ const Historico = () => {
             })}
 
             {filteredHistory.length === 0 && (
-              <div className="text-center py-12">
-                <FileText className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-                <p className="text-muted-foreground">
-                  Nenhum item encontrado no histórico.
+              <div className="text-center py-16">
+                <FileText className="w-16 h-16 mx-auto mb-4 text-foreground/30" />
+                <p className="text-foreground/60 text-lg">
+                  Nenhum item encontrado.
                 </p>
               </div>
             )}
@@ -259,8 +258,8 @@ const Historico = () => {
           {/* Export All */}
           {history.length > 0 && (
             <div className="mt-8 text-center">
-              <Button variant="outline" className="gap-2">
-                <Download className="w-4 h-4" />
+              <Button className="gap-2 bg-verde hover:bg-verde-brasil-light text-primary-foreground rounded-xl px-8 h-12 font-semibold">
+                <Download className="w-5 h-5" />
                 Exportar todo o histórico (PDF)
               </Button>
             </div>

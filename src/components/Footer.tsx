@@ -3,30 +3,35 @@ import { Link } from "react-router-dom";
 
 export function Footer() {
   return (
-    <footer className="bg-card border-t border-border mt-auto">
+    <footer className="bg-background border-t border-white/10 mt-auto">
       <div className="container mx-auto px-4 py-8">
         {/* Legal Disclaimer */}
-        <div className="flex items-start gap-3 p-4 rounded-lg bg-secondary/50 mb-8">
-          <AlertCircle className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            <strong>Aviso importante:</strong> Este serviço é meramente informativo e não substitui 
-            orientação jurídica profissional. Para casos específicos, consulte um advogado.
+        <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10 mb-8">
+          <AlertCircle className="w-5 h-5 text-amarelo-progresso shrink-0 mt-0.5" />
+          <p className="text-sm text-foreground/80 leading-relaxed">
+            <strong className="text-foreground">Aviso importante:</strong> Este aplicativo tem caráter informativo. 
+            Não substitui orientação jurídica profissional ou autoridade pública.
           </p>
         </div>
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 hero-gradient rounded-lg flex items-center justify-center">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-verde rounded-lg flex items-center justify-center">
               <Scale className="w-4 h-4 text-primary-foreground" />
             </div>
-            <span className="font-display font-semibold text-foreground">
-              Verdade na Lei BR
-            </span>
+            <div className="flex flex-col">
+              <span className="font-display font-bold text-sm text-foreground">
+                Verdade na Lei BR
+              </span>
+              <span className="text-[9px] text-foreground/60">
+                Informação, não manipulação.
+              </span>
+            </div>
           </div>
 
           {/* Links */}
-          <nav className="flex items-center gap-6 text-sm text-muted-foreground">
+          <nav className="flex items-center gap-6 text-sm text-foreground/70">
             <Link to="/sobre" className="hover:text-foreground transition-colors">
               Sobre
             </Link>
@@ -39,7 +44,7 @@ export function Footer() {
           </nav>
 
           {/* Copyright */}
-          <p className="text-sm text-muted-foreground">
+          <p className="text-sm text-foreground/60">
             © {new Date().getFullYear()} Verdade na Lei BR
           </p>
         </div>

@@ -18,10 +18,17 @@ const verdictEmojis: Record<VerdictType, string> = {
 };
 
 const verdictLabels: Record<VerdictType, string> = {
-  confirmed: "Confirmado",
-  misleading: "Enganoso",
-  false: "Falso",
-  unverifiable: "Não verificável",
+  confirmed: "CONFIRMADO",
+  misleading: "ENGANOSO",
+  false: "FALSO",
+  unverifiable: "NÃO VERIFICÁVEL",
+};
+
+const verdictDescriptions: Record<VerdictType, string> = {
+  confirmed: "Essa informação está de acordo com a lei vigente.",
+  misleading: "A informação divulgada simplifica a lei e omite condições importantes.",
+  false: "Não existe base legal que sustente essa afirmação.",
+  unverifiable: "Não há dados suficientes para confirmar essa informação com base legal.",
 };
 
 export function ShareButtons({
@@ -33,20 +40,23 @@ export function ShareButtons({
   const generateShareText = () => {
     const emoji = verdict ? verdictEmojis[verdict] : "";
     const label = verdict ? verdictLabels[verdict] : "";
+    const description = verdict ? verdictDescriptions[verdict] : "";
     
     let text = verdict ? `${emoji} ${label}\n\n` : "";
+    text += verdict ? `${description}\n\n` : "";
     text += `${summary}\n\n`;
     
     if (sources.length > 0) {
       text += "📚 Fontes:\n";
       sources.slice(0, 3).forEach((source) => {
         text += `• ${source.law}`;
-        if (source.article) text += ` - ${source.article}`;
+        if (source.article) text += `, ${source.article}`;
         text += "\n";
       });
     }
     
-    text += "\n🔍 Verificado pelo Verdade na Lei BR";
+    text += "\n🔍 Verificado pelo Verdade na Lei BR\n";
+    text += "Informação, não manipulação.";
     
     return text;
   };
@@ -74,7 +84,6 @@ export function ShareButtons({
           text: generateShareText(),
         });
       } catch (err) {
-        // User cancelled or error
         if ((err as Error).name !== "AbortError") {
           copyToClipboard();
         }
@@ -85,46 +94,41 @@ export function ShareButtons({
   };
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap gap-3">
       <Button
-        variant="outline"
-        size="sm"
-        className="gap-2"
+        className="gap-2 bg-[hsl(145_70%_40%)] hover:bg-[hsl(145_70%_35%)] text-white font-semibold rounded-xl"
         onClick={shareViaWhatsApp}
       >
-        <MessageCircle className="w-4 h-4" />
+        <MessageCircle className="w-5 h-5" />
         WhatsApp
       </Button>
 
       <Button
         variant="outline"
-        size="sm"
-        className="gap-2"
+        className="gap-2 rounded-xl font-semibold"
         onClick={shareNative}
       >
-        <Share2 className="w-4 h-4" />
+        <Share2 className="w-5 h-5" />
         Compartilhar
       </Button>
 
       <Button
         variant="outline"
-        size="sm"
-        className="gap-2"
+        className="gap-2 rounded-xl font-semibold"
         onClick={copyToClipboard}
       >
-        <Copy className="w-4 h-4" />
+        <Copy className="w-5 h-5" />
         Copiar
       </Button>
 
       {onDownloadPdf && (
         <Button
           variant="outline"
-          size="sm"
-          className="gap-2"
+          className="gap-2 rounded-xl font-semibold"
           onClick={onDownloadPdf}
         >
-          <Download className="w-4 h-4" />
-          PDF
+          <Download className="w-5 h-5" />
+          Salvar PDF
         </Button>
       )}
     </div>

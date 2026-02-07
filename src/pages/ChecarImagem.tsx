@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { VerdictBadge, VerdictType } from "@/components/ui/VerdictBadge";
+import { VerdictBadge, VerdictSeal, VerdictType } from "@/components/ui/VerdictBadge";
 import { FileUploader } from "@/components/FileUploader";
 import { ContentModeToggle } from "@/components/ContentModeToggle";
 import { ShareButtons } from "@/components/ShareButtons";
@@ -12,6 +12,7 @@ import {
   FileText,
   ExternalLink,
   AlertTriangle,
+  BookOpen,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -37,42 +38,23 @@ const ChecarImagem = () => {
     if (!file) return;
 
     try {
-      // Calculate hash for custody chain
       const hash = await calculateFileHash(file);
       setFileHash(hash);
 
-      // For now, we'll use a simple text extraction approach
-      // In production, this would use OCR services
       let text = "";
       
       if (file.type.startsWith("image/")) {
-        // For images, we'll send to AI for OCR
         toast.info("Extraindo texto da imagem...");
-        
-        // Convert image to base64 for AI processing
-        const reader = new FileReader();
-        text = await new Promise((resolve) => {
-          reader.onload = () => {
-            // For demo, we'll use a placeholder
-            // In production, this would use Vision AI for OCR
-            resolve("Texto extraído da imagem será processado pela IA...");
-          };
-          reader.readAsDataURL(file);
-        });
+        text = "Texto extraído da imagem será processado pela IA...";
       } else if (file.type === "application/pdf") {
         toast.info("Processando PDF...");
         text = "Texto extraído do PDF será processado...";
       } else {
-        // For DOCX, read as text
         text = await file.text();
       }
 
       setExtractedText(text);
-
-      // Analyze the text
       await analyze(text, mode);
-
-      // Upload file for storage
       await uploadFile(file, "documents");
       
     } catch (error) {
@@ -90,17 +72,18 @@ const ChecarImagem = () => {
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-8">
-            <h1 className="font-display text-3xl md:text-4xl font-bold mb-3">
-              Checar Arquivo
+            <span className="text-4xl mb-4 block">📸</span>
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-foreground mb-3">
+              Checar Notícia / Documento
             </h1>
-            <p className="text-muted-foreground">
-              Envie foto, PDF ou Word para verificação de informações jurídicas.
+            <p className="text-foreground/80">
+              Foto, PDF ou Word. Analisamos e verificamos na legislação.
             </p>
           </div>
 
           {/* Upload Section */}
           {!analysis && (
-            <div className="bg-card rounded-xl border border-border shadow-card p-6 space-y-6">
+            <div className="bg-card rounded-2xl shadow-card p-6 space-y-6">
               <ContentModeToggle mode={mode} onChange={setMode} />
 
               <FileUploader
@@ -113,18 +96,17 @@ const ChecarImagem = () => {
               {file && !isAnalyzing && (
                 <Button
                   onClick={handleAnalyze}
-                  className="w-full gap-2"
-                  size="lg"
+                  className="w-full gap-2 bg-verde hover:bg-verde-brasil-light text-primary-foreground rounded-xl h-14 text-lg font-semibold"
                 >
                   Analisar {isNewsMode ? "Matéria" : "Documento"}
                 </Button>
               )}
 
               {isAnalyzing && (
-                <div className="text-center py-4">
-                  <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin text-primary" />
-                  <p className="text-muted-foreground">Analisando conteúdo...</p>
-                  <p className="text-sm text-muted-foreground mt-1">
+                <div className="text-center py-8">
+                  <Loader2 className="w-12 h-12 mx-auto mb-4 animate-spin text-verde-brasil" />
+                  <p className="text-card-foreground text-lg font-medium">Analisando conteúdo...</p>
+                  <p className="text-muted-foreground mt-1">
                     Extraindo texto e verificando na legislação...
                   </p>
                 </div>
@@ -132,61 +114,41 @@ const ChecarImagem = () => {
             </div>
           )}
 
-          {/* Analysis Results - News/TV Mode */}
+          {/* Analysis Results */}
           {analysis && isNewsMode && newsAnalysis && (
             <div className="space-y-6 animate-fade-in">
-              {/* Overall Verdict */}
-              <div className="bg-card rounded-xl border border-border shadow-card overflow-hidden">
-                <div className="p-6 flex items-center justify-between">
-                  <div>
-                    <h2 className="font-display font-semibold text-lg mb-1">
-                      Resultado da Análise
-                    </h2>
-                    <p className="text-sm text-muted-foreground">
-                      {file?.name}
-                    </p>
-                  </div>
-                  <VerdictBadge
-                    verdict={newsAnalysis.overallVerdict}
-                    size="lg"
-                  />
-                </div>
-
-                {/* Summary */}
-                <div className="px-6 pb-6">
-                  <p className="text-foreground leading-relaxed">
-                    {newsAnalysis.summary}
-                  </p>
-                </div>
-
-                {/* Extracted Text */}
-                {extractedText && (
-                  <div className="px-6 pb-6">
-                    <h3 className="font-semibold text-sm mb-2 text-muted-foreground">
-                      Texto extraído:
-                    </h3>
-                    <p className="text-sm text-foreground bg-secondary/30 p-4 rounded-lg italic">
-                      "{extractedText}"
-                    </p>
-                  </div>
-                )}
-
-                {/* Hash for custody */}
-                {fileHash && (
-                  <div className="px-6 pb-6">
-                    <p className="text-xs text-muted-foreground font-mono">
-                      SHA-256: {fileHash.substring(0, 32)}...
-                    </p>
-                  </div>
-                )}
+              {/* Verdict Seal */}
+              <div className="bg-card rounded-2xl shadow-card p-8">
+                <VerdictSeal verdict={newsAnalysis.overallVerdict} />
               </div>
 
-              {/* Claims */}
+              {/* What was said */}
+              <div className="bg-card rounded-2xl shadow-card overflow-hidden">
+                <div className="p-6 border-b border-border">
+                  <h2 className="font-display font-bold text-xl text-card-foreground flex items-center gap-2">
+                    <span>📝</span> O que foi dito
+                  </h2>
+                </div>
+                <div className="p-6">
+                  <p className="text-card-foreground leading-relaxed">
+                    {newsAnalysis.summary}
+                  </p>
+                  {extractedText && (
+                    <div className="mt-4 p-4 rounded-xl bg-muted/50 border border-border">
+                      <p className="text-sm text-muted-foreground italic">
+                        "{extractedText}"
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* What the law says */}
               {newsAnalysis.claims && newsAnalysis.claims.length > 0 && (
-                <div className="bg-card rounded-xl border border-border shadow-card">
+                <div className="bg-card rounded-2xl shadow-card overflow-hidden">
                   <div className="p-6 border-b border-border">
-                    <h2 className="font-display font-semibold text-lg">
-                      Afirmações Identificadas
+                    <h2 className="font-display font-bold text-xl text-card-foreground flex items-center gap-2">
+                      <BookOpen className="w-6 h-6 text-verde-brasil" /> O que a lei diz
                     </h2>
                   </div>
 
@@ -194,12 +156,12 @@ const ChecarImagem = () => {
                     {newsAnalysis.claims.map((claim: Claim, index: number) => (
                       <div key={index} className="p-6">
                         <div className="flex items-start gap-4">
-                          <VerdictBadge verdict={claim.verdict} size="sm" />
+                          <VerdictBadge verdict={claim.verdict} size="md" showEmoji />
                           <div className="flex-1">
-                            <p className="font-medium text-foreground mb-2">
+                            <p className="font-semibold text-card-foreground mb-2">
                               "{claim.text}"
                             </p>
-                            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                            <p className="text-muted-foreground leading-relaxed mb-4">
                               {claim.explanation}
                             </p>
 
@@ -211,9 +173,9 @@ const ChecarImagem = () => {
                                     href={source.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                                    className="inline-flex items-center gap-2 text-sm text-verde-brasil hover:underline font-medium"
                                   >
-                                    <FileText className="w-3 h-3" />
+                                    <FileText className="w-4 h-4" />
                                     {source.law} - {source.article}
                                     <ExternalLink className="w-3 h-3" />
                                   </a>
@@ -228,6 +190,15 @@ const ChecarImagem = () => {
                 </div>
               )}
 
+              {/* Custody Hash */}
+              {fileHash && (
+                <div className="bg-card rounded-2xl shadow-card p-4">
+                  <p className="text-xs text-muted-foreground font-mono text-center">
+                    🔒 SHA-256: {fileHash.substring(0, 40)}...
+                  </p>
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <ShareButtons
@@ -235,7 +206,11 @@ const ChecarImagem = () => {
                   summary={newsAnalysis.summary}
                   sources={newsAnalysis.claims?.flatMap((c: Claim) => c.sources || [])}
                 />
-                <Button variant="ghost" onClick={handleClear}>
+                <Button 
+                  variant="ghost" 
+                  onClick={handleClear}
+                  className="text-foreground/70 hover:text-foreground"
+                >
                   Analisar outro arquivo
                 </Button>
               </div>
@@ -244,10 +219,10 @@ const ChecarImagem = () => {
 
           {/* Quality Warning */}
           {analysis && isNewsMode && newsAnalysis?.overallVerdict === "unverifiable" && (
-            <div className="mt-4 p-4 rounded-lg bg-secondary/50 flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-verdict-misleading shrink-0" />
+            <div className="mt-6 p-5 rounded-2xl bg-amarelo-progresso/10 border-2 border-amarelo-progresso/30 flex items-start gap-4">
+              <AlertTriangle className="w-6 h-6 text-amarelo-progresso shrink-0" />
               <div>
-                <p className="font-medium text-foreground">
+                <p className="font-semibold text-card-foreground">
                   Verificação inconclusiva
                 </p>
                 <p className="text-sm text-muted-foreground mt-1">
