@@ -24,14 +24,14 @@ export function useFactCheck() {
   const [isLoading, setIsLoading] = useState(false);
   const [response, setResponse] = useState<FactCheckResponse | null>(null);
 
-  const checkFact = async (claim: string): Promise<FactCheckResponse | null> => {
+  const checkFact = async (claim: string, inputType: "text" | "link" = "text"): Promise<FactCheckResponse | null> => {
     setIsLoading(true);
     setResponse(null);
 
     try {
       const result = await callEdgeFunction<FactCheckResponse & { success: boolean; error?: string }>(
         "fact-check",
-        { claim }
+        { claim, inputType }
       );
 
       if (!result.success) {
