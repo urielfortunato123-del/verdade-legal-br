@@ -15,12 +15,18 @@ export default {
     extend: {
       colors: {
         // Brasil Verde Theme
+        verde: {
+          DEFAULT: "hsl(145, 55%, 38%)",
+          light: "hsl(145, 50%, 50%)",
+          dark: "hsl(145, 55%, 20%)",
+        },
         "verde-brasil": {
           DEFAULT: "hsl(145, 55%, 38%)",
           light: "hsl(145, 50%, 50%)",
           dark: "hsl(145, 55%, 20%)",
         },
         "verde-escuro": "hsl(145, 55%, 12%)",
+        "azul-info": "hsl(210, 70%, 50%)",
         "amarelo-ouro": {
           DEFAULT: "hsl(48, 95%, 52%)",
           light: "hsl(48, 90%, 62%)",
