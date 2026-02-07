@@ -1,0 +1,13 @@
+project_id = "zqgqtgxgbctfkfwzspvh"
+
+[functions.analyze-document]
+enabled = true
+verify_jwt = false
+
+[functions.analyze-question]
+enabled = true
+verify_jwt = false
+
+[functions.transcribe-audio]
+enabled = true
+verify_jwt = false

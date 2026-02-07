@@ -1,7 +1,13 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
-import { VerdictBadge, VerdictType } from "@/components/ui/VerdictBadge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { VerdictBadge } from "@/components/ui/VerdictBadge";
+import { ContentModeToggle } from "@/components/ContentModeToggle";
+import { ShareButtons } from "@/components/ShareButtons";
+import { useAnalyzeDocument, DocumentAnalysis, Claim } from "@/hooks/useAnalyzeDocument";
+import { uploadFile, calculateFileHash, getEdgeFunctionUrl } from "@/lib/supabase";
 import {
   Mic,
   Upload,
@@ -9,100 +15,125 @@ import {
   FileText,
   ExternalLink,
   Square,
-  Play,
-  Pause,
+  Save,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-
-interface Claim {
-  text: string;
-  verdict: VerdictType;
-  explanation: string;
-  sources?: { law: string; article: string; url: string }[];
-}
-
-// Mock response for demo
-const mockAnalysis = {
-  transcript:
-    "O governo anunciou que vai liberar o FGTS para todos os trabalhadores sem nenhuma restrição. Isso está garantido pela CLT.",
-  overallVerdict: "misleading" as VerdictType,
-  claims: [
-    {
-      text: "O governo vai liberar o FGTS para todos os trabalhadores",
-      verdict: "misleading" as VerdictType,
-      explanation:
-        "Existem modalidades de saque do FGTS, mas não é liberado 'para todos sem restrição'. As condições estão previstas na Lei 8.036/90.",
-      sources: [
-        {
-          law: "Lei 8.036/90",
-          article: "Art. 20",
-          url: "https://www.planalto.gov.br/ccivil_03/leis/l8036.htm",
-        },
-      ],
-    },
-    {
-      text: "Isso está garantido pela CLT",
-      verdict: "false" as VerdictType,
-      explanation:
-        "O FGTS não é regulamentado pela CLT, mas sim pela Lei 8.036/90. A CLT trata de relações trabalhistas, não do fundo de garantia.",
-      sources: [
-        {
-          law: "CLT",
-          article: "Decreto-Lei 5.452/43",
-          url: "https://www.planalto.gov.br/ccivil_03/decreto-lei/del5452.htm",
-        },
-      ],
-    },
-  ] as Claim[],
-};
+import { toast } from "sonner";
 
 const ChecarAudio = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioFile, setAudioFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [analysis, setAnalysis] = useState<typeof mockAnalysis | null>(null);
+  const [audioTitle, setAudioTitle] = useState("");
+  const [mode, setMode] = useState<"news_tv" | "document">("news_tv");
+  const [transcript, setTranscript] = useState<string | null>(null);
+  const [isTranscribing, setIsTranscribing] = useState(false);
   const [recordingTime, setRecordingTime] = useState(0);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const { analyze, isAnalyzing, analysis } = useAnalyzeDocument();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setAudioFile(file);
-      setAnalysis(null);
+      setTranscript(null);
     }
   };
 
-  const toggleRecording = () => {
-    if (isRecording) {
-      setIsRecording(false);
-      // In real app, would stop recording and get audio file
-      setAudioFile(new File([], "gravacao.webm", { type: "audio/webm" }));
-    } else {
+  const startRecording = useCallback(async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      chunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) {
+          chunksRef.current.push(e.data);
+        }
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+        const file = new File([blob], `gravacao-${Date.now()}.webm`, {
+          type: "audio/webm",
+        });
+        setAudioFile(file);
+        stream.getTracks().forEach((track) => track.stop());
+      };
+
+      mediaRecorder.start();
       setIsRecording(true);
       setRecordingTime(0);
-      // Simulate recording timer
-      const interval = setInterval(() => {
+
+      timerRef.current = setInterval(() => {
         setRecordingTime((t) => t + 1);
       }, 1000);
-      setTimeout(() => {
-        clearInterval(interval);
-      }, 60000); // Max 1 minute
+    } catch (error) {
+      console.error("Error accessing microphone:", error);
+      toast.error("Não foi possível acessar o microfone");
     }
-  };
+  }, []);
 
-  const handleAnalyze = async () => {
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    }
+  }, [isRecording]);
+
+  const handleTranscribe = async () => {
     if (!audioFile) return;
 
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    setAnalysis(mockAnalysis);
-    setIsLoading(false);
+    setIsTranscribing(true);
+    try {
+      // Upload the audio file
+      await uploadFile(audioFile, "audios");
+
+      // Create FormData for transcription
+      const formData = new FormData();
+      formData.append("audio", audioFile);
+
+      const response = await fetch(getEdgeFunctionUrl("transcribe-audio"), {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Transcription failed");
+      }
+
+      const result = await response.json();
+      
+      if (result.transcript) {
+        setTranscript(result.transcript);
+        toast.success("Áudio transcrito com sucesso!");
+        
+        // Analyze the transcript
+        await analyze(result.transcript, mode);
+      } else {
+        throw new Error("No transcript returned");
+      }
+    } catch (error) {
+      console.error("Transcription error:", error);
+      toast.error("Erro na transcrição. Tente novamente.");
+    } finally {
+      setIsTranscribing(false);
+    }
   };
 
   const clearAudio = () => {
     setAudioFile(null);
-    setAnalysis(null);
+    setTranscript(null);
     setRecordingTime(0);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -115,6 +146,8 @@ const ChecarAudio = () => {
     return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
+  const newsAnalysis = analysis as DocumentAnalysis | null;
+
   return (
     <Layout>
       <div className="container mx-auto px-4 py-8 md:py-12">
@@ -125,111 +158,140 @@ const ChecarAudio = () => {
               Checar Áudio
             </h1>
             <p className="text-muted-foreground">
-              Grave ou envie áudio para transcrição e verificação de informações legais.
+              Grave ou envie áudio para transcrição e verificação.
             </p>
           </div>
 
           {/* Recording/Upload Section */}
-          {!audioFile && !analysis && (
-            <div className="bg-card rounded-xl border border-border shadow-card p-8">
-              <div className="flex flex-col items-center">
-                {/* Recording Button */}
-                <button
-                  onClick={toggleRecording}
-                  className={cn(
-                    "w-32 h-32 rounded-full flex items-center justify-center transition-all duration-300",
-                    "shadow-lg hover:shadow-xl",
-                    isRecording
-                      ? "bg-destructive animate-pulse"
-                      : "hero-gradient hover:opacity-90"
-                  )}
-                >
-                  {isRecording ? (
-                    <Square className="w-10 h-10 text-destructive-foreground" />
-                  ) : (
-                    <Mic className="w-10 h-10 text-primary-foreground" />
-                  )}
-                </button>
+          {!analysis && (
+            <div className="bg-card rounded-xl border border-border shadow-card p-6 space-y-6">
+              <ContentModeToggle mode={mode} onChange={setMode} />
 
-                <p className="mt-4 font-medium text-foreground">
-                  {isRecording
-                    ? `Gravando... ${formatTime(recordingTime)}`
-                    : "Clique para gravar"}
-                </p>
+              {!audioFile && (
+                <>
+                  {/* Recording Button */}
+                  <div className="flex flex-col items-center py-8">
+                    <button
+                      onClick={isRecording ? stopRecording : startRecording}
+                      disabled={isTranscribing}
+                      className={cn(
+                        "w-28 h-28 rounded-full flex items-center justify-center transition-all duration-300",
+                        "shadow-lg hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-primary/20",
+                        isRecording
+                          ? "bg-destructive animate-pulse"
+                          : "hero-gradient hover:opacity-90"
+                      )}
+                    >
+                      {isRecording ? (
+                        <Square className="w-10 h-10 text-destructive-foreground" />
+                      ) : (
+                        <Mic className="w-10 h-10 text-primary-foreground" />
+                      )}
+                    </button>
 
-                {!isRecording && (
-                  <>
-                    <p className="text-sm text-muted-foreground mt-2 mb-6">
-                      ou
+                    <p className="mt-4 font-medium text-foreground">
+                      {isRecording
+                        ? `Gravando... ${formatTime(recordingTime)}`
+                        : "Clique para gravar"}
                     </p>
+                  </div>
 
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept="audio/*"
-                      onChange={handleFileChange}
-                      className="hidden"
-                      id="audio-upload"
-                    />
+                  {/* Upload Option */}
+                  {!isRecording && (
+                    <>
+                      <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                          <div className="w-full border-t border-border" />
+                        </div>
+                        <div className="relative flex justify-center">
+                          <span className="bg-card px-4 text-sm text-muted-foreground">
+                            ou
+                          </span>
+                        </div>
+                      </div>
 
-                    <Button variant="outline" className="gap-2" asChild>
-                      <label htmlFor="audio-upload" className="cursor-pointer">
-                        <Upload className="w-4 h-4" />
-                        Enviar arquivo de áudio
-                      </label>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="audio/*"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="audio-upload"
+                      />
+
+                      <Button
+                        variant="outline"
+                        className="w-full gap-2"
+                        asChild
+                      >
+                        <label
+                          htmlFor="audio-upload"
+                          className="cursor-pointer"
+                        >
+                          <Upload className="w-4 h-4" />
+                          Enviar arquivo de áudio
+                        </label>
+                      </Button>
+                    </>
+                  )}
+                </>
+              )}
+
+              {/* Audio Ready */}
+              {audioFile && !transcript && (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-4 p-4 rounded-lg bg-secondary/30">
+                    <div className="w-12 h-12 rounded-full hero-gradient flex items-center justify-center">
+                      <Mic className="w-6 h-6 text-primary-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-medium text-foreground">
+                        {audioFile.name}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {audioFile.size > 0
+                          ? `${(audioFile.size / 1024 / 1024).toFixed(2)} MB`
+                          : `Duração: ${formatTime(recordingTime)}`}
+                      </p>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={clearAudio}>
+                      Remover
                     </Button>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
+                  </div>
 
-          {/* Audio Ready to Analyze */}
-          {audioFile && !analysis && (
-            <div className="bg-card rounded-xl border border-border shadow-card p-6">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 rounded-full hero-gradient flex items-center justify-center">
-                  <Mic className="w-6 h-6 text-primary-foreground" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-medium text-foreground">{audioFile.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {audioFile.size > 0
-                      ? `${(audioFile.size / 1024 / 1024).toFixed(2)} MB`
-                      : "Gravação pronta"}
-                  </p>
-                </div>
-                <Button variant="ghost" size="sm" onClick={clearAudio}>
-                  Remover
-                </Button>
-              </div>
+                  <div>
+                    <Label htmlFor="title">Título (opcional)</Label>
+                    <Input
+                      id="title"
+                      placeholder="Ex: Jornal das 7, Entrevista..."
+                      value={audioTitle}
+                      onChange={(e) => setAudioTitle(e.target.value)}
+                      className="mt-1"
+                    />
+                  </div>
 
-              <Button
-                onClick={handleAnalyze}
-                disabled={isLoading}
-                className="w-full gap-2"
-                size="lg"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    Transcrevendo e analisando...
-                  </>
-                ) : (
-                  <>Analisar Áudio</>
-                )}
-              </Button>
-
-              {isLoading && (
-                <div className="mt-4 space-y-2 text-sm text-muted-foreground text-center">
-                  <p>Convertendo áudio em texto...</p>
+                  <Button
+                    onClick={handleTranscribe}
+                    disabled={isTranscribing || isAnalyzing}
+                    className="w-full gap-2"
+                    size="lg"
+                  >
+                    {isTranscribing ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        Transcrevendo...
+                      </>
+                    ) : (
+                      <>Transcrever e Analisar</>
+                    )}
+                  </Button>
                 </div>
               )}
             </div>
           )}
 
           {/* Analysis Results */}
-          {analysis && (
+          {analysis && newsAnalysis && (
             <div className="space-y-6 animate-fade-in">
               {/* Transcript with Verdict */}
               <div className="bg-card rounded-xl border border-border shadow-card overflow-hidden">
@@ -239,13 +301,18 @@ const ChecarAudio = () => {
                       <Mic className="w-5 h-5 text-primary-foreground" />
                     </div>
                     <div>
-                      <p className="font-medium text-foreground">Áudio analisado</p>
+                      <p className="font-medium text-foreground">
+                        {audioTitle || audioFile?.name || "Áudio analisado"}
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         Transcrição completa
                       </p>
                     </div>
                   </div>
-                  <VerdictBadge verdict={analysis.overallVerdict} size="lg" />
+                  <VerdictBadge
+                    verdict={newsAnalysis.overallVerdict}
+                    size="lg"
+                  />
                 </div>
 
                 {/* Transcript */}
@@ -254,62 +321,72 @@ const ChecarAudio = () => {
                     Transcrição:
                   </h3>
                   <p className="text-foreground bg-secondary/30 p-4 rounded-lg italic">
-                    "{analysis.transcript}"
+                    "{transcript}"
+                  </p>
+                </div>
+
+                {/* Summary */}
+                <div className="px-6 pb-6">
+                  <p className="text-foreground leading-relaxed">
+                    {newsAnalysis.summary}
                   </p>
                 </div>
               </div>
 
               {/* Claims Analysis */}
-              <div className="bg-card rounded-xl border border-border shadow-card">
-                <div className="p-6 border-b border-border">
-                  <h2 className="font-display font-semibold text-lg">
-                    Afirmações Identificadas
-                  </h2>
-                </div>
+              {newsAnalysis.claims && newsAnalysis.claims.length > 0 && (
+                <div className="bg-card rounded-xl border border-border shadow-card">
+                  <div className="p-6 border-b border-border">
+                    <h2 className="font-display font-semibold text-lg">
+                      Afirmações Identificadas
+                    </h2>
+                  </div>
 
-                <div className="divide-y divide-border">
-                  {analysis.claims.map((claim, index) => (
-                    <div key={index} className="p-6">
-                      <div className="flex items-start gap-4">
-                        <VerdictBadge verdict={claim.verdict} size="sm" />
-                        <div className="flex-1">
-                          <p className="font-medium text-foreground mb-2">
-                            "{claim.text}"
-                          </p>
-                          <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                            {claim.explanation}
-                          </p>
+                  <div className="divide-y divide-border">
+                    {newsAnalysis.claims.map((claim: Claim, index: number) => (
+                      <div key={index} className="p-6">
+                        <div className="flex items-start gap-4">
+                          <VerdictBadge verdict={claim.verdict} size="sm" />
+                          <div className="flex-1">
+                            <p className="font-medium text-foreground mb-2">
+                              "{claim.text}"
+                            </p>
+                            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                              {claim.explanation}
+                            </p>
 
-                          {claim.sources && claim.sources.length > 0 && (
-                            <div className="space-y-2">
-                              {claim.sources.map((source, sIndex) => (
-                                <a
-                                  key={sIndex}
-                                  href={source.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
-                                >
-                                  <FileText className="w-3 h-3" />
-                                  {source.law} - {source.article}
-                                  <ExternalLink className="w-3 h-3" />
-                                </a>
-                              ))}
-                            </div>
-                          )}
+                            {claim.sources && claim.sources.length > 0 && (
+                              <div className="space-y-2">
+                                {claim.sources.map((source, sIndex) => (
+                                  <a
+                                    key={sIndex}
+                                    href={source.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                                  >
+                                    <FileText className="w-3 h-3" />
+                                    {source.law} - {source.article}
+                                    <ExternalLink className="w-3 h-3" />
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Actions */}
-              <div className="flex flex-wrap gap-3">
-                <Button variant="outline" className="gap-2">
-                  <FileText className="w-4 h-4" />
-                  Gerar Relatório PDF
-                </Button>
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <ShareButtons
+                  verdict={newsAnalysis.overallVerdict}
+                  summary={newsAnalysis.summary}
+                  sources={newsAnalysis.claims?.flatMap((c: Claim) => c.sources || [])}
+                />
                 <Button variant="ghost" onClick={clearAudio}>
                   Analisar outro áudio
                 </Button>

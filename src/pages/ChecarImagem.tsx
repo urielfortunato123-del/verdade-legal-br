@@ -1,95 +1,88 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { VerdictBadge, VerdictType } from "@/components/ui/VerdictBadge";
+import { FileUploader } from "@/components/FileUploader";
+import { ContentModeToggle } from "@/components/ContentModeToggle";
+import { ShareButtons } from "@/components/ShareButtons";
+import { useAnalyzeDocument, DocumentAnalysis, Claim } from "@/hooks/useAnalyzeDocument";
+import { uploadFile, calculateFileHash } from "@/lib/supabase";
 import {
-  Upload,
-  Camera,
   Loader2,
   FileText,
   ExternalLink,
-  X,
-  ImageIcon,
+  AlertTriangle,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-interface Claim {
-  text: string;
-  verdict: VerdictType;
-  explanation: string;
-  sources?: { law: string; article: string; url: string }[];
-}
-
-// Mock response for demo
-const mockAnalysis = {
-  extractedText:
-    "Governo anuncia que aposentados terão direito a 14º salário a partir de 2024. A medida está prevista na Constituição Federal.",
-  overallVerdict: "false" as VerdictType,
-  claims: [
-    {
-      text: "Aposentados terão direito a 14º salário",
-      verdict: "false" as VerdictType,
-      explanation:
-        "Não existe previsão legal de 14º salário para aposentados no Brasil. O INSS paga 13º salário conforme Lei 8.213/91.",
-      sources: [
-        {
-          law: "Lei 8.213/91",
-          article: "Art. 40",
-          url: "https://www.planalto.gov.br/ccivil_03/leis/l8213.htm",
-        },
-      ],
-    },
-    {
-      text: "A medida está prevista na Constituição Federal",
-      verdict: "false" as VerdictType,
-      explanation:
-        "A Constituição Federal não prevê 14º salário. O Art. 7º, VIII garante apenas o 13º salário.",
-      sources: [
-        {
-          law: "Constituição Federal",
-          article: "Art. 7º, VIII",
-          url: "https://www.planalto.gov.br/ccivil_03/constituicao/constituicao.htm",
-        },
-      ],
-    },
-  ] as Claim[],
-};
+import { toast } from "sonner";
 
 const ChecarImagem = () => {
-  const [image, setImage] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [analysis, setAnalysis] = useState<typeof mockAnalysis | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File | null>(null);
+  const [mode, setMode] = useState<"news_tv" | "document">("news_tv");
+  const [extractedText, setExtractedText] = useState<string | null>(null);
+  const [fileHash, setFileHash] = useState<string | null>(null);
+  const { analyze, isAnalyzing, analysis } = useAnalyzeDocument();
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setImage(e.target?.result as string);
-        setAnalysis(null);
-      };
-      reader.readAsDataURL(file);
-    }
+  const handleFileSelect = (selectedFile: File) => {
+    setFile(selectedFile);
+    setExtractedText(null);
+  };
+
+  const handleClear = () => {
+    setFile(null);
+    setExtractedText(null);
+    setFileHash(null);
   };
 
   const handleAnalyze = async () => {
-    if (!image) return;
+    if (!file) return;
 
-    setIsLoading(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-    setAnalysis(mockAnalysis);
-    setIsLoading(false);
-  };
+    try {
+      // Calculate hash for custody chain
+      const hash = await calculateFileHash(file);
+      setFileHash(hash);
 
-  const clearImage = () => {
-    setImage(null);
-    setAnalysis(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
+      // For now, we'll use a simple text extraction approach
+      // In production, this would use OCR services
+      let text = "";
+      
+      if (file.type.startsWith("image/")) {
+        // For images, we'll send to AI for OCR
+        toast.info("Extraindo texto da imagem...");
+        
+        // Convert image to base64 for AI processing
+        const reader = new FileReader();
+        text = await new Promise((resolve) => {
+          reader.onload = () => {
+            // For demo, we'll use a placeholder
+            // In production, this would use Vision AI for OCR
+            resolve("Texto extraído da imagem será processado pela IA...");
+          };
+          reader.readAsDataURL(file);
+        });
+      } else if (file.type === "application/pdf") {
+        toast.info("Processando PDF...");
+        text = "Texto extraído do PDF será processado...";
+      } else {
+        // For DOCX, read as text
+        text = await file.text();
+      }
+
+      setExtractedText(text);
+
+      // Analyze the text
+      await analyze(text, mode);
+
+      // Upload file for storage
+      await uploadFile(file, "documents");
+      
+    } catch (error) {
+      console.error("Analysis error:", error);
+      toast.error("Erro ao processar arquivo");
     }
   };
+
+  const isNewsMode = mode === "news_tv";
+  const newsAnalysis = analysis as DocumentAnalysis | null;
 
   return (
     <Layout>
@@ -98,194 +91,170 @@ const ChecarImagem = () => {
           {/* Header */}
           <div className="text-center mb-8">
             <h1 className="font-display text-3xl md:text-4xl font-bold mb-3">
-              Checar Matéria (Imagem)
+              Checar Arquivo
             </h1>
             <p className="text-muted-foreground">
-              Envie foto de TV ou print de matéria para verificar afirmações jurídicas.
+              Envie foto, PDF ou Word para verificação de informações jurídicas.
             </p>
           </div>
 
           {/* Upload Section */}
-          {!image && (
-            <div className="bg-card rounded-xl border border-border shadow-card p-8">
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleFileChange}
-                className="hidden"
-                id="image-upload"
+          {!analysis && (
+            <div className="bg-card rounded-xl border border-border shadow-card p-6 space-y-6">
+              <ContentModeToggle mode={mode} onChange={setMode} />
+
+              <FileUploader
+                onFileSelect={handleFileSelect}
+                onClear={handleClear}
+                file={file}
+                isLoading={isAnalyzing}
               />
 
-              <label
-                htmlFor="image-upload"
-                className={cn(
-                  "flex flex-col items-center justify-center",
-                  "min-h-[300px] rounded-xl border-2 border-dashed border-border",
-                  "cursor-pointer transition-colors",
-                  "hover:border-primary/50 hover:bg-secondary/30"
-                )}
-              >
-                <div className="w-16 h-16 rounded-full bg-secondary flex items-center justify-center mb-4">
-                  <ImageIcon className="w-8 h-8 text-muted-foreground" />
-                </div>
-                <p className="font-medium text-foreground mb-1">
-                  Clique para enviar ou arraste uma imagem
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  PNG, JPG ou WEBP até 10MB
-                </p>
-
-                <div className="flex gap-3 mt-6">
-                  <Button variant="outline" className="gap-2" asChild>
-                    <span>
-                      <Upload className="w-4 h-4" />
-                      Escolher arquivo
-                    </span>
-                  </Button>
-                  <Button variant="outline" className="gap-2">
-                    <Camera className="w-4 h-4" />
-                    Usar câmera
-                  </Button>
-                </div>
-              </label>
-            </div>
-          )}
-
-          {/* Image Preview */}
-          {image && !analysis && (
-            <div className="bg-card rounded-xl border border-border shadow-card overflow-hidden">
-              <div className="relative">
-                <img
-                  src={image}
-                  alt="Imagem para análise"
-                  className="w-full max-h-[400px] object-contain bg-secondary/30"
-                />
-                <Button
-                  variant="secondary"
-                  size="icon"
-                  className="absolute top-4 right-4"
-                  onClick={clearImage}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-
-              <div className="p-6">
+              {file && !isAnalyzing && (
                 <Button
                   onClick={handleAnalyze}
-                  disabled={isLoading}
                   className="w-full gap-2"
                   size="lg"
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      Analisando imagem...
-                    </>
-                  ) : (
-                    <>Analisar Imagem</>
-                  )}
+                  Analisar {isNewsMode ? "Matéria" : "Documento"}
                 </Button>
+              )}
 
-                {isLoading && (
-                  <div className="mt-4 space-y-2 text-sm text-muted-foreground text-center">
-                    <p>Extraindo texto (OCR)...</p>
+              {isAnalyzing && (
+                <div className="text-center py-4">
+                  <Loader2 className="w-8 h-8 mx-auto mb-3 animate-spin text-primary" />
+                  <p className="text-muted-foreground">Analisando conteúdo...</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Extraindo texto e verificando na legislação...
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Analysis Results - News/TV Mode */}
+          {analysis && isNewsMode && newsAnalysis && (
+            <div className="space-y-6 animate-fade-in">
+              {/* Overall Verdict */}
+              <div className="bg-card rounded-xl border border-border shadow-card overflow-hidden">
+                <div className="p-6 flex items-center justify-between">
+                  <div>
+                    <h2 className="font-display font-semibold text-lg mb-1">
+                      Resultado da Análise
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      {file?.name}
+                    </p>
+                  </div>
+                  <VerdictBadge
+                    verdict={newsAnalysis.overallVerdict}
+                    size="lg"
+                  />
+                </div>
+
+                {/* Summary */}
+                <div className="px-6 pb-6">
+                  <p className="text-foreground leading-relaxed">
+                    {newsAnalysis.summary}
+                  </p>
+                </div>
+
+                {/* Extracted Text */}
+                {extractedText && (
+                  <div className="px-6 pb-6">
+                    <h3 className="font-semibold text-sm mb-2 text-muted-foreground">
+                      Texto extraído:
+                    </h3>
+                    <p className="text-sm text-foreground bg-secondary/30 p-4 rounded-lg italic">
+                      "{extractedText}"
+                    </p>
                   </div>
                 )}
+
+                {/* Hash for custody */}
+                {fileHash && (
+                  <div className="px-6 pb-6">
+                    <p className="text-xs text-muted-foreground font-mono">
+                      SHA-256: {fileHash.substring(0, 32)}...
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* Claims */}
+              {newsAnalysis.claims && newsAnalysis.claims.length > 0 && (
+                <div className="bg-card rounded-xl border border-border shadow-card">
+                  <div className="p-6 border-b border-border">
+                    <h2 className="font-display font-semibold text-lg">
+                      Afirmações Identificadas
+                    </h2>
+                  </div>
+
+                  <div className="divide-y divide-border">
+                    {newsAnalysis.claims.map((claim: Claim, index: number) => (
+                      <div key={index} className="p-6">
+                        <div className="flex items-start gap-4">
+                          <VerdictBadge verdict={claim.verdict} size="sm" />
+                          <div className="flex-1">
+                            <p className="font-medium text-foreground mb-2">
+                              "{claim.text}"
+                            </p>
+                            <p className="text-sm text-muted-foreground leading-relaxed mb-4">
+                              {claim.explanation}
+                            </p>
+
+                            {claim.sources && claim.sources.length > 0 && (
+                              <div className="space-y-2">
+                                {claim.sources.map((source, sIndex) => (
+                                  <a
+                                    key={sIndex}
+                                    href={source.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
+                                  >
+                                    <FileText className="w-3 h-3" />
+                                    {source.law} - {source.article}
+                                    <ExternalLink className="w-3 h-3" />
+                                  </a>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <ShareButtons
+                  verdict={newsAnalysis.overallVerdict}
+                  summary={newsAnalysis.summary}
+                  sources={newsAnalysis.claims?.flatMap((c: Claim) => c.sources || [])}
+                />
+                <Button variant="ghost" onClick={handleClear}>
+                  Analisar outro arquivo
+                </Button>
               </div>
             </div>
           )}
 
-          {/* Analysis Results */}
-          {analysis && (
-            <div className="space-y-6 animate-fade-in">
-              {/* Image with Verdict */}
-              <div className="bg-card rounded-xl border border-border shadow-card overflow-hidden">
-                <div className="relative">
-                  <img
-                    src={image!}
-                    alt="Imagem analisada"
-                    className="w-full max-h-[300px] object-contain bg-secondary/30"
-                  />
-                  <div className="absolute top-4 left-4">
-                    <VerdictBadge verdict={analysis.overallVerdict} size="lg" />
-                  </div>
-                  <Button
-                    variant="secondary"
-                    size="icon"
-                    className="absolute top-4 right-4"
-                    onClick={clearImage}
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-
-                {/* Extracted Text */}
-                <div className="p-6 border-t border-border">
-                  <h3 className="font-semibold text-sm mb-2 text-muted-foreground">
-                    Texto extraído da imagem:
-                  </h3>
-                  <p className="text-foreground bg-secondary/30 p-4 rounded-lg italic">
-                    "{analysis.extractedText}"
-                  </p>
-                </div>
-              </div>
-
-              {/* Claims Analysis */}
-              <div className="bg-card rounded-xl border border-border shadow-card">
-                <div className="p-6 border-b border-border">
-                  <h2 className="font-display font-semibold text-lg">
-                    Afirmações Identificadas
-                  </h2>
-                </div>
-
-                <div className="divide-y divide-border">
-                  {analysis.claims.map((claim, index) => (
-                    <div key={index} className="p-6">
-                      <div className="flex items-start gap-4">
-                        <VerdictBadge verdict={claim.verdict} size="sm" />
-                        <div className="flex-1">
-                          <p className="font-medium text-foreground mb-2">
-                            "{claim.text}"
-                          </p>
-                          <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-                            {claim.explanation}
-                          </p>
-
-                          {claim.sources && claim.sources.length > 0 && (
-                            <div className="space-y-2">
-                              {claim.sources.map((source, sIndex) => (
-                                <a
-                                  key={sIndex}
-                                  href={source.url}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-2 text-sm text-primary hover:underline"
-                                >
-                                  <FileText className="w-3 h-3" />
-                                  {source.law} - {source.article}
-                                  <ExternalLink className="w-3 h-3" />
-                                </a>
-                              ))}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex flex-wrap gap-3">
-                <Button variant="outline" className="gap-2">
-                  <FileText className="w-4 h-4" />
-                  Gerar Relatório PDF
-                </Button>
-                <Button variant="ghost" onClick={clearImage}>
-                  Analisar outra imagem
-                </Button>
+          {/* Quality Warning */}
+          {analysis && isNewsMode && newsAnalysis?.overallVerdict === "unverifiable" && (
+            <div className="mt-4 p-4 rounded-lg bg-secondary/50 flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-verdict-misleading shrink-0" />
+              <div>
+                <p className="font-medium text-foreground">
+                  Verificação inconclusiva
+                </p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  Não foi possível verificar todas as afirmações apenas com base na legislação.
+                  Para afirmações sobre programas governamentais ou anúncios recentes,
+                  consulte fontes oficiais como gov.br.
+                </p>
               </div>
             </div>
           )}
