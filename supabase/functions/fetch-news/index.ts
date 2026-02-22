@@ -25,6 +25,11 @@ const RSS_FEEDS: Record<string, { name: string; url: string; encoding?: string }
     { name: "Brasil Paralelo", url: "https://www.brasilparalelo.com.br/feed" },
     { name: "Jornal da Cidade Online", url: "https://www.jornaldacidadeonline.com.br/feed" },
     { name: "Esquerda Diário", url: "https://www.esquerdadiario.com.br/feed" },
+    { name: "Revista Crusoé", url: "https://crusoe.com.br/feed/" },
+    { name: "Pleno News", url: "https://pleno.news/feed" },
+    { name: "Conexão Política", url: "https://conexaopolitica.com.br/feed/" },
+    { name: "Poder360", url: "https://www.poder360.com.br/feed/" },
+    { name: "Revista Oeste", url: "https://revistaoeste.com/feed/" },
   ],
   politica: [
     { name: "G1 Política", url: "https://g1.globo.com/rss/g1/politica/" },
@@ -43,6 +48,10 @@ const RSS_FEEDS: Record<string, { name: string; url: string; encoding?: string }
     { name: "Brasil Paralelo", url: "https://www.brasilparalelo.com.br/feed" },
     { name: "Jornal da Cidade Online", url: "https://www.jornaldacidadeonline.com.br/feed" },
     { name: "Esquerda Diário", url: "https://www.esquerdadiario.com.br/feed" },
+    { name: "Revista Crusoé", url: "https://crusoe.com.br/feed/" },
+    { name: "Pleno News", url: "https://pleno.news/feed" },
+    { name: "Conexão Política", url: "https://conexaopolitica.com.br/feed/" },
+    { name: "Poder360", url: "https://www.poder360.com.br/feed/" },
   ],
   economia: [
     { name: "G1 Economia", url: "https://g1.globo.com/rss/g1/economia/" },
