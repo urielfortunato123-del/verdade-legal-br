@@ -44,9 +44,12 @@ export function Footer() {
           </nav>
 
           {/* Copyright */}
-          <p className="text-sm text-foreground/60">
-            © {new Date().getFullYear()} Verdade na Lei BR
-          </p>
+          <div className="text-sm text-foreground/60 text-center md:text-right">
+            <p>© {new Date().getFullYear()} Verdade na Lei BR</p>
+            <p className="text-xs mt-1">
+              Desenvolvido por <span className="font-semibold text-foreground/80">Uriel da Fonseca Fortunato</span>
+            </p>
+          </div>
         </div>
       </div>
     </footer>
