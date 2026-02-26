@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Scale, Menu, X, Settings, Info, History, Share2, MoreHorizontal } from "lucide-react";
+import { Scale, Menu, X, Settings, Info, History, Share2, MoreHorizontal, Heart } from "lucide-react";
 import { useState } from "react";
+import { DonationModal } from "./DonationModal";
 import { Button } from "./ui/button";
 import {
   DropdownMenu,
@@ -29,6 +30,7 @@ const moreLinks = [
 export function Header() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [donationOpen, setDonationOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-white/10">
@@ -112,6 +114,17 @@ export function Header() {
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+
+            {/* Donation Button */}
+            <button
+              onClick={() => setDonationOpen(true)}
+              className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-1.5 bg-amarelo-ouro/10 text-amarelo-ouro hover:bg-amarelo-ouro/20 border border-amarelo-ouro/30"
+            >
+              <Heart className="w-4 h-4" />
+              Ajude o app
+            </button>
+
+            <DonationModal open={donationOpen} onOpenChange={setDonationOpen} />
           </nav>
 
           {/* Mobile Menu Button */}
@@ -188,6 +201,16 @@ export function Header() {
                 >
                   <Share2 className="w-5 h-5" />
                   Compartilhar app
+                </button>
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    setDonationOpen(true);
+                  }}
+                  className="w-full px-4 py-3 rounded-xl text-base font-medium transition-colors flex items-center gap-3 bg-amarelo-ouro/10 text-amarelo-ouro hover:bg-amarelo-ouro/20 border border-amarelo-ouro/30 mt-2"
+                >
+                  <Heart className="w-5 h-5" />
+                  💛 Ajude o app a continuar rodando
                 </button>
               </div>
             </div>

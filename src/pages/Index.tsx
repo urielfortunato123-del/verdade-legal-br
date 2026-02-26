@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { SearchBar } from "@/components/SearchBar";
 import { NewsSection } from "@/components/NewsSection";
+import { DonationModal, useDonationModal } from "@/components/DonationModal";
 import {
   MessageSquare,
   FileText,
@@ -14,7 +15,7 @@ import {
 
 const Index = () => {
   const navigate = useNavigate();
-
+  const { open: donationOpen, setOpen: setDonationOpen } = useDonationModal();
   const menuItems = [
     {
       icon: Search,
@@ -75,6 +76,7 @@ const Index = () => {
 
   return (
     <Layout>
+      <DonationModal open={donationOpen} onOpenChange={setDonationOpen} />
       <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="max-w-4xl mx-auto">
           {/* Avatar & Greeting */}
