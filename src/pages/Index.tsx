@@ -82,8 +82,8 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           {/* Avatar & Greeting */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-24 h-24 rounded-full overflow-hidden mb-4 shadow-lg">
-              <img src={brazilFlag} alt="Bandeira do Brasil" className="w-full h-full object-cover" />
+            <div className="w-28 h-28 rounded-full overflow-hidden mb-4 shadow-lg border-2 border-verde/30">
+              <img src={brazilFlag} alt="Bandeira do Brasil" className="w-full h-full object-cover scale-125" />
             </div>
             <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-1">
               Olá Brasileiro
