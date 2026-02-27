@@ -40,7 +40,7 @@ export function Header() {
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
             <div className="w-10 h-10 rounded-xl overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
-              <img src={brazilFlag} alt="Bandeira do Brasil" className="w-full h-full object-cover" />
+              <img src={brazilFlag} alt="Bandeira do Brasil" className="w-full h-full object-cover scale-150" />
             </div>
             <div className="hidden sm:flex flex-col">
               <span className="font-display font-bold text-base text-foreground leading-tight">
