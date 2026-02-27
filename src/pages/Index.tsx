@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import brazilFlag from "@/assets/brazil-flag.jpg";
 import { Layout } from "@/components/Layout";
 import { SearchBar } from "@/components/SearchBar";
 import { NewsSection } from "@/components/NewsSection";
@@ -81,8 +82,8 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           {/* Avatar & Greeting */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-24 h-24 rounded-full flex items-center justify-center overflow-hidden mb-4 shadow-lg bg-muted">
-              <span className="text-[126px] leading-none">🇧🇷</span>
+            <div className="w-24 h-24 rounded-full overflow-hidden mb-4 shadow-lg">
+              <img src={brazilFlag} alt="Bandeira do Brasil" className="w-full h-full object-cover" />
             </div>
             <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-1">
               Olá Brasileiro
