@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Scale, Menu, X, Settings, Info, History, Share2, MoreHorizontal, Heart } from "lucide-react";
+import { Menu, X, Settings, Info, History, Share2, MoreHorizontal, Heart } from "lucide-react";
+import brazilFlag from "@/assets/brazil-flag.jpg";
 import { useState } from "react";
 import { DonationModal } from "./DonationModal";
 import { Button } from "./ui/button";
@@ -38,8 +39,8 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 bg-verde rounded-xl flex items-center justify-center shadow-md group-hover:shadow-lg transition-shadow">
-              <Scale className="w-5 h-5 text-primary-foreground" />
+            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
+              <img src={brazilFlag} alt="Bandeira do Brasil" className="w-full h-full object-cover" />
             </div>
             <div className="hidden sm:flex flex-col">
               <span className="font-display font-bold text-base text-foreground leading-tight">
