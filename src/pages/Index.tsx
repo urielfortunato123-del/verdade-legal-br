@@ -23,9 +23,7 @@ const Index = () => {
     { icon: Search, label: "Fact Check", href: "/fact-check", variant: "pink" as const },
     { icon: MessageSquare, label: "Perguntar", href: "/perguntar", variant: "green" as const },
     { icon: FileText, label: "Checar Imagem", href: "/checar-imagem", variant: "blue" as const },
-    { icon: Mic, label: "Checar Áudio", href: "/checar-audio", variant: "yellow" as const },
     { icon: BookOpen, label: "Biblioteca", href: "/biblioteca", variant: "green" as const },
-    { icon: Clock, label: "Histórico", href: "/historico", variant: "blue" as const },
   ];
 
   const quickQuestions = [
