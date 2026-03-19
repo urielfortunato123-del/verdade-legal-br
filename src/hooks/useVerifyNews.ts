@@ -9,6 +9,7 @@ export interface VerificationResult {
   confidence: number;
   explanation: string;
   sources: string[];
+  sourcesChecked?: number;
 }
 
 export function useVerifyNews() {
