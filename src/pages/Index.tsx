@@ -83,7 +83,6 @@ const Index = () => {
       <DonationModal open={donationOpen} onOpenChange={setDonationOpen} />
       <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="max-w-4xl mx-auto">
-        <div className="max-w-4xl mx-auto">
           {/* Avatar & Greeting */}
           <div className="flex flex-col items-center mb-8">
             <div className="w-28 h-28 rounded-full overflow-hidden mb-4 shadow-lg border-2 border-verde/30">
