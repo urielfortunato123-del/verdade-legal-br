@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { Header } from "./Header";
 import { Footer } from "./Footer";
+import { PageTransition } from "./PageTransition";
 
 interface LayoutProps {
   children: ReactNode;
@@ -12,7 +13,9 @@ export function Layout({ children, hideHeader = false, hideFooter = false }: Lay
   return (
     <div className="min-h-screen flex flex-col">
       {!hideHeader && <Header />}
-      <main className="flex-1">{children}</main>
+      <main className="flex-1">
+        <PageTransition>{children}</PageTransition>
+      </main>
       {!hideFooter && <Footer />}
     </div>
   );
