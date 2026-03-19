@@ -43,22 +43,22 @@ const verdictConfig: Record<
   confirmed: {
     label: "Confirmado",
     icon: CheckCircle2,
-    className: "bg-green-100 dark:bg-green-500/20 text-green-700 dark:text-green-300 border-green-300 dark:border-green-500/30",
+    className: "verdict-confirmed",
   },
   misleading: {
     label: "Enganoso",
     icon: AlertTriangle,
-    className: "bg-yellow-100 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300 border-yellow-300 dark:border-yellow-500/30",
+    className: "verdict-misleading",
   },
   false: {
     label: "Falso",
     icon: XCircle,
-    className: "bg-red-100 dark:bg-red-500/20 text-red-700 dark:text-red-300 border-red-300 dark:border-red-500/30",
+    className: "verdict-false",
   },
   unverifiable: {
     label: "Não verificável",
     icon: HelpCircle,
-    className: "bg-gray-100 dark:bg-gray-500/20 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-500/30",
+    className: "verdict-unverifiable",
   },
 };
 
@@ -261,7 +261,7 @@ function VerdictBadge({ verification }: { verification: { verdict: VerdictType; 
   const config = verdictConfig[verification.verdict];
   const Icon = config.icon;
   return (
-    <div className={cn("mt-2 p-2.5 rounded-lg border text-xs", config.className)}>
+    <div className={cn("mt-2 p-2.5 rounded-sm border text-xs", config.className)}>
       <div className="flex items-center gap-1.5 mb-0.5">
         <Icon className="w-3.5 h-3.5" />
         <span className="font-bold font-sans">{config.label}</span>
