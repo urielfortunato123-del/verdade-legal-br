@@ -21,7 +21,7 @@ const Index = () => {
   const menuItems = [
     { icon: Search, label: "Fact Check", href: "/fact-check" },
     { icon: MessageSquare, label: "Perguntar", href: "/perguntar" },
-    { icon: FileText, label: "Checar Imagem", href: "/checar-imagem" },
+    
     { icon: BookOpen, label: "Biblioteca", href: "/biblioteca" },
   ];
 
