@@ -12,6 +12,7 @@ import {
   BookOpen,
   Search,
   ChevronRight,
+  User,
 } from "lucide-react";
 
 const Index = () => {
