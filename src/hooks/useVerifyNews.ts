@@ -9,6 +9,7 @@ export interface VerificationResult {
   confidence: number;
   explanation: string;
   sources: string[];
+  sourcesChecked?: number;
 }
 
 export function useVerifyNews() {
@@ -39,6 +40,7 @@ export function useVerifyNews() {
         confidence: data.confidence,
         explanation: data.explanation,
         sources: data.sources || [],
+        sourcesChecked: data.sourcesChecked || 0,
       };
 
       setResults((prev) => ({ ...prev, [newsId]: result }));
