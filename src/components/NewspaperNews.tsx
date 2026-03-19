@@ -82,6 +82,31 @@ export function NewspaperNews() {
     }
   };
 
+  const requestLocation = useCallback(() => {
+    if (userLocation) return;
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+        setIsLocating(false);
+        toast.success("Localização obtida! Buscando notícias locais...");
+      },
+      () => {
+        setIsLocating(false);
+        toast.error("Não foi possível obter sua localização. Verifique as permissões do navegador.");
+        setCategory("geral");
+      },
+      { enableHighAccuracy: false, timeout: 10000 }
+    );
+  }, [userLocation]);
+
+  const handleCategoryChange = (cat: NewsCategory) => {
+    setCategory(cat);
+    if (cat === "local" && !userLocation) {
+      requestLocation();
+    }
+  };
+
   const handleVerify = async (
     e: React.MouseEvent, idx: number,
     item: { title: string; description: string; source: string; link: string }
