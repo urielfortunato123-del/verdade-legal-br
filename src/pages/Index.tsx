@@ -139,11 +139,15 @@ const Index = () => {
                 </div>
 
                 <div className="space-y-2">
-                  {quickQuestions.map((question) => (
-                    <button
+                  {quickQuestions.map((question, i) => (
+                    <motion.button
                       key={question}
+                      initial={{ opacity: 0, x: 12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 + i * 0.1, duration: 0.35 }}
+                      whileHover={{ x: 4 }}
                       onClick={() => navigate(`/perguntar?q=${encodeURIComponent(question)}`)}
-                      className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg bg-muted/50 border border-border hover:bg-muted hover:border-primary/30 transition-all"
+                      className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg bg-muted/50 border border-border hover:bg-muted hover:border-primary/30 transition-colors"
                     >
                       <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-lg bg-verde flex items-center justify-center">
@@ -152,7 +156,7 @@ const Index = () => {
                         <span className="font-medium text-sm text-card-foreground">{question}</span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>

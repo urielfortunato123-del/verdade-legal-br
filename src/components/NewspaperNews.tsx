@@ -245,7 +245,7 @@ export function NewspaperNews() {
                       {isCurrentlyAnalyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <><FileText className="w-3 h-3 mr-0.5" />PDF</>}
                     </Button>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
