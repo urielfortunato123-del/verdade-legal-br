@@ -146,7 +146,7 @@ export function NewspaperNews() {
         {categories.map((cat) => (
           <button
             key={cat.id}
-            onClick={() => setCategory(cat.id)}
+            onClick={() => handleCategoryChange(cat.id)}
             className={cn(
               "flex items-center gap-1.5 px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap border-b-2 font-sans",
               category === cat.id
