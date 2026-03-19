@@ -233,14 +233,26 @@ export function NewspaperNews() {
                     </span>
                   </div>
 
-                  <a href={item.link} target="_blank" rel="noopener noreferrer" className="group block">
-                    <h4 className="font-serif font-bold text-sm text-foreground leading-snug mb-1 group-hover:text-primary transition-colors">
-                      {item.title}
-                    </h4>
-                    {item.description && (
-                      <p className="text-xs text-muted-foreground font-body line-clamp-2 leading-relaxed">
-                        {item.description}
-                      </p>
+                  <a href={item.link} target="_blank" rel="noopener noreferrer" className="group flex gap-3">
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-serif font-bold text-sm text-foreground leading-snug mb-1 group-hover:text-primary transition-colors">
+                        {item.title}
+                      </h4>
+                      {item.description && (
+                        <p className="text-xs text-muted-foreground font-body line-clamp-2 leading-relaxed">
+                          {item.description}
+                        </p>
+                      )}
+                    </div>
+                    {item.imageUrl && (
+                      <div className="w-20 h-20 flex-shrink-0 overflow-hidden rounded-sm">
+                        <img
+                          src={item.imageUrl}
+                          alt=""
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                          onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none'; }}
+                        />
+                      </div>
                     )}
                   </a>
 
