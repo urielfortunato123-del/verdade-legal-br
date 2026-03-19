@@ -11,7 +11,7 @@ import { toast } from "sonner";
 import pixQrCode from "@/assets/pix-qrcode.jpg";
 
 const PIX_CODE =
-  "00020126330014BR.GOV.BCB.PIX01113638483487152040000530398658 02BR5901N6001C62140510SOSCIDAD4O6304DF0C";
+  "00020126330014BR.GOV.BCB.PIX01113638484834871520400005303986540410039865404100580 2BR5901N6001C62140510YARRLISTTV630454AC";
 
 interface DonationModalProps {
   open: boolean;
@@ -42,7 +42,7 @@ export function DonationModal({ open, onOpenChange }: DonationModalProps) {
           <p className="text-sm text-muted-foreground text-center leading-relaxed">
             Este aplicativo tem custos para se manter ativo e gratuito para todos.
             Se ele te ajuda, considere fazer uma contribuição via PIX a partir de{" "}
-            <strong className="text-foreground">R$ 20,00</strong>! 🙏
+            <strong className="text-foreground">R$ 1,00</strong>! 🙏
           </p>
 
           {/* QR Code */}
