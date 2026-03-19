@@ -94,9 +94,12 @@ const Index = () => {
             <p className="text-lg text-foreground/80 font-medium mb-3">
               Antes de acreditar, verifique!
             </p>
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-muted text-muted-foreground">
-              <span>🇧🇷</span>
-              <span>Brasil</span>
+            <div className="flex items-center gap-3 flex-wrap justify-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-muted text-muted-foreground">
+                <span>🇧🇷</span>
+                <span>Brasil</span>
+              </div>
+              <LiveVisitorCounter />
             </div>
           </div>
 
