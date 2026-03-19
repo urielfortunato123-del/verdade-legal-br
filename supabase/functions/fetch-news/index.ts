@@ -89,6 +89,7 @@ interface NewsItem {
   description: string;
   pubDate: string;
   source: string;
+  imageUrl: string | null;
 }
 
 function parseRSSItem(item: string, source: string): NewsItem | null {
