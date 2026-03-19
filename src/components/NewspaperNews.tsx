@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useNews, NewsCategory } from "@/hooks/useNews";
 import { useVerifyNews, VerdictType } from "@/hooks/useVerifyNews";
 import { useAnalyzeNews, AnalysisResult } from "@/hooks/useAnalyzeNews";
