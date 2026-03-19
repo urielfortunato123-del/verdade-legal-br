@@ -18,12 +18,10 @@ const navLinks = [
   { href: "/", label: "Início" },
   { href: "/perguntar", label: "Perguntar" },
   { href: "/checar-imagem", label: "Checar" },
-  { href: "/checar-audio", label: "Áudio" },
   { href: "/biblioteca", label: "Leis" },
 ];
 
 const moreLinks = [
-  { href: "/historico", label: "Histórico", icon: History },
   { href: "/configuracoes", label: "Configurações", icon: Settings },
   { href: "/sobre", label: "Sobre o app", icon: Info },
 ];

@@ -95,8 +95,7 @@ export function SearchBar() {
           className="flex-1 bg-transparent text-white placeholder:text-white/40 outline-none text-sm"
         />
         <button 
-          type="button"
-          onClick={() => navigate("/checar-audio")}
+          type="submit"
           className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all hover:scale-105"
         >
           <Mic className="w-4 h-4 text-white/70" />
