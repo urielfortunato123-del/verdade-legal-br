@@ -79,8 +79,10 @@ const Index = () => {
 
   return (
     <Layout>
+      <HeadlinesTicker />
       <DonationModal open={donationOpen} onOpenChange={setDonationOpen} />
       <div className="container mx-auto px-4 py-8 md:py-12">
+        <div className="max-w-4xl mx-auto">
         <div className="max-w-4xl mx-auto">
           {/* Avatar & Greeting */}
           <div className="flex flex-col items-center mb-8">
