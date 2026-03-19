@@ -1,7 +1,6 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Menu, X, Settings, Info, History, Share2, MoreHorizontal, Heart } from "lucide-react";
-import brazilFlag from "@/assets/brazil-flag.jpg";
+import { Menu, X, Settings, Info, Share2, MoreHorizontal, Heart } from "lucide-react";
 import { useState } from "react";
 import { DonationModal } from "./DonationModal";
 import { Button } from "./ui/button";
@@ -32,61 +31,53 @@ export function Header() {
   const [donationOpen, setDonationOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-white/10">
+    <header className="sticky top-0 z-50 bg-background border-b border-border">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 group">
-            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-md group-hover:shadow-lg transition-shadow">
-              <img src={brazilFlag} alt="Bandeira do Brasil" className="w-full h-full object-cover scale-150" />
-            </div>
-            <div className="hidden sm:flex flex-col">
-              <span className="font-display font-bold text-base text-foreground leading-tight">
-                Verdade na Lei
-              </span>
-              <span className="text-[10px] font-semibold text-amarelo-progresso tracking-widest">
-                BRASIL
-              </span>
-            </div>
+        <div className="flex items-center justify-between h-12">
+          {/* Logo — NYT style text-only */}
+          <Link to="/" className="flex items-center gap-2 group">
+            <span className="font-serif font-bold text-lg text-foreground tracking-tight leading-none">
+              Verdade na Lei
+            </span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1">
+          {/* Desktop Navigation — flat text links */}
+          <nav className="hidden lg:flex items-center gap-0.5">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 to={link.href}
                 className={cn(
-                  "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200",
+                  "px-3 py-1.5 text-[13px] font-medium transition-colors rounded-sm",
                   location.pathname === link.href
-                    ? "bg-verde text-white shadow-md"
-                    : "text-foreground/80 hover:text-foreground hover:bg-muted/50"
+                    ? "bg-foreground text-background"
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {link.label}
               </Link>
             ))}
             
-            {/* More Menu */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
                   variant="ghost"
+                  size="sm"
                   className={cn(
-                    "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 gap-1",
+                    "px-3 py-1.5 text-[13px] font-medium h-auto gap-1 rounded-sm",
                     moreLinks.some(l => location.pathname === l.href)
-                      ? "bg-verde text-white shadow-md"
-                      : "text-foreground/80 hover:text-foreground hover:bg-muted/50"
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:text-foreground"
                   )}
                 >
                   Mais
-                  <MoreHorizontal className="w-4 h-4" />
+                  <MoreHorizontal className="w-3.5 h-3.5" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuContent align="end" className="w-48 rounded-sm">
                 {moreLinks.map((link) => (
                   <DropdownMenuItem key={link.href} asChild>
-                    <Link to={link.href} className="flex items-center gap-2 cursor-pointer">
+                    <Link to={link.href} className="flex items-center gap-2 cursor-pointer text-sm">
                       <link.icon className="w-4 h-4" />
                       {link.label}
                     </Link>
@@ -106,21 +97,20 @@ export function Header() {
                       toast.success("Link copiado!");
                     }
                   }}
-                  className="flex items-center gap-2 cursor-pointer"
+                  className="flex items-center gap-2 cursor-pointer text-sm"
                 >
                   <Share2 className="w-4 h-4" />
-                  Compartilhar app
+                  Compartilhar
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Donation Button */}
             <button
               onClick={() => setDonationOpen(true)}
-              className="px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-1.5 bg-amarelo-ouro/10 text-amarelo-ouro hover:bg-amarelo-ouro/20 border border-amarelo-ouro/30"
+              className="ml-2 px-3 py-1.5 text-[13px] font-medium transition-colors flex items-center gap-1 text-accent hover:text-accent/80"
             >
-              <Heart className="w-4 h-4" />
-              Ajude o app
+              <Heart className="w-3.5 h-3.5" />
+              Apoiar
             </button>
 
             <DonationModal open={donationOpen} onOpenChange={setDonationOpen} />
@@ -130,86 +120,54 @@ export function Header() {
           <Button
             variant="ghost"
             size="icon"
-            className="lg:hidden text-foreground hover:bg-white/10"
+            className="lg:hidden h-8 w-8"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
-            {mobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </Button>
         </div>
 
         {/* Mobile Navigation */}
         {mobileMenuOpen && (
-          <nav className="lg:hidden py-4 border-t border-border animate-fade-in">
-            <div className="flex flex-col gap-1">
+          <nav className="lg:hidden py-3 border-t border-border animate-fade-in">
+            <div className="flex flex-col gap-0.5">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   to={link.href}
                   onClick={() => setMobileMenuOpen(false)}
                   className={cn(
-                    "px-4 py-3 rounded-xl text-base font-medium transition-colors",
+                    "px-3 py-2.5 text-sm font-medium transition-colors",
                     location.pathname === link.href
-                      ? "bg-verde text-white"
-                      : "text-foreground/80 hover:text-foreground hover:bg-muted/50"
+                      ? "bg-foreground text-background"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
                   )}
                 >
                   {link.label}
                 </Link>
               ))}
               
-              {/* More Section in Mobile */}
               <div className="mt-2 pt-2 border-t border-border">
-                <p className="px-4 py-2 text-xs text-muted-foreground font-semibold uppercase tracking-wider">
-                  Mais
-                </p>
                 {moreLinks.map((link) => (
                   <Link
                     key={link.href}
                     to={link.href}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={cn(
-                      "px-4 py-3 rounded-xl text-base font-medium transition-colors flex items-center gap-3",
-                      location.pathname === link.href
-                        ? "bg-verde text-white"
-                        : "text-foreground/80 hover:text-foreground hover:bg-muted/50"
-                    )}
+                    className="px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground flex items-center gap-2"
                   >
-                    <link.icon className="w-5 h-5" />
+                    <link.icon className="w-4 h-4" />
                     {link.label}
                   </Link>
                 ))}
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
-                    if (navigator.share) {
-                      navigator.share({
-                        title: "Verdade na Lei Brasil",
-                        text: "Verifique fatos com base na legislação brasileira!",
-                        url: window.location.origin,
-                      });
-                    } else {
-                      navigator.clipboard.writeText(window.location.origin);
-                      toast.success("Link copiado!");
-                    }
-                  }}
-                  className="w-full px-4 py-3 rounded-xl text-base font-medium transition-colors flex items-center gap-3 text-foreground/80 hover:text-foreground hover:bg-muted/50"
-                >
-                  <Share2 className="w-5 h-5" />
-                  Compartilhar app
-                </button>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
                     setDonationOpen(true);
                   }}
-                  className="w-full px-4 py-3 rounded-xl text-base font-medium transition-colors flex items-center gap-3 bg-amarelo-ouro/10 text-amarelo-ouro hover:bg-amarelo-ouro/20 border border-amarelo-ouro/30 mt-2"
+                  className="w-full px-3 py-2.5 text-sm font-medium text-accent flex items-center gap-2 mt-1"
                 >
-                  <Heart className="w-5 h-5" />
-                  💛 Ajude o app a continuar rodando
+                  <Heart className="w-4 h-4" />
+                  Apoiar o projeto
                 </button>
               </div>
             </div>
