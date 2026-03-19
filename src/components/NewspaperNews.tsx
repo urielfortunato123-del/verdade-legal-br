@@ -162,7 +162,19 @@ export function NewspaperNews() {
                   {featuredNews.source} • {formatDate(featuredNews.pubDate)}
                 </span>
               </div>
+
               <a href={featuredNews.link} target="_blank" rel="noopener noreferrer" className="group block">
+                {/* Featured image */}
+                {featuredNews.imageUrl && (
+                  <div className="mb-3 overflow-hidden rounded-sm">
+                    <img
+                      src={featuredNews.imageUrl}
+                      alt={featuredNews.title}
+                      className="w-full h-48 md:h-64 object-cover transition-transform duration-500 group-hover:scale-105"
+                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                    />
+                  </div>
+                )}
                 <h3 className="font-serif font-bold text-xl md:text-2xl text-foreground leading-tight mb-2 group-hover:text-primary transition-colors">
                   {featuredNews.title}
                 </h3>
@@ -173,7 +185,6 @@ export function NewspaperNews() {
                 )}
               </a>
 
-              {/* Verification for featured */}
               {results[`${category}-0`] && (
                 <VerdictBadge verification={results[`${category}-0`]} />
               )}
