@@ -40,6 +40,7 @@ export function useVerifyNews() {
         confidence: data.confidence,
         explanation: data.explanation,
         sources: data.sources || [],
+        sourcesChecked: data.sourcesChecked || 0,
       };
 
       setResults((prev) => ({ ...prev, [newsId]: result }));
