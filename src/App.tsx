@@ -9,6 +9,7 @@ import Perguntar from "./pages/Perguntar";
 import FactCheck from "./pages/FactCheck";
 
 import Biblioteca from "./pages/Biblioteca";
+import Candidatos from "./pages/Candidatos";
 import Configuracoes from "./pages/Configuracoes";
 import Sobre from "./pages/Sobre";
 import NotFound from "./pages/NotFound";
