@@ -10,14 +10,20 @@ export interface NewsItem {
   imageUrl: string | null;
 }
 
-export type NewsCategory = "geral" | "politica" | "economia" | "esportes" | "tecnologia" | "entretenimento";
+export type NewsCategory = "geral" | "politica" | "economia" | "esportes" | "tecnologia" | "entretenimento" | "local";
 
-export function useNews(category: NewsCategory = "geral") {
+export function useNews(category: NewsCategory = "geral", location?: { lat: number; lon: number } | null) {
   return useQuery({
-    queryKey: ["news", category],
+    queryKey: ["news", category, location?.lat, location?.lon],
     queryFn: async (): Promise<NewsItem[]> => {
+      const body: Record<string, unknown> = { category };
+      if (category === "local" && location) {
+        body.latitude = location.lat;
+        body.longitude = location.lon;
+      }
+
       const { data, error } = await supabase.functions.invoke("fetch-news", {
-        body: { category },
+        body,
       });
 
       if (error) {
@@ -31,7 +37,8 @@ export function useNews(category: NewsCategory = "geral") {
 
       return data.news;
     },
-    staleTime: 5 * 60 * 1000, // 5 minutos
-    refetchInterval: 10 * 60 * 1000, // Atualiza a cada 10 minutos
+    staleTime: 5 * 60 * 1000,
+    refetchInterval: 10 * 60 * 1000,
+    enabled: category !== "local" || !!location,
   });
 }

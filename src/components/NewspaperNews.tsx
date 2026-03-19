@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useNews, NewsCategory } from "@/hooks/useNews";
 import { useVerifyNews, VerdictType } from "@/hooks/useVerifyNews";
@@ -21,14 +21,17 @@ import {
   Smartphone,
   Film,
   ExternalLink,
+  MapPin,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 const categories: { id: NewsCategory; label: string; icon: typeof Globe }[] = [
   { id: "geral", label: "Geral", icon: Globe },
+  { id: "local", label: "Local", icon: MapPin },
   { id: "politica", label: "Governo", icon: Landmark },
   { id: "economia", label: "Economia", icon: TrendingUp },
   { id: "esportes", label: "Esportes", icon: Dumbbell },
@@ -65,7 +68,9 @@ const verdictConfig: Record<
 export function NewspaperNews() {
   const [category, setCategory] = useState<NewsCategory>("geral");
   const [modalData, setModalData] = useState<AnalysisResult | null>(null);
-  const { data: news, isLoading, error, refetch, isFetching } = useNews(category);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const { data: news, isLoading, error, refetch, isFetching } = useNews(category, userLocation);
   const { verify, isVerifying, results } = useVerifyNews();
   const { analyze, isAnalyzing, results: analysisResults } = useAnalyzeNews();
 
@@ -74,6 +79,31 @@ export function NewspaperNews() {
       return formatDistanceToNow(new Date(dateString), { addSuffix: true, locale: ptBR });
     } catch {
       return "";
+    }
+  };
+
+  const requestLocation = useCallback(() => {
+    if (userLocation) return;
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setUserLocation({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+        setIsLocating(false);
+        toast.success("Localização obtida! Buscando notícias locais...");
+      },
+      () => {
+        setIsLocating(false);
+        toast.error("Não foi possível obter sua localização. Verifique as permissões do navegador.");
+        setCategory("geral");
+      },
+      { enableHighAccuracy: false, timeout: 10000 }
+    );
+  }, [userLocation]);
+
+  const handleCategoryChange = (cat: NewsCategory) => {
+    setCategory(cat);
+    if (cat === "local" && !userLocation) {
+      requestLocation();
     }
   };
 
@@ -116,7 +146,7 @@ export function NewspaperNews() {
         {categories.map((cat) => (
           <button
             key={cat.id}
-            onClick={() => setCategory(cat.id)}
+            onClick={() => handleCategoryChange(cat.id)}
             className={cn(
               "flex items-center gap-1.5 px-3 py-2 text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap border-b-2 font-sans",
               category === cat.id
@@ -124,8 +154,15 @@ export function NewspaperNews() {
                 : "border-transparent text-muted-foreground hover:text-foreground"
             )}
           >
-            <cat.icon className="w-3.5 h-3.5" />
+            {cat.id === "local" && isLocating ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <cat.icon className="w-3.5 h-3.5" />
+            )}
             {cat.label}
+            {cat.id === "local" && userLocation && category === "local" && (
+              <span className="w-1.5 h-1.5 rounded-full bg-verde animate-pulse" />
+            )}
           </button>
         ))}
       </div>

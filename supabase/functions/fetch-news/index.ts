@@ -220,28 +220,162 @@ async function fetchRSSFeed(feedUrl: string, sourceName: string): Promise<NewsIt
   }
 }
 
+// Mapeamento de coordenadas para estado/região do Brasil
+function getStateFromCoords(lat: number, lon: number): string {
+  // Approximate Brazilian state detection based on lat/lon ranges
+  const states: { name: string; feeds: { name: string; url: string }[]; latMin: number; latMax: number; lonMin: number; lonMax: number }[] = [
+    { name: "SP", latMin: -25.5, latMax: -19.5, lonMin: -53.5, lonMax: -44.0, feeds: [
+      { name: "G1 SP", url: "https://g1.globo.com/rss/g1/sao-paulo/" },
+      { name: "Folha SP", url: "https://feeds.folha.uol.com.br/cotidiano/rss091.xml" },
+      { name: "Estadão SP", url: "https://www.estadao.com.br/rss/sao-paulo.xml" },
+    ]},
+    { name: "RJ", latMin: -23.5, latMax: -20.5, lonMin: -44.9, lonMax: -40.5, feeds: [
+      { name: "G1 RJ", url: "https://g1.globo.com/rss/g1/rio-de-janeiro/" },
+      { name: "O Globo", url: "https://oglobo.globo.com/rss/oglobo.xml" },
+    ]},
+    { name: "MG", latMin: -23.0, latMax: -14.0, lonMin: -51.5, lonMax: -39.8, feeds: [
+      { name: "G1 MG", url: "https://g1.globo.com/rss/g1/minas-gerais/" },
+    ]},
+    { name: "BA", latMin: -18.5, latMax: -8.5, lonMin: -46.5, lonMax: -37.0, feeds: [
+      { name: "G1 BA", url: "https://g1.globo.com/rss/g1/bahia/" },
+    ]},
+    { name: "RS", latMin: -34.0, latMax: -27.0, lonMin: -58.0, lonMax: -49.5, feeds: [
+      { name: "G1 RS", url: "https://g1.globo.com/rss/g1/rs/" },
+      { name: "GaúchaZH", url: "https://gauchazh.clicrbs.com.br/rss/" },
+    ]},
+    { name: "PR", latMin: -27.0, latMax: -22.5, lonMin: -55.0, lonMax: -48.0, feeds: [
+      { name: "G1 PR", url: "https://g1.globo.com/rss/g1/parana/" },
+      { name: "Gazeta do Povo", url: "https://www.gazetadopovo.com.br/feed/rss/" },
+    ]},
+    { name: "SC", latMin: -29.5, latMax: -25.5, lonMin: -54.0, lonMax: -48.0, feeds: [
+      { name: "G1 SC", url: "https://g1.globo.com/rss/g1/santa-catarina/" },
+    ]},
+    { name: "PE", latMin: -10.0, latMax: -7.0, lonMin: -41.5, lonMax: -34.5, feeds: [
+      { name: "G1 PE", url: "https://g1.globo.com/rss/g1/pernambuco/" },
+    ]},
+    { name: "CE", latMin: -8.0, latMax: -2.5, lonMin: -41.5, lonMax: -37.0, feeds: [
+      { name: "G1 CE", url: "https://g1.globo.com/rss/g1/ceara/" },
+    ]},
+    { name: "DF", latMin: -16.1, latMax: -15.4, lonMin: -48.3, lonMax: -47.3, feeds: [
+      { name: "G1 DF", url: "https://g1.globo.com/rss/g1/distrito-federal/" },
+      { name: "Metrópoles DF", url: "https://www.metropoles.com/distrito-federal/feed" },
+    ]},
+    { name: "GO", latMin: -19.5, latMax: -12.5, lonMin: -53.0, lonMax: -46.0, feeds: [
+      { name: "G1 GO", url: "https://g1.globo.com/rss/g1/goias/" },
+    ]},
+    { name: "PA", latMin: -10.0, latMax: 2.5, lonMin: -58.5, lonMax: -46.0, feeds: [
+      { name: "G1 PA", url: "https://g1.globo.com/rss/g1/para/" },
+    ]},
+    { name: "AM", latMin: -10.0, latMax: 3.0, lonMin: -74.0, lonMax: -56.0, feeds: [
+      { name: "G1 AM", url: "https://g1.globo.com/rss/g1/amazonas/" },
+    ]},
+  ];
+
+  for (const state of states) {
+    if (lat >= state.latMin && lat <= state.latMax && lon >= state.lonMin && lon <= state.lonMax) {
+      return state.name;
+    }
+  }
+  return "BR"; // fallback
+}
+
+function getLocalFeeds(lat: number, lon: number): { name: string; url: string }[] {
+  const states = [
+    { name: "SP", latMin: -25.5, latMax: -19.5, lonMin: -53.5, lonMax: -44.0, feeds: [
+      { name: "G1 São Paulo", url: "https://g1.globo.com/rss/g1/sao-paulo/" },
+      { name: "Folha Cotidiano", url: "https://feeds.folha.uol.com.br/cotidiano/rss091.xml" },
+    ]},
+    { name: "RJ", latMin: -23.5, latMax: -20.5, lonMin: -44.9, lonMax: -40.5, feeds: [
+      { name: "G1 Rio de Janeiro", url: "https://g1.globo.com/rss/g1/rio-de-janeiro/" },
+    ]},
+    { name: "MG", latMin: -23.0, latMax: -14.0, lonMin: -51.5, lonMax: -39.8, feeds: [
+      { name: "G1 Minas Gerais", url: "https://g1.globo.com/rss/g1/minas-gerais/" },
+    ]},
+    { name: "BA", latMin: -18.5, latMax: -8.5, lonMin: -46.5, lonMax: -37.0, feeds: [
+      { name: "G1 Bahia", url: "https://g1.globo.com/rss/g1/bahia/" },
+    ]},
+    { name: "RS", latMin: -34.0, latMax: -27.0, lonMin: -58.0, lonMax: -49.5, feeds: [
+      { name: "G1 Rio Grande do Sul", url: "https://g1.globo.com/rss/g1/rs/" },
+    ]},
+    { name: "PR", latMin: -27.0, latMax: -22.5, lonMin: -55.0, lonMax: -48.0, feeds: [
+      { name: "G1 Paraná", url: "https://g1.globo.com/rss/g1/parana/" },
+      { name: "Gazeta do Povo", url: "https://www.gazetadopovo.com.br/feed/rss/" },
+    ]},
+    { name: "SC", latMin: -29.5, latMax: -25.5, lonMin: -54.0, lonMax: -48.0, feeds: [
+      { name: "G1 Santa Catarina", url: "https://g1.globo.com/rss/g1/santa-catarina/" },
+    ]},
+    { name: "PE", latMin: -10.0, latMax: -7.0, lonMin: -41.5, lonMax: -34.5, feeds: [
+      { name: "G1 Pernambuco", url: "https://g1.globo.com/rss/g1/pernambuco/" },
+    ]},
+    { name: "CE", latMin: -8.0, latMax: -2.5, lonMin: -41.5, lonMax: -37.0, feeds: [
+      { name: "G1 Ceará", url: "https://g1.globo.com/rss/g1/ceara/" },
+    ]},
+    { name: "DF", latMin: -16.1, latMax: -15.4, lonMin: -48.3, lonMax: -47.3, feeds: [
+      { name: "G1 Distrito Federal", url: "https://g1.globo.com/rss/g1/distrito-federal/" },
+      { name: "Metrópoles DF", url: "https://www.metropoles.com/distrito-federal/feed" },
+    ]},
+    { name: "GO", latMin: -19.5, latMax: -12.5, lonMin: -53.0, lonMax: -46.0, feeds: [
+      { name: "G1 Goiás", url: "https://g1.globo.com/rss/g1/goias/" },
+    ]},
+    { name: "PA", latMin: -10.0, latMax: 2.5, lonMin: -58.5, lonMax: -46.0, feeds: [
+      { name: "G1 Pará", url: "https://g1.globo.com/rss/g1/para/" },
+    ]},
+    { name: "AM", latMin: -10.0, latMax: 3.0, lonMin: -74.0, lonMax: -56.0, feeds: [
+      { name: "G1 Amazonas", url: "https://g1.globo.com/rss/g1/amazonas/" },
+    ]},
+    { name: "MA", latMin: -11.0, latMax: -1.0, lonMin: -48.5, lonMax: -41.5, feeds: [
+      { name: "G1 Maranhão", url: "https://g1.globo.com/rss/g1/maranhao/" },
+    ]},
+    { name: "ES", latMin: -21.5, latMax: -17.5, lonMin: -41.9, lonMax: -39.5, feeds: [
+      { name: "G1 Espírito Santo", url: "https://g1.globo.com/rss/g1/espirito-santo/" },
+    ]},
+  ];
+
+  for (const state of states) {
+    if (lat >= state.latMin && lat <= state.latMax && lon >= state.lonMin && lon <= state.lonMax) {
+      return state.feeds;
+    }
+  }
+
+  // Fallback: general Brazil feeds
+  return [
+    { name: "G1", url: "https://g1.globo.com/rss/g1/" },
+    { name: "Metrópoles", url: "https://www.metropoles.com/feed" },
+  ];
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Pegar categoria do body (se houver)
     let category = "geral";
+    let latitude: number | null = null;
+    let longitude: number | null = null;
+
     try {
       const body = await req.json();
-      if (body.category && RSS_FEEDS[body.category]) {
+      if (body.category && (RSS_FEEDS[body.category] || body.category === "local")) {
         category = body.category;
       }
+      if (body.latitude !== undefined) latitude = body.latitude;
+      if (body.longitude !== undefined) longitude = body.longitude;
     } catch {
       // Sem body, usar categoria geral
     }
 
-    console.log(`Fetching news from RSS feeds (category: ${category})...`);
+    console.log(`Fetching news (category: ${category}, lat: ${latitude}, lon: ${longitude})...`);
 
-    const feeds = RSS_FEEDS[category] || RSS_FEEDS.geral;
+    let feeds: { name: string; url: string }[];
 
-    // Buscar de todos os feeds em paralelo
+    if (category === "local" && latitude !== null && longitude !== null) {
+      feeds = getLocalFeeds(latitude, longitude);
+      console.log(`Local feeds for coords (${latitude}, ${longitude}):`, feeds.map(f => f.name));
+    } else {
+      feeds = RSS_FEEDS[category] || RSS_FEEDS.geral;
+    }
+
     const feedPromises = feeds.map((feed) =>
       fetchRSSFeed(feed.url, feed.name)
     );
@@ -249,14 +383,12 @@ serve(async (req) => {
     const results = await Promise.all(feedPromises);
     const allNews = results.flat();
 
-    // Ordenar por data (mais recentes primeiro)
     allNews.sort((a, b) => {
       const dateA = new Date(a.pubDate).getTime();
       const dateB = new Date(b.pubDate).getTime();
       return dateB - dateA;
     });
 
-    // Limitar a 15 notícias
     const news = allNews.slice(0, 15);
 
     console.log(`Fetched ${news.length} news items for category: ${category}`);
