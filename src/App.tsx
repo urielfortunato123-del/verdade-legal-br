@@ -8,9 +8,7 @@ import Index from "./pages/Index";
 import Perguntar from "./pages/Perguntar";
 import FactCheck from "./pages/FactCheck";
 import ChecarImagem from "./pages/ChecarImagem";
-import ChecarAudio from "./pages/ChecarAudio";
 import Biblioteca from "./pages/Biblioteca";
-import Historico from "./pages/Historico";
 import Configuracoes from "./pages/Configuracoes";
 import Sobre from "./pages/Sobre";
 import NotFound from "./pages/NotFound";
@@ -59,9 +57,7 @@ const App = () => (
             <Route path="/perguntar" element={<Perguntar />} />
             <Route path="/fact-check" element={<FactCheck />} />
             <Route path="/checar-imagem" element={<ChecarImagem />} />
-            <Route path="/checar-audio" element={<ChecarAudio />} />
             <Route path="/biblioteca" element={<Biblioteca />} />
-            <Route path="/historico" element={<Historico />} />
             <Route path="/configuracoes" element={<Configuracoes />} />
             <Route path="/sobre" element={<Sobre />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
