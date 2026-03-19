@@ -317,7 +317,7 @@ export function NewspaperNews() {
   );
 }
 
-function VerdictBadge({ verification }: { verification: { verdict: VerdictType; confidence: number; explanation: string; sources: string[] } }) {
+function VerdictBadge({ verification }: { verification: { verdict: VerdictType; confidence: number; explanation: string; sources: string[]; sourcesChecked?: number } }) {
   const config = verdictConfig[verification.verdict];
   const Icon = config.icon;
   return (
@@ -326,10 +326,28 @@ function VerdictBadge({ verification }: { verification: { verdict: VerdictType; 
         <Icon className="w-3.5 h-3.5" />
         <span className="font-bold font-sans">{config.label}</span>
         <span className="opacity-70 font-sans">({verification.confidence}%)</span>
+        {verification.sourcesChecked && verification.sourcesChecked > 0 && (
+          <span className="opacity-60 font-sans text-[10px] ml-auto">
+            {verification.sourcesChecked} fontes consultadas
+          </span>
+        )}
       </div>
       <p className="opacity-90 font-body leading-relaxed">{verification.explanation}</p>
       {verification.sources.length > 0 && (
-        <p className="mt-1 opacity-70 font-sans">Fontes: {verification.sources.join(", ")}</p>
+        <div className="mt-1.5 space-y-0.5">
+          <span className="opacity-70 font-sans font-semibold">Fontes:</span>
+          {verification.sources.map((src, i) => (
+            <div key={i} className="opacity-70 font-sans truncate">
+              {src.startsWith("http") ? (
+                <a href={src} target="_blank" rel="noopener noreferrer" className="underline hover:opacity-100 transition-opacity">
+                  {new URL(src).hostname.replace("www.", "")}
+                </a>
+              ) : (
+                <span>{src}</span>
+              )}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
