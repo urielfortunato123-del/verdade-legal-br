@@ -182,9 +182,39 @@
     background: hsl(var(--background));
   }
 
+  .dark .search-editorial {
+    background: hsla(220, 15%, 12%, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-color: hsla(220, 15%, 22%, 0.5);
+  }
+
   .search-editorial:focus-within {
     border-color: hsl(var(--foreground));
     box-shadow: 0 0 0 1px hsl(var(--foreground));
+  }
+
+  .dark .search-editorial:focus-within {
+    border-color: hsl(145, 55%, 45%);
+    box-shadow: 0 0 0 1px hsl(145, 55%, 45% / 0.3), 0 0 20px hsl(145, 55%, 45% / 0.05);
+  }
+
+  /* Glass card for dark mode */
+  .glass-card-dark {
+    background: hsla(220, 15%, 12%, 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsla(220, 15%, 22%, 0.4);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Glow accents */
+  .glow-green {
+    box-shadow: 0 0 30px hsl(145, 55%, 40% / 0.08);
+  }
+
+  .dark .glow-green {
+    box-shadow: 0 0 40px hsl(145, 55%, 40% / 0.12);
   }
 
   /* Verdict Badges */
