@@ -188,8 +188,8 @@ export function NewspaperNews() {
                   {isAnalyzing === `${category}-0` ? <><Loader2 className="w-3 h-3 animate-spin mr-1" />Analisando...</> : <><FileText className="w-3 h-3 mr-1" />Analisar PDF</>}
                 </Button>
               </div>
-            </div>
-          )}  {/* closes motion.div for featured */}
+            </motion.div>
+          )}
 
           {/* Other Stories - newspaper column style */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-0">
