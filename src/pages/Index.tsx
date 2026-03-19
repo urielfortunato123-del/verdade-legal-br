@@ -1,10 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import brazilFlag from "@/assets/brazil-flag.jpg";
 import { Layout } from "@/components/Layout";
 import { SearchBar } from "@/components/SearchBar";
-import { NewsSection } from "@/components/NewsSection";
 import { HeadlinesTicker } from "@/components/HeadlinesTicker";
 import { LiveVisitorCounter } from "@/components/LiveVisitorCounter";
+import { NewspaperNews } from "@/components/NewspaperNews";
 import { DonationModal, useDonationModal } from "@/components/DonationModal";
 import {
   MessageSquare,
@@ -19,43 +18,14 @@ import {
 const Index = () => {
   const navigate = useNavigate();
   const { open: donationOpen, setOpen: setDonationOpen } = useDonationModal();
+
   const menuItems = [
-    {
-      icon: Search,
-      label: "Fact Check",
-      href: "/fact-check",
-      variant: "pink" as const,
-    },
-    {
-      icon: MessageSquare,
-      label: "Perguntar",
-      href: "/perguntar",
-      variant: "green" as const,
-    },
-    {
-      icon: FileText,
-      label: "Checar Imagem",
-      href: "/checar-imagem",
-      variant: "blue" as const,
-    },
-    {
-      icon: Mic,
-      label: "Checar Áudio",
-      href: "/checar-audio",
-      variant: "yellow" as const,
-    },
-    {
-      icon: BookOpen,
-      label: "Biblioteca",
-      href: "/biblioteca",
-      variant: "green" as const,
-    },
-    {
-      icon: Clock,
-      label: "Histórico",
-      href: "/historico",
-      variant: "blue" as const,
-    },
+    { icon: Search, label: "Fact Check", href: "/fact-check", variant: "pink" as const },
+    { icon: MessageSquare, label: "Perguntar", href: "/perguntar", variant: "green" as const },
+    { icon: FileText, label: "Checar Imagem", href: "/checar-imagem", variant: "blue" as const },
+    { icon: Mic, label: "Checar Áudio", href: "/checar-audio", variant: "yellow" as const },
+    { icon: BookOpen, label: "Biblioteca", href: "/biblioteca", variant: "green" as const },
+    { icon: Clock, label: "Histórico", href: "/historico", variant: "blue" as const },
   ];
 
   const quickQuestions = [
@@ -66,64 +36,76 @@ const Index = () => {
 
   const getIconBgClass = (variant: string) => {
     switch (variant) {
-      case "yellow":
-        return "bg-gradient-to-br from-amarelo-ouro to-amarelo-ouro-dark";
-      case "blue":
-        return "bg-gradient-to-br from-azul-ordem to-azul-ordem-light";
-      case "pink":
-        return "bg-gradient-to-br from-rose-500 to-pink-600";
-      default:
-        return "bg-gradient-to-br from-verde to-verde-dark";
+      case "yellow": return "bg-gradient-to-br from-amarelo-ouro to-amarelo-ouro-dark";
+      case "blue": return "bg-gradient-to-br from-azul-ordem to-azul-ordem-light";
+      case "pink": return "bg-gradient-to-br from-rose-500 to-pink-600";
+      default: return "bg-gradient-to-br from-verde to-verde-dark";
     }
   };
+
+  const today = new Date();
+  const dateStr = today.toLocaleDateString("pt-BR", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 
   return (
     <Layout>
       <HeadlinesTicker />
       <DonationModal open={donationOpen} onOpenChange={setDonationOpen} />
-      <div className="container mx-auto px-4 py-8 md:py-12">
-        <div className="max-w-4xl mx-auto">
-          {/* Avatar & Greeting */}
-          <div className="flex flex-col items-center mb-8">
-            <div className="w-28 h-28 rounded-full overflow-hidden mb-4 shadow-lg border-2 border-verde/30">
-              <img src={brazilFlag} alt="Bandeira do Brasil" className="w-full h-full object-cover scale-150" />
-            </div>
-            <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-1">
-              Olá Brasileiro
+
+      {/* Newspaper Masthead */}
+      <div className="border-b-2 border-foreground/20">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex items-center justify-between">
+            <p className="text-xs text-muted-foreground capitalize">{dateStr}</p>
+            <LiveVisitorCounter />
+          </div>
+          <div className="text-center py-4">
+            <h1 className="font-serif text-4xl md:text-6xl lg:text-7xl font-black text-foreground tracking-tight leading-none">
+              Verdade na Lei
             </h1>
-            <p className="text-lg text-foreground/80 font-medium mb-3">
-              Antes de acreditar, verifique!
-            </p>
-            <div className="flex items-center gap-3 flex-wrap justify-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium bg-muted text-muted-foreground">
-                <span>🇧🇷</span>
-                <span>Brasil</span>
-              </div>
-              <LiveVisitorCounter />
+            <div className="flex items-center justify-center gap-4 mt-2">
+              <div className="h-px flex-1 max-w-24 bg-foreground/30" />
+              <p className="text-sm md:text-base font-body text-muted-foreground italic">
+                Antes de acreditar, verifique
+              </p>
+              <div className="h-px flex-1 max-w-24 bg-foreground/30" />
             </div>
           </div>
+          <div className="border-t border-foreground/10 pt-3">
+            <p className="text-xs text-center text-muted-foreground uppercase tracking-[0.3em] font-medium">
+              🇧🇷 O jornal digital do cidadão brasileiro
+            </p>
+          </div>
+        </div>
+      </div>
 
+      <div className="container mx-auto px-4 py-6">
+        <div className="max-w-6xl mx-auto">
           {/* Search */}
-          <div className="mb-8">
+          <div className="mb-6">
             <SearchBar />
           </div>
 
-          {/* Main Menu */}
-          <div className="mb-8">
-            <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4">
-              MENU PRINCIPAL
+          {/* Tools Strip - horizontal newspaper-style section */}
+          <div className="border-y border-foreground/10 py-4 mb-6">
+            <p className="text-[10px] font-bold uppercase tracking-[0.25em] text-muted-foreground mb-3 font-sans">
+              Ferramentas de Verificação
             </p>
-            <div className="grid grid-cols-3 sm:grid-cols-6 gap-4">
+            <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
               {menuItems.map((item) => (
                 <button
                   key={item.label}
                   onClick={() => navigate(item.href)}
-                  className="flex flex-col items-center justify-center gap-3 p-5 cursor-pointer bg-card border border-border rounded-2xl shadow-sm hover:shadow-md hover:border-primary/30 transition-all duration-300 hover:-translate-y-1"
+                  className="flex flex-col items-center justify-center gap-2 p-3 cursor-pointer bg-card border border-border rounded-lg hover:shadow-md hover:border-primary/30 transition-all duration-200 hover:-translate-y-0.5"
                 >
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center shadow-md ${getIconBgClass(item.variant)}`}>
-                    <item.icon className="w-6 h-6 text-white" />
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center shadow-sm ${getIconBgClass(item.variant)}`}>
+                    <item.icon className="w-5 h-5 text-white" />
                   </div>
-                  <span className="text-xs font-medium text-card-foreground text-center leading-tight">
+                  <span className="text-[11px] font-medium text-card-foreground text-center leading-tight font-sans">
                     {item.label}
                   </span>
                 </button>
@@ -131,46 +113,71 @@ const Index = () => {
             </div>
           </div>
 
-          {/* Quick Questions */}
-          <div className="bg-card rounded-2xl shadow-card p-6 mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="font-display font-bold text-card-foreground text-lg">
-                  Consulta Rápida
-                </h2>
-                <p className="text-sm text-muted-foreground">Dúvidas Frequentes</p>
-              </div>
-              <button 
-                onClick={() => navigate("/perguntar")}
-                className="w-10 h-10 rounded-full bg-verde flex items-center justify-center hover:bg-verde-light transition-all hover:scale-105"
-              >
-                <ChevronRight className="w-5 h-5 text-white" />
-              </button>
+          {/* Main Content: Newspaper Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Main Column - News */}
+            <div className="lg:col-span-2">
+              <NewspaperNews />
             </div>
 
-            <div className="space-y-3">
-              {quickQuestions.map((question) => (
-                <button
-                  key={question}
-                  onClick={() =>
-                    navigate(`/perguntar?q=${encodeURIComponent(question)}`)
-                  }
-                  className="flex items-center justify-between w-full px-4 py-3 rounded-xl bg-muted/50 border border-border hover:bg-muted hover:border-primary/30 transition-all"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-verde flex items-center justify-center">
-                      <MessageSquare className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="font-medium text-card-foreground">{question}</span>
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* Quick Questions - Editorial sidebar */}
+              <div className="border border-border rounded-lg p-5 bg-card">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h2 className="font-serif font-bold text-foreground text-xl">
+                      Consulta Rápida
+                    </h2>
+                    <p className="text-xs text-muted-foreground font-body italic">Dúvidas frequentes dos leitores</p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
-                </button>
-              ))}
+                  <button
+                    onClick={() => navigate("/perguntar")}
+                    className="w-8 h-8 rounded-full bg-verde flex items-center justify-center hover:bg-verde-light transition-all hover:scale-105"
+                  >
+                    <ChevronRight className="w-4 h-4 text-white" />
+                  </button>
+                </div>
+
+                <div className="space-y-2">
+                  {quickQuestions.map((question) => (
+                    <button
+                      key={question}
+                      onClick={() => navigate(`/perguntar?q=${encodeURIComponent(question)}`)}
+                      className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg bg-muted/50 border border-border hover:bg-muted hover:border-primary/30 transition-all"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-lg bg-verde flex items-center justify-center">
+                          <MessageSquare className="w-4 h-4 text-white" />
+                        </div>
+                        <span className="font-medium text-sm text-card-foreground">{question}</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Editorial Note */}
+              <div className="border border-border rounded-lg p-5 bg-card">
+                <h3 className="font-serif font-bold text-foreground text-lg mb-2">
+                  Nota Editorial
+                </h3>
+                <p className="text-sm font-body text-muted-foreground leading-relaxed">
+                  O <strong>Verdade na Lei</strong> é um jornal digital independente que utiliza inteligência artificial
+                  para verificar fatos e informar o cidadão brasileiro com base na legislação vigente.
+                </p>
+                <p className="text-sm font-body text-muted-foreground leading-relaxed mt-2">
+                  Nosso compromisso é com a verdade, a transparência e o acesso à informação de qualidade.
+                </p>
+                <div className="mt-3 pt-3 border-t border-border">
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider font-sans">
+                    Fontes: +25 veículos de imprensa
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-
-          {/* News Section */}
-          <NewsSection />
         </div>
       </div>
     </Layout>
