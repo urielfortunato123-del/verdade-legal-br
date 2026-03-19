@@ -148,7 +148,12 @@ export function NewspaperNews() {
         <div>
           {/* Featured Story */}
           {featuredNews && (
-            <div className="mb-6 pb-6 border-b-2 border-foreground/20">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6 pb-6 border-b-2 border-foreground/20"
+            >
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-destructive font-sans">
                   Destaque
