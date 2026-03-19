@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { useNews, NewsCategory } from "@/hooks/useNews";
 import { useVerifyNews, VerdictType } from "@/hooks/useVerifyNews";
 import { useAnalyzeNews, AnalysisResult } from "@/hooks/useAnalyzeNews";
@@ -147,7 +148,12 @@ export function NewspaperNews() {
         <div>
           {/* Featured Story */}
           {featuredNews && (
-            <div className="mb-6 pb-6 border-b-2 border-foreground/20">
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="mb-6 pb-6 border-b-2 border-foreground/20"
+            >
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-destructive font-sans">
                   Destaque
@@ -182,7 +188,7 @@ export function NewspaperNews() {
                   {isAnalyzing === `${category}-0` ? <><Loader2 className="w-3 h-3 animate-spin mr-1" />Analisando...</> : <><FileText className="w-3 h-3 mr-1" />Analisar PDF</>}
                 </Button>
               </div>
-            </div>
+            </motion.div>
           )}
 
           {/* Other Stories - newspaper column style */}
@@ -195,12 +201,17 @@ export function NewspaperNews() {
               const isCurrentlyAnalyzing = isAnalyzing === newsId;
 
               return (
-                <div key={idx} className={cn(
-                  "py-4 px-3",
-                  // Newspaper column dividers
-                  i % 2 === 0 ? "md:border-r md:border-border" : "",
-                  "border-b border-border last:border-b-0"
-                )}>
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: i * 0.06 }}
+                  className={cn(
+                    "py-4 px-3",
+                    i % 2 === 0 ? "md:border-r md:border-border" : "",
+                    "border-b border-border last:border-b-0"
+                  )}
+                >
                   <div className="flex items-center gap-2 mb-1.5">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-primary font-sans">
                       {item.source}
@@ -234,7 +245,7 @@ export function NewspaperNews() {
                       {isCurrentlyAnalyzing ? <Loader2 className="w-3 h-3 animate-spin" /> : <><FileText className="w-3 h-3 mr-0.5" />PDF</>}
                     </Button>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
