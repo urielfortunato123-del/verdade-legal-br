@@ -120,8 +120,16 @@ export function Header() {
             </DropdownMenu>
 
             <button
+              onClick={toggleTheme}
+              className="ml-1 p-1.5 rounded-sm text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Alternar tema"
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+
+            <button
               onClick={() => setDonationOpen(true)}
-              className="ml-2 px-3 py-1.5 text-[13px] font-medium transition-colors flex items-center gap-1 text-accent hover:text-accent/80"
+              className="ml-1 px-3 py-1.5 text-[13px] font-medium transition-colors flex items-center gap-1 text-accent hover:text-accent/80"
             >
               <Heart className="w-3.5 h-3.5" />
               Apoiar
