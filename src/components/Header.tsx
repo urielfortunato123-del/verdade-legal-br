@@ -16,7 +16,7 @@ import { toast } from "sonner";
 const navLinks = [
   { href: "/", label: "Início" },
   { href: "/perguntar", label: "Perguntar" },
-  { href: "/checar-imagem", label: "Checar" },
+  
   { href: "/biblioteca", label: "Leis" },
 ];
 
