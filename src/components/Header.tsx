@@ -29,6 +29,20 @@ export function Header() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"));
+  }, []);
+
+  const toggleTheme = () => {
+    const root = document.documentElement;
+    const newDark = !isDark;
+    root.classList.remove("light", "dark");
+    root.classList.add(newDark ? "dark" : "light");
+    localStorage.setItem("theme", newDark ? "dark" : "light");
+    setIsDark(newDark);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-background/80 dark:bg-background/60 backdrop-blur-xl border-b border-border dark:border-border/50">
