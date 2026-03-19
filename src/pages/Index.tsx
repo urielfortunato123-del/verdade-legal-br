@@ -1,16 +1,16 @@
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import { Layout } from "@/components/Layout";
 import { SearchBar } from "@/components/SearchBar";
 import { HeadlinesTicker } from "@/components/HeadlinesTicker";
 import { LiveVisitorCounter } from "@/components/LiveVisitorCounter";
 import { NewspaperNews } from "@/components/NewspaperNews";
 import { DonationModal, useDonationModal } from "@/components/DonationModal";
+import { AnimatedCard } from "@/components/AnimatedCard";
 import {
   MessageSquare,
   FileText,
   BookOpen,
-  Mic,
-  Clock,
   Search,
   ChevronRight,
 } from "lucide-react";
