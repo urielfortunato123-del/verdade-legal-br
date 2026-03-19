@@ -105,7 +105,7 @@ export function useDonationModal() {
       const timer = setTimeout(() => {
         setOpen(true);
         sessionStorage.setItem("donation_shown", "1");
-      }, 2000);
+      }, 800);
       return () => clearTimeout(timer);
     }
   }, []);
