@@ -9,6 +9,7 @@ import Perguntar from "./pages/Perguntar";
 import FactCheck from "./pages/FactCheck";
 
 import Biblioteca from "./pages/Biblioteca";
+import Candidatos from "./pages/Candidatos";
 import Configuracoes from "./pages/Configuracoes";
 import Sobre from "./pages/Sobre";
 import NotFound from "./pages/NotFound";
@@ -57,6 +58,7 @@ const App = () => (
             <Route path="/perguntar" element={<Perguntar />} />
             <Route path="/fact-check" element={<FactCheck />} />
             
+            <Route path="/candidatos" element={<Candidatos />} />
             <Route path="/biblioteca" element={<Biblioteca />} />
             <Route path="/configuracoes" element={<Configuracoes />} />
             <Route path="/sobre" element={<Sobre />} />
