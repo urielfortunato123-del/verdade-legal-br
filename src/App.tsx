@@ -7,7 +7,7 @@ import { useEffect } from "react";
 import Index from "./pages/Index";
 import Perguntar from "./pages/Perguntar";
 import FactCheck from "./pages/FactCheck";
-import ChecarImagem from "./pages/ChecarImagem";
+
 import Biblioteca from "./pages/Biblioteca";
 import Configuracoes from "./pages/Configuracoes";
 import Sobre from "./pages/Sobre";
