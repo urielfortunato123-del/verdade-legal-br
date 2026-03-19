@@ -9,12 +9,11 @@ export default {
       center: true,
       padding: "1rem",
       screens: {
-        "2xl": "1400px",
+        "2xl": "1280px",
       },
     },
     extend: {
       colors: {
-        // Brasil Verde Theme
         verde: {
           DEFAULT: "hsl(145, 55%, 38%)",
           light: "hsl(145, 50%, 50%)",
@@ -37,11 +36,8 @@ export default {
           light: "hsl(210, 65%, 55%)",
         },
         "vermelho-alerta": "hsl(0, 70%, 50%)",
-        
-        // Legacy
         "amarelo-progresso": "hsl(48, 95%, 52%)",
         
-        // Semantic tokens
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -97,23 +93,19 @@ export default {
         },
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        display: ["Plus Jakarta Sans", "Inter", "system-ui", "sans-serif"],
-        serif: ["Playfair Display", "Lora", "Georgia", "serif"],
+        sans: ["Libre Franklin", "Helvetica Neue", "Arial", "sans-serif"],
+        display: ["Playfair Display", "Georgia", "serif"],
+        serif: ["Playfair Display", "Georgia", "Times New Roman", "serif"],
         body: ["Lora", "Georgia", "serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
-        md: "calc(var(--radius) - 4px)",
-        sm: "calc(var(--radius) - 8px)",
-        xl: "calc(var(--radius) + 4px)",
-        "2xl": "calc(var(--radius) + 8px)",
-        "3xl": "1.5rem",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
       },
       boxShadow: {
         card: "var(--shadow-card)",
         elevated: "var(--shadow-elevated)",
-        glow: "0 0 24px hsla(145, 55%, 40%, 0.3)",
       },
       keyframes: {
         "accordion-down": {
@@ -125,29 +117,14 @@ export default {
           to: { height: "0" },
         },
         "fade-in": {
-          from: { opacity: "0", transform: "translateY(10px)" },
+          from: { opacity: "0", transform: "translateY(8px)" },
           to: { opacity: "1", transform: "translateY(0)" },
-        },
-        "fade-in-up": {
-          from: { opacity: "0", transform: "translateY(20px)" },
-          to: { opacity: "1", transform: "translateY(0)" },
-        },
-        "scale-in": {
-          from: { opacity: "0", transform: "scale(0.95)" },
-          to: { opacity: "1", transform: "scale(1)" },
-        },
-        pulse: {
-          "0%, 100%": { opacity: "1" },
-          "50%": { opacity: "0.6" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.4s ease-out forwards",
-        "fade-in-up": "fade-in-up 0.5s ease-out forwards",
-        "scale-in": "scale-in 0.3s ease-out forwards",
-        pulse: "pulse 2s ease-in-out infinite",
+        "fade-in": "fade-in 0.3s ease-out forwards",
       },
     },
   },
