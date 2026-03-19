@@ -99,9 +99,9 @@ const Index = () => {
             </div>
 
             {/* Sidebar */}
-            <div className="lg:col-span-4 lg:pl-6 mt-6 lg:mt-0">
+            <div className="lg:col-span-4 lg:pl-6 mt-6 lg:mt-0 space-y-6">
               {/* Quick Questions */}
-              <div className="mb-6">
+              <div className="p-5 rounded-lg border border-border dark:glass-card-dark dark:border-0 dark:glow-green">
                 <div className="flex items-center justify-between mb-3">
                   <h2 className="font-serif font-bold text-foreground text-lg">
                     Consulta Rápida
@@ -114,7 +114,7 @@ const Index = () => {
                   </button>
                 </div>
 
-                <div className="space-y-0 divide-y divide-border">
+                <div className="space-y-0 divide-y divide-border dark:divide-border/50">
                   {quickQuestions.map((question, i) => (
                     <motion.button
                       key={question}
@@ -135,7 +135,7 @@ const Index = () => {
               </div>
 
               {/* Editorial Note */}
-              <div className="border-t border-border pt-5">
+              <div className="p-5 rounded-lg border border-border dark:glass-card-dark dark:border-0">
                 <h3 className="font-serif font-bold text-foreground text-base mb-2">
                   Nota Editorial
                 </h3>
@@ -146,7 +146,7 @@ const Index = () => {
                 <p className="text-sm font-body text-muted-foreground leading-relaxed mt-2">
                   Nosso compromisso é com a verdade, a transparência e o acesso à informação de qualidade.
                 </p>
-                <div className="mt-3 pt-3 border-t border-border">
+                <div className="mt-3 pt-3 border-t border-border dark:border-border/50">
                   <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] font-sans">
                     Fontes: +25 veículos de imprensa
                   </p>
