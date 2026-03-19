@@ -154,8 +154,15 @@ export function NewspaperNews() {
                 : "border-transparent text-muted-foreground hover:text-foreground"
             )}
           >
-            <cat.icon className="w-3.5 h-3.5" />
+            {cat.id === "local" && isLocating ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <cat.icon className="w-3.5 h-3.5" />
+            )}
             {cat.label}
+            {cat.id === "local" && userLocation && category === "local" && (
+              <span className="w-1.5 h-1.5 rounded-full bg-verde animate-pulse" />
+            )}
           </button>
         ))}
       </div>
