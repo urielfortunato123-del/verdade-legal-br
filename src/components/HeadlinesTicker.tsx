@@ -1,13 +1,32 @@
+import { useEffect } from "react";
 import { useNews } from "@/hooks/useNews";
-import { Flame, ExternalLink } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useBreakingNewsAlert } from "@/hooks/useBreakingNewsAlert";
+import { Flame, ExternalLink, Bell } from "lucide-react";
+import { Button } from "./ui/button";
 
 export function HeadlinesTicker() {
   const { data: news, isLoading } = useNews("geral");
+  const { checkForBreakingNews, requestNotificationPermission } = useBreakingNewsAlert();
+
+  // Check for new headlines whenever news updates
+  useEffect(() => {
+    if (news?.length) {
+      checkForBreakingNews(news);
+    }
+  }, [news, checkForBreakingNews]);
+
+  // Request notification permission on first interaction
+  useEffect(() => {
+    const handleClick = () => {
+      requestNotificationPermission();
+      document.removeEventListener("click", handleClick);
+    };
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, [requestNotificationPermission]);
 
   if (isLoading || !news?.length) return null;
 
-  // Take top 10 headlines
   const headlines = news.slice(0, 10);
 
   return (
@@ -37,6 +56,15 @@ export function HeadlinesTicker() {
             ))}
           </div>
         </div>
+
+        {/* Notification bell */}
+        <button
+          onClick={() => requestNotificationPermission()}
+          className="shrink-0 p-1.5 rounded-full hover:bg-white/20 transition-colors"
+          title="Ativar notificações de breaking news"
+        >
+          <Bell className="w-4 h-4" />
+        </button>
       </div>
     </div>
   );
