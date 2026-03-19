@@ -94,19 +94,20 @@ const Index = () => {
               Ferramentas de Verificação
             </p>
             <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
-              {menuItems.map((item) => (
-                <button
-                  key={item.label}
-                  onClick={() => navigate(item.href)}
-                  className="flex flex-col items-center justify-center gap-2 p-3 cursor-pointer bg-card border border-border rounded-lg hover:shadow-md hover:border-primary/30 transition-all duration-200 hover:-translate-y-0.5"
-                >
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center shadow-sm ${getIconBgClass(item.variant)}`}>
-                    <item.icon className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-[11px] font-medium text-card-foreground text-center leading-tight font-sans">
-                    {item.label}
-                  </span>
-                </button>
+              {menuItems.map((item, i) => (
+                <AnimatedCard key={item.label} index={i}>
+                  <button
+                    onClick={() => navigate(item.href)}
+                    className="flex flex-col items-center justify-center gap-2 p-3 w-full cursor-pointer bg-card border border-border rounded-lg hover:shadow-md hover:border-primary/30 transition-all duration-200"
+                  >
+                    <div className={`w-10 h-10 rounded-lg flex items-center justify-center shadow-sm ${getIconBgClass(item.variant)}`}>
+                      <item.icon className="w-5 h-5 text-white" />
+                    </div>
+                    <span className="text-[11px] font-medium text-card-foreground text-center leading-tight font-sans">
+                      {item.label}
+                    </span>
+                  </button>
+                </AnimatedCard>
               ))}
             </div>
           </div>
