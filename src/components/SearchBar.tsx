@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search, Mic, MessageSquare, Scale, ChevronRight } from "lucide-react";
+import { Search, MessageSquare, Scale, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SearchResult {
@@ -84,99 +84,89 @@ export function SearchBar() {
 
   return (
     <div ref={containerRef} className="relative">
-      <form onSubmit={handleSubmit} className="search-glass">
-        <Search className="w-5 h-5 text-white/50" />
+      <form onSubmit={handleSubmit} className="search-editorial">
+        <Search className="w-4 h-4 text-muted-foreground" />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onFocus={() => setIsOpen(true)}
           placeholder="Pesquisar leis, direitos..."
-          className="flex-1 bg-transparent text-white placeholder:text-white/40 outline-none text-sm"
+          className="flex-1 bg-transparent text-foreground placeholder:text-muted-foreground outline-none text-sm font-sans"
         />
-        <button 
-          type="submit"
-          className="p-2 rounded-xl bg-white/10 hover:bg-white/20 transition-all hover:scale-105"
-        >
-          <Mic className="w-4 h-4 text-white/70" />
-        </button>
       </form>
 
-      {/* Search Results Dropdown - Glass */}
+      {/* Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-3 glass-panel p-4 z-50 animate-fade-in">
+        <div className="absolute top-full left-0 right-0 mt-1 bg-popover border border-border rounded-sm shadow-elevated z-50 animate-fade-in">
           {results.length > 0 ? (
-            <div className="max-h-80 overflow-y-auto space-y-1">
+            <div className="max-h-80 overflow-y-auto divide-y divide-border">
               {results.map((result, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleResultClick(result)}
-                  className="w-full flex items-center gap-3 px-4 py-3 text-left rounded-xl hover:bg-white/10 transition-all"
+                  className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-muted transition-colors"
                 >
                   <div className={cn(
-                    "w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0",
+                    "w-8 h-8 rounded-sm flex items-center justify-center flex-shrink-0",
                     result.type === "question" 
-                      ? "bg-gradient-to-br from-verde-brasil to-verde-brasil-dark" 
-                      : "bg-gradient-to-br from-secondary to-amarelo-ouro-dark"
+                      ? "bg-primary/10 text-primary" 
+                      : "bg-secondary/20 text-secondary-foreground"
                   )}>
                     {result.type === "question" ? (
-                      <MessageSquare className="w-5 h-5 text-white" />
+                      <MessageSquare className="w-4 h-4" />
                     ) : (
-                      <Scale className="w-5 h-5 text-secondary-foreground" />
+                      <Scale className="w-4 h-4" />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="font-medium text-white/90 text-sm truncate">{result.title}</p>
+                    <p className="font-medium text-foreground text-sm truncate">{result.title}</p>
                     {result.description && (
-                      <p className="text-xs text-white/50 truncate">{result.description}</p>
+                      <p className="text-xs text-muted-foreground truncate">{result.description}</p>
                     )}
                   </div>
-                  <ChevronRight className="w-4 h-4 text-white/40 flex-shrink-0" />
+                  <ChevronRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                 </button>
               ))}
             </div>
           ) : query.trim() ? (
             <div className="p-4 text-center">
-              <p className="text-white/60 text-sm mb-3">Nenhum resultado para "{query}"</p>
+              <p className="text-muted-foreground text-sm mb-3">Nenhum resultado para "{query}"</p>
               <button
                 onClick={handleSubmit}
-                className="px-4 py-2 rounded-xl bg-secondary text-secondary-foreground font-medium text-sm hover:bg-secondary/90 transition-all"
+                className="px-4 py-2 bg-foreground text-background font-medium text-sm hover:bg-foreground/90 transition-colors"
               >
                 Perguntar sobre isso →
               </button>
             </div>
           ) : (
-            <div className="space-y-4">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-2 px-1">
-                  Sugestões
-                </p>
+            <div className="divide-y divide-border">
+              <div className="p-3">
+                <p className="label-section mb-2 px-1">Sugestões</p>
                 {quickQuestions.slice(0, 3).map((q, idx) => (
                   <button
                     key={idx}
                     onClick={() => navigate(q.href)}
-                    className="w-full flex items-center gap-3 px-3 py-2.5 text-left rounded-xl hover:bg-white/10 transition-all"
+                    className="w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-muted transition-colors rounded-sm"
                   >
-                    <Search className="w-4 h-4 text-white/40" />
-                    <span className="text-sm text-white/70">{q.title}</span>
+                    <Search className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span className="text-sm text-foreground">{q.title}</span>
                   </button>
                 ))}
               </div>
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wider text-white/40 mb-2 px-1">
-                  Leis Populares
-                </p>
+              <div className="p-3">
+                <p className="label-section mb-2 px-1">Leis Populares</p>
                 {laws.slice(0, 3).map((law, idx) => (
                   <button
                     key={idx}
                     onClick={() => navigate(law.href)}
-                    className="w-full flex items-center justify-between px-3 py-2.5 text-left rounded-xl hover:bg-white/10 transition-all"
+                    className="w-full flex items-center justify-between px-3 py-2 text-left hover:bg-muted transition-colors rounded-sm"
                   >
                     <div className="flex items-center gap-3">
-                      <Scale className="w-4 h-4 text-secondary" />
-                      <span className="text-sm text-white/70">{law.title}</span>
+                      <Scale className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-sm text-foreground">{law.title}</span>
                     </div>
-                    <ChevronRight className="w-4 h-4 text-white/30" />
+                    <ChevronRight className="w-3.5 h-3.5 text-muted-foreground" />
                   </button>
                 ))}
               </div>
