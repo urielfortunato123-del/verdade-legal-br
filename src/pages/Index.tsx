@@ -3,6 +3,8 @@ import brazilFlag from "@/assets/brazil-flag.jpg";
 import { Layout } from "@/components/Layout";
 import { SearchBar } from "@/components/SearchBar";
 import { NewsSection } from "@/components/NewsSection";
+import { HeadlinesTicker } from "@/components/HeadlinesTicker";
+import { LiveVisitorCounter } from "@/components/LiveVisitorCounter";
 import { DonationModal, useDonationModal } from "@/components/DonationModal";
 import {
   MessageSquare,
