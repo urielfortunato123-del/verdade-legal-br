@@ -89,6 +89,31 @@ interface NewsItem {
   description: string;
   pubDate: string;
   source: string;
+  imageUrl: string | null;
+}
+
+function extractImageUrl(itemXml: string): string | null {
+  // Try media:content
+  const mediaMatch = itemXml.match(/<media:content[^>]+url=["']([^"']+)["']/);
+  if (mediaMatch) return mediaMatch[1];
+
+  // Try media:thumbnail
+  const thumbMatch = itemXml.match(/<media:thumbnail[^>]+url=["']([^"']+)["']/);
+  if (thumbMatch) return thumbMatch[1];
+
+  // Try enclosure with image type
+  const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image\/[^"']+["']/);
+  if (enclosureMatch) return enclosureMatch[1];
+
+  // Try enclosure without type check (often images)
+  const enclosureAny = itemXml.match(/<enclosure[^>]+url=["']([^"']+\.(?:jpg|jpeg|png|webp)[^"']*)["']/i);
+  if (enclosureAny) return enclosureAny[1];
+
+  // Try image tag inside description CDATA
+  const imgMatch = itemXml.match(/<img[^>]+src=["']([^"']+)["']/);
+  if (imgMatch) return imgMatch[1];
+
+  return null;
 }
 
 function parseRSSItem(item: string, source: string): NewsItem | null {
@@ -102,10 +127,10 @@ function parseRSSItem(item: string, source: string): NewsItem | null {
     const link = linkMatch ? linkMatch[1]?.trim() : null;
     const description = descMatch ? (descMatch[1] || descMatch[2])?.trim() : "";
     const pubDate = dateMatch ? dateMatch[1]?.trim() : new Date().toISOString();
+    const imageUrl = extractImageUrl(item);
 
     if (!title || !link) return null;
 
-    // Limpar HTML do description e corrigir encoding
     const cleanDescription = description
       .replace(/<[^>]*>/g, "")
       .replace(/&nbsp;/g, " ")
@@ -126,6 +151,7 @@ function parseRSSItem(item: string, source: string): NewsItem | null {
       description: cleanDescription,
       pubDate,
       source,
+      imageUrl,
     };
   } catch {
     return null;

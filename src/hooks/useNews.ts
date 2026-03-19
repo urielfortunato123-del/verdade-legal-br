@@ -7,6 +7,7 @@ export interface NewsItem {
   description: string;
   pubDate: string;
   source: string;
+  imageUrl: string | null;
 }
 
 export type NewsCategory = "geral" | "politica" | "economia" | "esportes" | "tecnologia" | "entretenimento";
