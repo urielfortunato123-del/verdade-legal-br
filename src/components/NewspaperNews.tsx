@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { useNews, NewsCategory } from "@/hooks/useNews";
 import { useVerifyNews, VerdictType } from "@/hooks/useVerifyNews";
@@ -21,14 +21,17 @@ import {
   Smartphone,
   Film,
   ExternalLink,
+  MapPin,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
+import { toast } from "sonner";
 
 const categories: { id: NewsCategory; label: string; icon: typeof Globe }[] = [
   { id: "geral", label: "Geral", icon: Globe },
+  { id: "local", label: "Local", icon: MapPin },
   { id: "politica", label: "Governo", icon: Landmark },
   { id: "economia", label: "Economia", icon: TrendingUp },
   { id: "esportes", label: "Esportes", icon: Dumbbell },
