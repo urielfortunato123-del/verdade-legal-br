@@ -221,14 +221,34 @@
   .verdict-confirmed {
     @apply bg-[hsl(145,50%,95%)] text-[hsl(145,60%,30%)] border border-[hsl(145,50%,80%)] font-semibold;
   }
+  .dark .verdict-confirmed {
+    background: hsla(145, 50%, 20%, 0.3);
+    color: hsl(145, 60%, 60%);
+    border-color: hsla(145, 50%, 40%, 0.3);
+  }
   .verdict-misleading {
     @apply bg-[hsl(48,90%,93%)] text-[hsl(40,80%,30%)] border border-[hsl(48,85%,75%)] font-semibold;
+  }
+  .dark .verdict-misleading {
+    background: hsla(48, 80%, 30%, 0.2);
+    color: hsl(48, 85%, 65%);
+    border-color: hsla(48, 80%, 50%, 0.3);
   }
   .verdict-false {
     @apply bg-[hsl(0,70%,96%)] text-[hsl(0,70%,45%)] border border-[hsl(0,60%,82%)] font-semibold;
   }
+  .dark .verdict-false {
+    background: hsla(0, 60%, 25%, 0.25);
+    color: hsl(0, 70%, 65%);
+    border-color: hsla(0, 60%, 45%, 0.3);
+  }
   .verdict-unverifiable {
     @apply bg-[hsl(210,15%,94%)] text-[hsl(210,20%,45%)] border border-[hsl(210,15%,82%)] font-semibold;
+  }
+  .dark .verdict-unverifiable {
+    background: hsla(210, 15%, 20%, 0.3);
+    color: hsl(210, 15%, 65%);
+    border-color: hsla(210, 15%, 35%, 0.3);
   }
 }
 
