@@ -46,8 +46,7 @@ export function useBreakingNewsAlert() {
         icon: "/pwa-192x192.png",
         badge: "/pwa-192x192.png",
         tag: "breaking-news",
-        renotify: true,
-      });
+      } as NotificationOptions);
     }
   }, []);
 
