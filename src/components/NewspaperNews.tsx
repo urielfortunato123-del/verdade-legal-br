@@ -68,7 +68,9 @@ const verdictConfig: Record<
 export function NewspaperNews() {
   const [category, setCategory] = useState<NewsCategory>("geral");
   const [modalData, setModalData] = useState<AnalysisResult | null>(null);
-  const { data: news, isLoading, error, refetch, isFetching } = useNews(category);
+  const [userLocation, setUserLocation] = useState<{ lat: number; lon: number } | null>(null);
+  const [isLocating, setIsLocating] = useState(false);
+  const { data: news, isLoading, error, refetch, isFetching } = useNews(category, userLocation);
   const { verify, isVerifying, results } = useVerifyNews();
   const { analyze, isAnalyzing, results: analysisResults } = useAnalyzeNews();
 
