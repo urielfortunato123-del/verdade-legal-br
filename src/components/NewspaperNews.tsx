@@ -261,7 +261,7 @@ function VerdictBadge({ verification }: { verification: { verdict: VerdictType; 
   const config = verdictConfig[verification.verdict];
   const Icon = config.icon;
   return (
-    <div className={cn("mt-2 p-2.5 rounded-lg border text-xs", config.className)}>
+    <div className={cn("mt-2 p-2.5 rounded-sm border text-xs", config.className)}>
       <div className="flex items-center gap-1.5 mb-0.5">
         <Icon className="w-3.5 h-3.5" />
         <span className="font-bold font-sans">{config.label}</span>
