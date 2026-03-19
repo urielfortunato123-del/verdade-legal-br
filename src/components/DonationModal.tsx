@@ -42,7 +42,7 @@ export function DonationModal({ open, onOpenChange }: DonationModalProps) {
           <p className="text-sm text-muted-foreground text-center leading-relaxed">
             Este aplicativo tem custos para se manter ativo e gratuito para todos.
             Se ele te ajuda, considere fazer uma contribuição via PIX a partir de{" "}
-            <strong className="text-foreground">R$ 20,00</strong>! 🙏
+            <strong className="text-foreground">R$ 1,00</strong>! 🙏
           </p>
 
           {/* QR Code */}
