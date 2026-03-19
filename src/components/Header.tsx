@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { Menu, X, Settings, Info, Share2, MoreHorizontal, Heart } from "lucide-react";
-import { useState } from "react";
+import { Menu, X, Settings, Info, Share2, MoreHorizontal, Heart, Sun, Moon } from "lucide-react";
+import { useState, useEffect } from "react";
 import { DonationModal } from "./DonationModal";
 import { Button } from "./ui/button";
 import {
@@ -29,6 +29,20 @@ export function Header() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [donationOpen, setDonationOpen] = useState(false);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"));
+  }, []);
+
+  const toggleTheme = () => {
+    const root = document.documentElement;
+    const newDark = !isDark;
+    root.classList.remove("light", "dark");
+    root.classList.add(newDark ? "dark" : "light");
+    localStorage.setItem("theme", newDark ? "dark" : "light");
+    setIsDark(newDark);
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-background/80 dark:bg-background/60 backdrop-blur-xl border-b border-border dark:border-border/50">
@@ -106,8 +120,16 @@ export function Header() {
             </DropdownMenu>
 
             <button
+              onClick={toggleTheme}
+              className="ml-1 p-1.5 rounded-sm text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="Alternar tema"
+            >
+              {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+            </button>
+
+            <button
               onClick={() => setDonationOpen(true)}
-              className="ml-2 px-3 py-1.5 text-[13px] font-medium transition-colors flex items-center gap-1 text-accent hover:text-accent/80"
+              className="ml-1 px-3 py-1.5 text-[13px] font-medium transition-colors flex items-center gap-1 text-accent hover:text-accent/80"
             >
               <Heart className="w-3.5 h-3.5" />
               Apoiar
@@ -159,6 +181,13 @@ export function Header() {
                     {link.label}
                   </Link>
                 ))}
+                <button
+                  onClick={toggleTheme}
+                  className="w-full px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                  {isDark ? "Tema Claro" : "Tema Escuro"}
+                </button>
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
