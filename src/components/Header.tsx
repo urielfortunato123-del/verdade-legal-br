@@ -182,6 +182,13 @@ export function Header() {
                   </Link>
                 ))}
                 <button
+                  onClick={toggleTheme}
+                  className="w-full px-3 py-2.5 text-sm text-muted-foreground hover:text-foreground flex items-center gap-2"
+                >
+                  {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                  {isDark ? "Tema Claro" : "Tema Escuro"}
+                </button>
+                <button
                   onClick={() => {
                     setMobileMenuOpen(false);
                     setDonationOpen(true);
