@@ -27,7 +27,7 @@ export function HeadlinesTicker() {
   const headlines = news.slice(0, 10);
 
   return (
-    <div className="w-full border-b border-border bg-background overflow-hidden">
+    <div className="w-full border-b border-border dark:border-border/50 bg-background dark:bg-background/40 dark:backdrop-blur-md overflow-hidden">
       <div className="container mx-auto px-4 flex items-center gap-3 h-9">
         {/* LIVE label */}
         <span className="label-live shrink-0">AO VIVO</span>

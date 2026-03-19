@@ -74,45 +74,45 @@
   }
 
   .dark {
-    --background: 0 0% 7%;
-    --foreground: 0 0% 93%;
+    --background: 220 20% 6%;
+    --foreground: 210 20% 92%;
 
-    --card: 0 0% 10%;
-    --card-foreground: 0 0% 93%;
+    --card: 220 15% 10%;
+    --card-foreground: 210 20% 92%;
 
-    --popover: 0 0% 10%;
-    --popover-foreground: 0 0% 93%;
+    --popover: 220 15% 11%;
+    --popover-foreground: 210 20% 92%;
 
-    --primary: 145 55% 40%;
+    --primary: 145 55% 45%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 48 95% 55%;
-    --secondary-foreground: 0 0% 7%;
+    --secondary: 48 90% 55%;
+    --secondary-foreground: 220 20% 6%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 220 15% 14%;
+    --muted-foreground: 210 10% 55%;
 
-    --accent: 0 72% 55%;
+    --accent: 0 72% 58%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 15%;
-    --ring: 48 95% 55%;
+    --border: 220 12% 16%;
+    --input: 220 15% 13%;
+    --ring: 145 55% 45%;
 
-    --shadow-card: 0 1px 3px rgba(0,0,0,0.3);
-    --shadow-elevated: 0 4px 12px rgba(0,0,0,0.4);
+    --shadow-card: 0 2px 8px rgba(0,0,0,0.4);
+    --shadow-elevated: 0 8px 24px rgba(0,0,0,0.5);
 
-    --sidebar-background: 0 0% 9%;
-    --sidebar-foreground: 0 0% 93%;
-    --sidebar-primary: 145 55% 40%;
+    --sidebar-background: 220 20% 7%;
+    --sidebar-foreground: 210 20% 92%;
+    --sidebar-primary: 145 55% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 15%;
-    --sidebar-accent-foreground: 0 0% 93%;
-    --sidebar-border: 0 0% 18%;
-    --sidebar-ring: 48 95% 55%;
+    --sidebar-accent: 220 15% 14%;
+    --sidebar-accent-foreground: 210 20% 92%;
+    --sidebar-border: 220 12% 16%;
+    --sidebar-ring: 145 55% 45%;
   }
 }
 
@@ -125,6 +125,16 @@
     @apply bg-background text-foreground antialiased;
     font-family: 'Libre Franklin', 'Helvetica Neue', Arial, sans-serif;
     min-height: 100vh;
+  }
+
+  /* Dark mode gradient background */
+  .dark body {
+    background: linear-gradient(
+      180deg,
+      hsl(220, 20%, 6%) 0%,
+      hsl(225, 22%, 8%) 40%,
+      hsl(220, 18%, 7%) 100%
+    );
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -172,23 +182,73 @@
     background: hsl(var(--background));
   }
 
+  .dark .search-editorial {
+    background: hsla(220, 15%, 12%, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-color: hsla(220, 15%, 22%, 0.5);
+  }
+
   .search-editorial:focus-within {
     border-color: hsl(var(--foreground));
     box-shadow: 0 0 0 1px hsl(var(--foreground));
+  }
+
+  .dark .search-editorial:focus-within {
+    border-color: hsl(145, 55%, 45%);
+    box-shadow: 0 0 0 1px hsl(145, 55%, 45% / 0.3), 0 0 20px hsl(145, 55%, 45% / 0.05);
+  }
+
+  /* Glass card for dark mode */
+  .glass-card-dark {
+    background: hsla(220, 15%, 12%, 0.5);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid hsla(220, 15%, 22%, 0.4);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  }
+
+  /* Glow accents */
+  .glow-green {
+    box-shadow: 0 0 30px hsl(145, 55%, 40% / 0.08);
+  }
+
+  .dark .glow-green {
+    box-shadow: 0 0 40px hsl(145, 55%, 40% / 0.12);
   }
 
   /* Verdict Badges */
   .verdict-confirmed {
     @apply bg-[hsl(145,50%,95%)] text-[hsl(145,60%,30%)] border border-[hsl(145,50%,80%)] font-semibold;
   }
+  .dark .verdict-confirmed {
+    background: hsla(145, 50%, 20%, 0.3);
+    color: hsl(145, 60%, 60%);
+    border-color: hsla(145, 50%, 40%, 0.3);
+  }
   .verdict-misleading {
     @apply bg-[hsl(48,90%,93%)] text-[hsl(40,80%,30%)] border border-[hsl(48,85%,75%)] font-semibold;
+  }
+  .dark .verdict-misleading {
+    background: hsla(48, 80%, 30%, 0.2);
+    color: hsl(48, 85%, 65%);
+    border-color: hsla(48, 80%, 50%, 0.3);
   }
   .verdict-false {
     @apply bg-[hsl(0,70%,96%)] text-[hsl(0,70%,45%)] border border-[hsl(0,60%,82%)] font-semibold;
   }
+  .dark .verdict-false {
+    background: hsla(0, 60%, 25%, 0.25);
+    color: hsl(0, 70%, 65%);
+    border-color: hsla(0, 60%, 45%, 0.3);
+  }
   .verdict-unverifiable {
     @apply bg-[hsl(210,15%,94%)] text-[hsl(210,20%,45%)] border border-[hsl(210,15%,82%)] font-semibold;
+  }
+  .dark .verdict-unverifiable {
+    background: hsla(210, 15%, 20%, 0.3);
+    color: hsl(210, 15%, 65%);
+    border-color: hsla(210, 15%, 35%, 0.3);
   }
 }
 
