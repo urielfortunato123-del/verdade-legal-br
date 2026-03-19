@@ -201,12 +201,17 @@ export function NewspaperNews() {
               const isCurrentlyAnalyzing = isAnalyzing === newsId;
 
               return (
-                <div key={idx} className={cn(
-                  "py-4 px-3",
-                  // Newspaper column dividers
-                  i % 2 === 0 ? "md:border-r md:border-border" : "",
-                  "border-b border-border last:border-b-0"
-                )}>
+                <motion.div
+                  key={idx}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: i * 0.06 }}
+                  className={cn(
+                    "py-4 px-3",
+                    i % 2 === 0 ? "md:border-r md:border-border" : "",
+                    "border-b border-border last:border-b-0"
+                  )}
+                >
                   <div className="flex items-center gap-2 mb-1.5">
                     <span className="text-[10px] font-semibold uppercase tracking-wider text-primary font-sans">
                       {item.source}
