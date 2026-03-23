@@ -10,7 +10,7 @@ async function searchBrave(query: string, apiKey: string): Promise<{ title: stri
   try {
     const params = new URLSearchParams({
       q: query,
-      count: "10",
+      count: "5",
       search_lang: "pt-br",
       country: "BR",
     });
@@ -67,19 +67,8 @@ serve(async (req) => {
     let searchContext = "";
 
     if (BRAVE_API_KEY) {
-      const [generalResults, politicalResults, newsResults] = await Promise.all([
-        searchBrave(`${candidateName} político candidato Brasil biografia`, BRAVE_API_KEY),
-        searchBrave(`${candidateName} TSE eleições projetos de lei votações`, BRAVE_API_KEY),
-        searchBrave(`${candidateName} polêmicas processos escândalos investigação`, BRAVE_API_KEY),
-      ]);
-
-      const allResults = [...generalResults, ...politicalResults, ...newsResults];
-      const seen = new Set<string>();
-      const unique = allResults.filter(r => {
-        if (seen.has(r.url)) return false;
-        seen.add(r.url);
-        return true;
-      });
+      const results = await searchBrave(`${candidateName} político candidato Brasil biografia histórico`, BRAVE_API_KEY);
+      const unique = results.slice(0, 8);
 
       searchContext = unique.length > 0
         ? `\n\nFONTES DA WEB (${unique.length} resultados):\n${unique.map((r, i) => 
@@ -138,6 +127,7 @@ Com base nas informações disponíveis, gere o dossiê em JSON.`;
       },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
+        max_tokens: 4000,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
