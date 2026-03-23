@@ -10,7 +10,7 @@ async function searchBrave(query: string, apiKey: string): Promise<{ title: stri
   try {
     const params = new URLSearchParams({
       q: query,
-      count: "10",
+      count: "5",
       search_lang: "pt-br",
       country: "BR",
     });
